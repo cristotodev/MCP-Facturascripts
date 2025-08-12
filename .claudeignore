@@ -1,0 +1,10 @@
+node_modules/
+facturascripts/
+dist/
+mysql/
+tsconfig.tsbuildinfo
+.env
+.env.local
+.env.production
+*.log
+*.lock

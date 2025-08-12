@@ -17,8 +17,10 @@ export class ClientesResource {
 
   async getResource(uri: string): Promise<Resource> {
     const url = new URL(uri);
-    const limit = parseInt(url.searchParams.get('limit') || '50');
-    const offset = parseInt(url.searchParams.get('offset') || '0');
+    const limitParam = url.searchParams.get('limit');
+    const offsetParam = url.searchParams.get('offset');
+    const limit = limitParam && !isNaN(parseInt(limitParam)) ? parseInt(limitParam) : 50;
+    const offset = offsetParam && !isNaN(parseInt(offsetParam)) ? parseInt(offsetParam) : 0;
 
     try {
       const result = await this.client.getWithPagination<Cliente>(
