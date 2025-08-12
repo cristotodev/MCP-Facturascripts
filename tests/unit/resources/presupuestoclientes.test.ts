@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PresupuestoclientesResource, PresupuestoCliente } from '../../../src/resources/presupuestoclientes.js';
-import { FacturaScriptsClient } from '../../../src/facturascripts/client.js';
+import { FacturaScriptsClient } from '../../../src/fs/client.js';
 
-vi.mock('../../../src/facturascripts/client.js');
+vi.mock('../../../src/fs/client.js');
 
 describe('PresupuestoclientesResource', () => {
   let presupuestoclientesResource: PresupuestoclientesResource;
@@ -52,7 +52,7 @@ describe('PresupuestoclientesResource', () => {
 
       const result = await presupuestoclientesResource.getResource('facturascripts://presupuestoclientes');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/presupuestoclientes', 50, 0);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/presupuestoclientes', 50, 0, {});
       expect(result.uri).toBe('facturascripts://presupuestoclientes');
       expect(result.name).toBe('FacturaScripts PresupuestoClientes');
       expect(result.mimeType).toBe('application/json');
@@ -68,7 +68,7 @@ describe('PresupuestoclientesResource', () => {
 
       await presupuestoclientesResource.getResource('facturascripts://presupuestoclientes?limit=10&offset=20');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/presupuestoclientes', 10, 20);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/presupuestoclientes', 10, 20, {});
     });
 
     it('should use default values for missing params', async () => {
@@ -80,7 +80,7 @@ describe('PresupuestoclientesResource', () => {
 
       await presupuestoclientesResource.getResource('facturascripts://presupuestoclientes?limit=invalid');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/presupuestoclientes', 50, 0);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/presupuestoclientes', 50, 0, {});
     });
 
     it('should handle API errors gracefully', async () => {

@@ -1,19 +1,15 @@
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../fs/client.js';
 
-export interface FacturaCliente {
-  codigo: string;
-  numero?: string;
-  codcliente: string;
-  nombrecliente?: string;
-  fecha: string;
-  total?: number;
-  totaliva?: number;
-  pagada?: boolean;
-  vencimiento?: string;
+export interface AgenciaTransporte {
+  activo?: number;
+  codtrans: string;
+  nombre: string;
+  telefono?: string;
+  web?: string;
 }
 
-export class FacturaclientesResource {
+export class AgenciatransportesResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
@@ -31,8 +27,8 @@ export class FacturaclientesResource {
     if (orderParam) additionalParams.order = orderParam;
 
     try {
-      const result = await this.client.getWithPagination<FacturaCliente>(
-        '/facturaclientes',
+      const result = await this.client.getWithPagination<AgenciaTransporte>(
+        '/agenciatransportes',
         limit,
         offset,
         additionalParams
@@ -40,7 +36,7 @@ export class FacturaclientesResource {
 
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes',
+        name: 'FacturaScripts AgenciaTransportes',
         mimeType: 'application/json',
         contents: [
           {
@@ -54,13 +50,13 @@ export class FacturaclientesResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes (Error)',
+        name: 'FacturaScripts AgenciaTransportes (Error)',
         mimeType: 'application/json',
         contents: [
           {
             type: 'text',
             text: JSON.stringify({
-              error: 'Failed to fetch facturaclientes',
+              error: 'Failed to fetch agenciatransportes',
               message: errorMessage,
               meta: {
                 total: 0,
@@ -80,7 +76,7 @@ export class FacturaclientesResource {
   matchesUri(uri: string): boolean {
     try {
       const url = new URL(uri);
-      return url.protocol === 'facturascripts:' && url.hostname === 'facturaclientes';
+      return url.protocol === 'facturascripts:' && url.hostname === 'agenciatransportes';
     } catch {
       return false;
     }

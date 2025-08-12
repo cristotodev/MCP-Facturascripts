@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ProductosResource, Producto } from '../../../src/resources/productos.js';
-import { FacturaScriptsClient } from '../../../src/facturascripts/client.js';
+import { FacturaScriptsClient } from '../../../src/fs/client.js';
 
-vi.mock('../../../src/facturascripts/client.js');
+vi.mock('../../../src/fs/client.js');
 
 describe('ProductosResource', () => {
   let productosResource: ProductosResource;
@@ -51,7 +51,7 @@ describe('ProductosResource', () => {
 
       const result = await productosResource.getResource('facturascripts://productos');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productos', 50, 0);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productos', 50, 0, {});
       expect(result.uri).toBe('facturascripts://productos');
       expect(result.name).toBe('FacturaScripts Productos');
       expect(result.mimeType).toBe('application/json');
@@ -67,7 +67,7 @@ describe('ProductosResource', () => {
 
       await productosResource.getResource('facturascripts://productos?limit=10&offset=20');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productos', 10, 20);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productos', 10, 20, {});
     });
 
     it('should use default values for missing params', async () => {
@@ -79,7 +79,7 @@ describe('ProductosResource', () => {
 
       await productosResource.getResource('facturascripts://productos?limit=invalid');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productos', 50, 0);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productos', 50, 0, {});
     });
 
     it('should handle API errors gracefully', async () => {

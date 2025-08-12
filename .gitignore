@@ -17,8 +17,53 @@ coverage/
 *.pid.lock
 .vscode/
 .idea/
+
+# Build and cache files
+*.tsbuildinfo
+*.cache
+.turbo/
+.next/
+.parcel-cache/
+.webpack/
+.rollup.cache/
+.vitest/
+
+# Test output and temporary files
+.nyc_output
+coverage/
+*.lcov
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*~
+
+# Package manager files
+.pnpm-debug.log*
+.yarn-integrity
+.yarn-error.log
+yarn.lock
+pnpm-lock.yaml
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker and local development
 docker-compose-facturascripts.yml
+# Local FacturaScripts development instance (exclude this)
 facturascripts/
 .claude/
-mysql/
-docs/
+/mysql/
+/docs/
+
+# OpenAPI files - keep the current one, exclude the old one
+/facturascripts.openapi.json
+# Keep the current OpenAPI definition file
+/facturascripts_get_no_path_params.openapi.json

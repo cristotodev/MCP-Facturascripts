@@ -13,6 +13,15 @@ TypeScript ESM project for a Model Context Protocol (MCP) server that integrates
 - `src/resources/pedidoclientes.ts` - MCP resource for customer orders data
 - `src/resources/facturaclientes.ts` - MCP resource for customer invoices data
 - `src/resources/presupuestoclientes.ts` - MCP resource for customer quotes data
+- `src/resources/proveedores.ts` - MCP resource for suppliers data
+- `src/resources/stocks.ts` - MCP resource for inventory stock data
+- `src/resources/facturaproveedores.ts` - MCP resource for supplier invoices data
+- `src/resources/agenciatransportes.ts` - MCP resource for transport agencies data
+- `src/resources/agentes.ts` - MCP resource for agents data
+- `src/resources/albaranclientes.ts` - MCP resource for customer delivery notes data
+- `src/resources/albaranproveedores.ts` - MCP resource for supplier delivery notes data
+- `src/resources/almacenes.ts` - MCP resource for warehouses data
+- `src/types/facturascripts.ts` - TypeScript interfaces for all FacturaScripts entities
 
 ## Configuration
 
@@ -33,12 +42,27 @@ Environment variables (see `.env.example`):
 
 ## MCP Resources
 
-- `facturascripts://clientes?limit={limit}&offset={offset}` - Paginated clients list
-- `facturascripts://productos?limit={limit}&offset={offset}` - Paginated products list
-- `facturascripts://productoproveedores?limit={limit}&offset={offset}` - Paginated products by supplier list
-- `facturascripts://pedidoclientes?limit={limit}&offset={offset}` - Paginated customer orders list
-- `facturascripts://facturaclientes?limit={limit}&offset={offset}` - Paginated customer invoices list
-- `facturascripts://presupuestoclientes?limit={limit}&offset={offset}` - Paginated customer quotes list
+All resources support the following query parameters:
+- `limit` - Number of records to return (default: 50)
+- `offset` - Number of records to skip (default: 0)
+- `filter` - Filters in format `campo:valor` (e.g., `activo:1`)
+- `order` - Sort order in format `campo:asc|desc` (e.g., `nombre:asc`)
+
+Available resources:
+- `facturascripts://clientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated clients list
+- `facturascripts://productos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated products list
+- `facturascripts://productoproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated products by supplier list
+- `facturascripts://pedidoclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer orders list
+- `facturascripts://facturaclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer invoices list
+- `facturascripts://presupuestoclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer quotes list
+- `facturascripts://proveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated suppliers list
+- `facturascripts://stocks?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated inventory stock list
+- `facturascripts://facturaproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier invoices list
+- `facturascripts://agenciatransportes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated transport agencies list
+- `facturascripts://agentes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated agents list
+- `facturascripts://albaranclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer delivery notes list
+- `facturascripts://albaranproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier delivery notes list
+- `facturascripts://almacenes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated warehouses list
 
 Returns JSON format:
 ```json
@@ -71,12 +95,13 @@ Important files for maintaining context:
 **IMPORTANT**: When adding new MCP resources (files in `src/resources/`):
 1. Automatically update this CLAUDE.md file with the new resource endpoint
 2. Update README.md "Available Resources" section if it exists
-3. Follow the pattern: `facturascripts://{resourceName}?limit={limit}&offset={offset}`
-4. Use consistent naming and documentation format
+3. Follow the pattern: `facturascripts://{resourceName}?limit={limit}&offset={offset}&filter={filter}&order={order}`
+4. All resources must support: `limit`, `offset`, `filter`, and `order` query parameters
+5. Use consistent naming and documentation format
 5. **CRITICAL**: Always add corresponding tools to `src/index.ts` for Claude Desktop integration:
    - Add tool definition in `ListToolsRequestSchema` handler
    - Add tool implementation in `CallToolRequestSchema` handler
-   - Use naming pattern: `get_{resourceName}` (e.g., `get_clientes`, `get_productos`)
+   - Use naming pattern: `get_{resourceName}` (e.g., `get_clientes`, `get_productos`, `get_proveedores`, `get_stocks`, `get_facturaproveedores`, `get_agenciatransportes`, `get_agentes`, `get_albaranclientes`, `get_albaranproveedores`, `get_almacenes`)
    - Tools make resources interactive in Claude Desktop interface
 
 ## Development Standards

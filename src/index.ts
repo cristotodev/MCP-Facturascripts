@@ -6,13 +6,21 @@ import {
   ListToolsRequestSchema,
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { FacturaScriptsClient } from './facturascripts/client.js';
+import { FacturaScriptsClient } from './fs/client.js';
 import { ClientesResource } from './resources/clientes.js';
 import { ProductosResource } from './resources/productos.js';
 import { ProductoproveedoresResource } from './resources/productoproveedores.js';
 import { PedidoclientesResource } from './resources/pedidoclientes.js';
 import { FacturaclientesResource } from './resources/facturaclientes.js';
 import { PresupuestoclientesResource } from './resources/presupuestoclientes.js';
+import { ProveedoresResource } from './resources/proveedores.js';
+import { StocksResource } from './resources/stocks.js';
+import { FacturaproveedoresResource } from './resources/facturaproveedores.js';
+import { AgenciatransportesResource } from './resources/agenciatransportes.js';
+import { AgentesResource } from './resources/agentes.js';
+import { AlbaranclientesResource } from './resources/albaranclientes.js';
+import { AlbaranproveedoresResource } from './resources/albaranproveedores.js';
+import { AlmacenesResource } from './resources/almacenes.js';
 
 const server = new Server(
   {
@@ -34,6 +42,14 @@ const productoproveedoresResource = new ProductoproveedoresResource(fsClient);
 const pedidoclientesResource = new PedidoclientesResource(fsClient);
 const facturaclientesResource = new FacturaclientesResource(fsClient);
 const presupuestoclientesResource = new PresupuestoclientesResource(fsClient);
+const proveedoresResource = new ProveedoresResource(fsClient);
+const stocksResource = new StocksResource(fsClient);
+const facturaproveedoresResource = new FacturaproveedoresResource(fsClient);
+const agenciatransportesResource = new AgenciatransportesResource(fsClient);
+const agentesResource = new AgentesResource(fsClient);
+const albaranclientesResource = new AlbaranclientesResource(fsClient);
+const albaranproveedoresResource = new AlbaranproveedoresResource(fsClient);
+const almacenesResource = new AlmacenesResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -54,6 +70,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Número de registros a omitir (por defecto: 0)',
               default: 0,
             },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
           },
         },
       },
@@ -72,6 +96,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: 'number',
               description: 'Número de registros a omitir (por defecto: 0)',
               default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
             },
           },
         },
@@ -92,6 +124,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Número de registros a omitir (por defecto: 0)',
               default: 0,
             },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
           },
         },
       },
@@ -110,6 +150,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: 'number',
               description: 'Número de registros a omitir (por defecto: 0)',
               default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
             },
           },
         },
@@ -130,6 +178,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Número de registros a omitir (por defecto: 0)',
               default: 0,
             },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
           },
         },
       },
@@ -148,6 +204,230 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: 'number',
               description: 'Número de registros a omitir (por defecto: 0)',
               default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_proveedores',
+        description: 'Obtiene la lista de proveedores con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_stocks',
+        description: 'Obtiene la lista de stocks con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_facturaproveedores',
+        description: 'Obtiene la lista de facturas de proveedores con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_agenciatransportes',
+        description: 'Obtiene la lista de agencias de transporte con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_agentes',
+        description: 'Obtiene la lista de agentes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_albaranclientes',
+        description: 'Obtiene la lista de albaranes de clientes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_albaranproveedores',
+        description: 'Obtiene la lista de albaranes de proveedores con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_almacenes',
+        description: 'Obtiene la lista de almacenes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
             },
           },
         },
@@ -195,6 +475,54 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de presupuestos de clientes de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://proveedores',
+        name: 'FacturaScripts Proveedores',
+        description: 'Lista de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://stocks',
+        name: 'FacturaScripts Stocks',
+        description: 'Lista de stocks de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://facturaproveedores',
+        name: 'FacturaScripts FacturaProveedores',
+        description: 'Lista de facturas de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://agenciatransportes',
+        name: 'FacturaScripts AgenciaTransportes',
+        description: 'Lista de agencias de transporte de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://agentes',
+        name: 'FacturaScripts Agentes',
+        description: 'Lista de agentes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://albaranclientes',
+        name: 'FacturaScripts AlbaranClientes',
+        description: 'Lista de albaranes de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://albaranproveedores',
+        name: 'FacturaScripts AlbaranProveedores',
+        description: 'Lista de albaranes de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://almacenes',
+        name: 'FacturaScripts Almacenes',
+        description: 'Lista de almacenes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -226,6 +554,38 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     return await presupuestoclientesResource.getResource(uri);
   }
 
+  if (proveedoresResource.matchesUri(uri)) {
+    return await proveedoresResource.getResource(uri);
+  }
+
+  if (stocksResource.matchesUri(uri)) {
+    return await stocksResource.getResource(uri);
+  }
+
+  if (facturaproveedoresResource.matchesUri(uri)) {
+    return await facturaproveedoresResource.getResource(uri);
+  }
+
+  if (agenciatransportesResource.matchesUri(uri)) {
+    return await agenciatransportesResource.getResource(uri);
+  }
+
+  if (agentesResource.matchesUri(uri)) {
+    return await agentesResource.getResource(uri);
+  }
+
+  if (albaranclientesResource.matchesUri(uri)) {
+    return await albaranclientesResource.getResource(uri);
+  }
+
+  if (albaranproveedoresResource.matchesUri(uri)) {
+    return await albaranproveedoresResource.getResource(uri);
+  }
+
+  if (almacenesResource.matchesUri(uri)) {
+    return await almacenesResource.getResource(uri);
+  }
+
   throw new Error(`Resource not found: ${uri}`);
 });
 
@@ -234,11 +594,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   const limit = args?.limit ?? 50;
   const offset = args?.offset ?? 0;
+  const filter = args?.filter;
+  const order = args?.order;
+
+  // Helper function to build URI with query parameters
+  const buildUri = (resource: string) => {
+    const params = new URLSearchParams();
+    params.set('limit', String(limit));
+    params.set('offset', String(offset));
+    if (filter && typeof filter === 'string') params.set('filter', filter);
+    if (order && typeof order === 'string') params.set('order', order);
+    return `facturascripts://${resource}?${params.toString()}`;
+  };
 
   try {
     switch (name) {
       case 'get_clientes': {
-        const uri = `facturascripts://clientes?limit=${limit}&offset=${offset}`;
+        const uri = buildUri('clientes');
         const result = await clientesResource.getResource(uri);
         return {
           content: [
@@ -251,7 +623,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_productos': {
-        const uri = `facturascripts://productos?limit=${limit}&offset=${offset}`;
+        const uri = buildUri('productos');
         const result = await productosResource.getResource(uri);
         return {
           content: [
@@ -264,7 +636,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_productoproveedores': {
-        const uri = `facturascripts://productoproveedores?limit=${limit}&offset=${offset}`;
+        const uri = buildUri('productoproveedores');
         const result = await productoproveedoresResource.getResource(uri);
         return {
           content: [
@@ -277,7 +649,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_pedidoclientes': {
-        const uri = `facturascripts://pedidoclientes?limit=${limit}&offset=${offset}`;
+        const uri = buildUri('pedidoclientes');
         const result = await pedidoclientesResource.getResource(uri);
         return {
           content: [
@@ -290,7 +662,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_facturaclientes': {
-        const uri = `facturascripts://facturaclientes?limit=${limit}&offset=${offset}`;
+        const uri = buildUri('facturaclientes');
         const result = await facturaclientesResource.getResource(uri);
         return {
           content: [
@@ -303,8 +675,112 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_presupuestoclientes': {
-        const uri = `facturascripts://presupuestoclientes?limit=${limit}&offset=${offset}`;
+        const uri = buildUri('presupuestoclientes');
         const result = await presupuestoclientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_proveedores': {
+        const uri = buildUri('proveedores');
+        const result = await proveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_stocks': {
+        const uri = buildUri('stocks');
+        const result = await stocksResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_facturaproveedores': {
+        const uri = buildUri('facturaproveedores');
+        const result = await facturaproveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_agenciatransportes': {
+        const uri = buildUri('agenciatransportes');
+        const result = await agenciatransportesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_agentes': {
+        const uri = buildUri('agentes');
+        const result = await agentesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_albaranclientes': {
+        const uri = buildUri('albaranclientes');
+        const result = await albaranclientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_albaranproveedores': {
+        const uri = buildUri('albaranproveedores');
+        const result = await albaranproveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_almacenes': {
+        const uri = buildUri('almacenes');
+        const result = await almacenesResource.getResource(uri);
         return {
           content: [
             {

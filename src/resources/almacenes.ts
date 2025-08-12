@@ -1,19 +1,21 @@
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../fs/client.js';
 
-export interface FacturaCliente {
-  codigo: string;
-  numero?: string;
-  codcliente: string;
-  nombrecliente?: string;
-  fecha: string;
-  total?: number;
-  totaliva?: number;
-  pagada?: boolean;
-  vencimiento?: string;
+export interface Almacen {
+  activo?: number;
+  apartado?: string;
+  ciudad?: string;
+  codpais?: string;
+  codalmacen: string;
+  codpostal?: string;
+  direccion?: string;
+  idempresa?: number;
+  nombre: string;
+  provincia?: string;
+  telefono?: string;
 }
 
-export class FacturaclientesResource {
+export class AlmacenesResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
@@ -31,8 +33,8 @@ export class FacturaclientesResource {
     if (orderParam) additionalParams.order = orderParam;
 
     try {
-      const result = await this.client.getWithPagination<FacturaCliente>(
-        '/facturaclientes',
+      const result = await this.client.getWithPagination<Almacen>(
+        '/almacenes',
         limit,
         offset,
         additionalParams
@@ -40,7 +42,7 @@ export class FacturaclientesResource {
 
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes',
+        name: 'FacturaScripts Almacenes',
         mimeType: 'application/json',
         contents: [
           {
@@ -54,13 +56,13 @@ export class FacturaclientesResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes (Error)',
+        name: 'FacturaScripts Almacenes (Error)',
         mimeType: 'application/json',
         contents: [
           {
             type: 'text',
             text: JSON.stringify({
-              error: 'Failed to fetch facturaclientes',
+              error: 'Failed to fetch almacenes',
               message: errorMessage,
               meta: {
                 total: 0,
@@ -80,7 +82,7 @@ export class FacturaclientesResource {
   matchesUri(uri: string): boolean {
     try {
       const url = new URL(uri);
-      return url.protocol === 'facturascripts:' && url.hostname === 'facturaclientes';
+      return url.protocol === 'facturascripts:' && url.hostname === 'almacenes';
     } catch {
       return false;
     }

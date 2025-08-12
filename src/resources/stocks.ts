@@ -1,19 +1,8 @@
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../fs/client.js';
+import type { Stock } from '../types/facturascripts.js';
 
-export interface FacturaCliente {
-  codigo: string;
-  numero?: string;
-  codcliente: string;
-  nombrecliente?: string;
-  fecha: string;
-  total?: number;
-  totaliva?: number;
-  pagada?: boolean;
-  vencimiento?: string;
-}
-
-export class FacturaclientesResource {
+export class StocksResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
@@ -31,8 +20,8 @@ export class FacturaclientesResource {
     if (orderParam) additionalParams.order = orderParam;
 
     try {
-      const result = await this.client.getWithPagination<FacturaCliente>(
-        '/facturaclientes',
+      const result = await this.client.getWithPagination<Stock>(
+        '/stocks',
         limit,
         offset,
         additionalParams
@@ -40,7 +29,7 @@ export class FacturaclientesResource {
 
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes',
+        name: 'FacturaScripts Stocks',
         mimeType: 'application/json',
         contents: [
           {
@@ -54,13 +43,13 @@ export class FacturaclientesResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes (Error)',
+        name: 'FacturaScripts Stocks (Error)',
         mimeType: 'application/json',
         contents: [
           {
             type: 'text',
             text: JSON.stringify({
-              error: 'Failed to fetch facturaclientes',
+              error: 'Failed to fetch stocks',
               message: errorMessage,
               meta: {
                 total: 0,
@@ -80,7 +69,7 @@ export class FacturaclientesResource {
   matchesUri(uri: string): boolean {
     try {
       const url = new URL(uri);
-      return url.protocol === 'facturascripts:' && url.hostname === 'facturaclientes';
+      return url.protocol === 'facturascripts:' && url.hostname === 'stocks';
     } catch {
       return false;
     }

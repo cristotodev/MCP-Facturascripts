@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that integrates with FacturaScripts ERP sy
 
 ## Features
 
-- **Comprehensive Business Data Access**: Access clients, products, supplier products, customer orders, customer invoices, and customer quotes
+- **Comprehensive Business Data Access**: Access clients, products, suppliers, stocks, customer orders, supplier orders, customer invoices, supplier invoices, and quotes
 - **MCP Protocol**: Full compatibility with Model Context Protocol for AI integration
 - **RESTful Integration**: Connects to FacturaScripts REST API v3
 - **TypeScript**: Built with TypeScript for type safety and better development experience
@@ -106,6 +106,27 @@ All resources support pagination with `limit` and `offset` parameters and return
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
 
+### Proveedores (Suppliers)
+- **URI**: `facturascripts://proveedores?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of suppliers from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Stocks (Inventory)
+- **URI**: `facturascripts://stocks?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of stock levels from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### FacturaProveedores (Supplier Invoices)
+- **URI**: `facturascripts://facturaproveedores?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of supplier invoices from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
 **Response Format**:
 ```json
 {
@@ -144,7 +165,10 @@ src/
     ├── productoproveedores.ts # Supplier products resource implementation
     ├── pedidoclientes.ts    # Customer orders resource implementation
     ├── facturaclientes.ts   # Customer invoices resource implementation
-    └── presupuestoclientes.ts # Customer quotes resource implementation
+    ├── presupuestoclientes.ts # Customer quotes resource implementation
+    ├── proveedores.ts       # Suppliers resource implementation
+    ├── stocks.ts            # Stock levels resource implementation
+    └── facturaproveedores.ts # Supplier invoices resource implementation
 
 tests/
 ├── unit/                    # Unit tests for individual classes/functions

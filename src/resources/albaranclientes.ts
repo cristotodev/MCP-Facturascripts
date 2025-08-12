@@ -1,19 +1,55 @@
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../fs/client.js';
 
-export interface FacturaCliente {
-  codigo: string;
-  numero?: string;
-  codcliente: string;
+export interface AlbaranCliente {
+  apartado?: string;
+  cifnif?: string;
+  ciudad?: string;
+  codagente?: string;
+  codalmacen?: string;
+  codcliente?: string;
+  coddivisa?: string;
+  codejercicio?: string;
+  codigo?: string;
+  codigoenv?: string;
+  codpago?: string;
+  codpais?: string;
+  codpostal?: string;
+  codserie?: string;
+  codtrans?: string;
+  direccion?: string;
+  dtopor1?: number;
+  dtopor2?: number;
+  editable?: number;
+  fecha?: string;
+  femail?: string;
+  hora?: string;
+  idalbaran?: number;
+  idcontactoenv?: number;
+  idcontactofact?: number;
+  idempresa?: number;
+  idestado?: number;
+  irpf?: number;
+  neto?: number;
+  netosindto?: number;
+  nick?: string;
   nombrecliente?: string;
-  fecha: string;
+  numdocs?: number;
+  numero?: string;
+  numero2?: string;
+  observaciones?: string;
+  operacion?: string;
+  provincia?: string;
+  tasaconv?: number;
   total?: number;
+  totalbeneficio?: number;
+  totalcoste?: number;
+  totaleuros?: number;
+  totalirpf?: number;
   totaliva?: number;
-  pagada?: boolean;
-  vencimiento?: string;
 }
 
-export class FacturaclientesResource {
+export class AlbaranclientesResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
@@ -31,8 +67,8 @@ export class FacturaclientesResource {
     if (orderParam) additionalParams.order = orderParam;
 
     try {
-      const result = await this.client.getWithPagination<FacturaCliente>(
-        '/facturaclientes',
+      const result = await this.client.getWithPagination<AlbaranCliente>(
+        '/albaranclientes',
         limit,
         offset,
         additionalParams
@@ -40,7 +76,7 @@ export class FacturaclientesResource {
 
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes',
+        name: 'FacturaScripts AlbaranClientes',
         mimeType: 'application/json',
         contents: [
           {
@@ -54,13 +90,13 @@ export class FacturaclientesResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts FacturaClientes (Error)',
+        name: 'FacturaScripts AlbaranClientes (Error)',
         mimeType: 'application/json',
         contents: [
           {
             type: 'text',
             text: JSON.stringify({
-              error: 'Failed to fetch facturaclientes',
+              error: 'Failed to fetch albaranclientes',
               message: errorMessage,
               meta: {
                 total: 0,
@@ -80,7 +116,7 @@ export class FacturaclientesResource {
   matchesUri(uri: string): boolean {
     try {
       const url = new URL(uri);
-      return url.protocol === 'facturascripts:' && url.hostname === 'facturaclientes';
+      return url.protocol === 'facturascripts:' && url.hostname === 'albaranclientes';
     } catch {
       return false;
     }

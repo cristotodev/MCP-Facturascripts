@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
-import { FacturaScriptsClient } from '../../src/facturascripts/client.js';
+import { FacturaScriptsClient } from '../../src/fs/client.js';
 import { FacturaclientesResource } from '../../src/resources/facturaclientes.js';
 
 // Integration tests - only run if environment is configured
