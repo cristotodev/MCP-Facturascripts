@@ -12,6 +12,7 @@ import { ProductosResource } from './resources/productos.js';
 import { ProductoproveedoresResource } from './resources/productoproveedores.js';
 import { PedidoclientesResource } from './resources/pedidoclientes.js';
 import { FacturaclientesResource } from './resources/facturaclientes.js';
+import { PresupuestoclientesResource } from './resources/presupuestoclientes.js';
 
 const server = new Server(
   {
@@ -32,6 +33,7 @@ const productosResource = new ProductosResource(fsClient);
 const productoproveedoresResource = new ProductoproveedoresResource(fsClient);
 const pedidoclientesResource = new PedidoclientesResource(fsClient);
 const facturaclientesResource = new FacturaclientesResource(fsClient);
+const presupuestoclientesResource = new PresupuestoclientesResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -131,6 +133,25 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_presupuestoclientes',
+        description: 'Obtiene la lista de presupuestos de clientes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -168,6 +189,12 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de facturas de clientes de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://presupuestoclientes',
+        name: 'FacturaScripts PresupuestoClientes',
+        description: 'Lista de presupuestos de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -193,6 +220,10 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 
   if (facturaclientesResource.matchesUri(uri)) {
     return await facturaclientesResource.getResource(uri);
+  }
+
+  if (presupuestoclientesResource.matchesUri(uri)) {
+    return await presupuestoclientesResource.getResource(uri);
   }
 
   throw new Error(`Resource not found: ${uri}`);
@@ -261,6 +292,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_facturaclientes': {
         const uri = `facturascripts://facturaclientes?limit=${limit}&offset=${offset}`;
         const result = await facturaclientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_presupuestoclientes': {
+        const uri = `facturascripts://presupuestoclientes?limit=${limit}&offset=${offset}`;
+        const result = await presupuestoclientesResource.getResource(uri);
         return {
           content: [
             {

@@ -12,6 +12,7 @@ TypeScript ESM project for a Model Context Protocol (MCP) server that integrates
 - `src/resources/productoproveedores.ts` - MCP resource for products by supplier data
 - `src/resources/pedidoclientes.ts` - MCP resource for customer orders data
 - `src/resources/facturaclientes.ts` - MCP resource for customer invoices data
+- `src/resources/presupuestoclientes.ts` - MCP resource for customer quotes data
 
 ## Configuration
 
@@ -37,6 +38,7 @@ Environment variables (see `.env.example`):
 - `facturascripts://productoproveedores?limit={limit}&offset={offset}` - Paginated products by supplier list
 - `facturascripts://pedidoclientes?limit={limit}&offset={offset}` - Paginated customer orders list
 - `facturascripts://facturaclientes?limit={limit}&offset={offset}` - Paginated customer invoices list
+- `facturascripts://presupuestoclientes?limit={limit}&offset={offset}` - Paginated customer quotes list
 
 Returns JSON format:
 ```json

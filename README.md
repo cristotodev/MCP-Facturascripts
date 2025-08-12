@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server that integrates with FacturaScripts ERP sy
 
 ## Features
 
-- **Comprehensive Business Data Access**: Access clients, products, supplier products, customer orders, and customer invoices
+- **Comprehensive Business Data Access**: Access clients, products, supplier products, customer orders, customer invoices, and customer quotes
 - **MCP Protocol**: Full compatibility with Model Context Protocol for AI integration
 - **RESTful Integration**: Connects to FacturaScripts REST API v3
 - **TypeScript**: Built with TypeScript for type safety and better development experience
@@ -99,6 +99,13 @@ All resources support pagination with `limit` and `offset` parameters and return
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
 
+### PresupuestoClientes (Customer Quotes)
+- **URI**: `facturascripts://presupuestoclientes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of customer quotes from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
 **Response Format**:
 ```json
 {
@@ -136,7 +143,8 @@ src/
     ├── productos.ts         # Products resource implementation
     ├── productoproveedores.ts # Supplier products resource implementation
     ├── pedidoclientes.ts    # Customer orders resource implementation
-    └── facturaclientes.ts   # Customer invoices resource implementation
+    ├── facturaclientes.ts   # Customer invoices resource implementation
+    └── presupuestoclientes.ts # Customer quotes resource implementation
 
 tests/
 ├── unit/                    # Unit tests for individual classes/functions
