@@ -1,7 +1,7 @@
 {
   "name": "mcp-facturascripts",
   "version": "1.0.0",
-  "description": "MCP server for FacturaScripts integration",
+  "description": "MCP server for comprehensive FacturaScripts integration - provides access to clients, products, supplier products, customer orders, and customer invoices",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {

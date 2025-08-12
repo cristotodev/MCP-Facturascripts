@@ -4,11 +4,12 @@ A Model Context Protocol (MCP) server that integrates with FacturaScripts ERP sy
 
 ## Features
 
-- **Client Management**: Access and browse FacturaScripts clients with pagination support
+- **Comprehensive Business Data Access**: Access clients, products, supplier products, customer orders, and customer invoices
 - **MCP Protocol**: Full compatibility with Model Context Protocol for AI integration
 - **RESTful Integration**: Connects to FacturaScripts REST API v3
 - **TypeScript**: Built with TypeScript for type safety and better development experience
 - **Pagination**: Efficient data retrieval with configurable limit and offset parameters
+- **Comprehensive Testing**: Unit and integration tests with Test-Driven Development approach
 
 ## Prerequisites
 
@@ -61,9 +62,39 @@ npx @modelcontextprotocol/inspector npm run dev
 
 ## MCP Resources
 
+All resources support pagination with `limit` and `offset` parameters and return data in a consistent format with metadata.
+
 ### Clientes (Clients)
 - **URI**: `facturascripts://clientes?limit={limit}&offset={offset}`
 - **Description**: Retrieve paginated list of clients from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Productos (Products)
+- **URI**: `facturascripts://productos?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of products from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### ProductoProveedores (Supplier Products)
+- **URI**: `facturascripts://productoproveedores?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of products by supplier from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### PedidoClientes (Customer Orders)
+- **URI**: `facturascripts://pedidoclientes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of customer orders from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### FacturaClientes (Customer Invoices)
+- **URI**: `facturascripts://facturaclientes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of customer invoices from FacturaScripts
 - **Parameters**:
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
@@ -101,7 +132,18 @@ src/
 ├── facturascripts/
 │   └── client.ts            # FacturaScripts API client
 └── resources/
-    └── clientes.ts          # Clients resource implementation
+    ├── clientes.ts          # Clients resource implementation
+    ├── productos.ts         # Products resource implementation
+    ├── productoproveedores.ts # Supplier products resource implementation
+    ├── pedidoclientes.ts    # Customer orders resource implementation
+    └── facturaclientes.ts   # Customer invoices resource implementation
+
+tests/
+├── unit/                    # Unit tests for individual classes/functions
+│   ├── facturascripts/
+│   └── resources/
+├── integration/             # Integration tests with real APIs
+└── setup.ts                # Global test setup and teardown
 ```
 
 ## Configuration
@@ -127,7 +169,10 @@ src/
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Build TypeScript to dist/
 - `npm start` - Run production server
-- `npm run lint` - Run linter (if configured)
+- `npm run test` - Run all tests with Vitest
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:ui` - Run tests with Vitest UI
+- `npm run test:run` - Run tests once and exit
 
 ### Adding New Resources
 
