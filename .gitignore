@@ -21,3 +21,4 @@ docker-compose-facturascripts.yml
 facturascripts/
 .claude/
 mysql/
+docs/

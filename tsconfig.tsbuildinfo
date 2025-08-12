@@ -1,1 +1,1 @@
-{"root":["./src/env.ts","./src/index.ts","./src/facturascripts/client.ts","./src/resources/clientes.ts"],"version":"5.9.2"}
+{"root":["./src/env.ts","./src/index.ts","./src/facturascripts/client.ts","./src/resources/clientes.ts","./src/resources/facturaclientes.ts","./src/resources/pedidoclientes.ts","./src/resources/productoproveedores.ts","./src/resources/productos.ts"],"version":"5.9.2"}

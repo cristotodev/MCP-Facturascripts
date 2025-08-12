@@ -8,6 +8,10 @@ TypeScript ESM project for a Model Context Protocol (MCP) server that integrates
 - `src/env.ts` - Environment validation using Zod
 - `src/facturascripts/client.ts` - Axios-based FacturaScripts API client
 - `src/resources/clientes.ts` - MCP resource for clients data
+- `src/resources/productos.ts` - MCP resource for products data
+- `src/resources/productoproveedores.ts` - MCP resource for products by supplier data
+- `src/resources/pedidoclientes.ts` - MCP resource for customer orders data
+- `src/resources/facturaclientes.ts` - MCP resource for customer invoices data
 
 ## Configuration
 
@@ -29,6 +33,10 @@ Environment variables (see `.env.example`):
 ## MCP Resources
 
 - `facturascripts://clientes?limit={limit}&offset={offset}` - Paginated clients list
+- `facturascripts://productos?limit={limit}&offset={offset}` - Paginated products list
+- `facturascripts://productoproveedores?limit={limit}&offset={offset}` - Paginated products by supplier list
+- `facturascripts://pedidoclientes?limit={limit}&offset={offset}` - Paginated customer orders list
+- `facturascripts://facturaclientes?limit={limit}&offset={offset}` - Paginated customer invoices list
 
 Returns JSON format:
 ```json
