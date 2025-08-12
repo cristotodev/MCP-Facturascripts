@@ -25,7 +25,7 @@ export class FacturaclientesResource {
 
     try {
       const result = await this.client.getWithPagination<FacturaCliente>(
-        '/facturascli',
+        '/facturaclientes',
         limit,
         offset
       );

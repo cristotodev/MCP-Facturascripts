@@ -22,7 +22,7 @@ export class ProductoproveedoresResource {
 
     try {
       const result = await this.client.getWithPagination<ProductoProveedor>(
-        '/productosprov',
+        '/productoproveedores',
         limit,
         offset
       );

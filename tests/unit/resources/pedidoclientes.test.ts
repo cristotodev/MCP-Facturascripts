@@ -51,7 +51,7 @@ describe('PedidoclientesResource', () => {
 
       const result = await pedidoclientesResource.getResource('facturascripts://pedidoclientes');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/pedidoscli', 50, 0);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/pedidoclientes', 50, 0);
       expect(result.uri).toBe('facturascripts://pedidoclientes');
       expect(result.name).toBe('FacturaScripts PedidoClientes');
       expect(result.mimeType).toBe('application/json');
@@ -67,7 +67,7 @@ describe('PedidoclientesResource', () => {
 
       await pedidoclientesResource.getResource('facturascripts://pedidoclientes?limit=10&offset=20');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/pedidoscli', 10, 20);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/pedidoclientes', 10, 20);
     });
 
     it('should use default values for missing params', async () => {
@@ -79,7 +79,7 @@ describe('PedidoclientesResource', () => {
 
       await pedidoclientesResource.getResource('facturascripts://pedidoclientes?limit=invalid');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/pedidoscli', 50, 0);
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/pedidoclientes', 50, 0);
     });
 
     it('should handle API errors gracefully', async () => {

@@ -24,7 +24,7 @@ export class PedidoclientesResource {
 
     try {
       const result = await this.client.getWithPagination<PedidoCliente>(
-        '/pedidoscli',
+        '/pedidoclientes',
         limit,
         offset
       );
