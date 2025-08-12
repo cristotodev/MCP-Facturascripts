@@ -71,6 +71,11 @@ Important files for maintaining context:
 2. Update README.md "Available Resources" section if it exists
 3. Follow the pattern: `facturascripts://{resourceName}?limit={limit}&offset={offset}`
 4. Use consistent naming and documentation format
+5. **CRITICAL**: Always add corresponding tools to `src/index.ts` for Claude Desktop integration:
+   - Add tool definition in `ListToolsRequestSchema` handler
+   - Add tool implementation in `CallToolRequestSchema` handler
+   - Use naming pattern: `get_{resourceName}` (e.g., `get_clientes`, `get_productos`)
+   - Tools make resources interactive in Claude Desktop interface
 
 ## Development Standards
 

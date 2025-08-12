@@ -21,6 +21,7 @@ const server = new Server(
   {
     capabilities: {
       resources: {},
+      tools: {},
     },
   }
 );
@@ -31,6 +32,108 @@ const productosResource = new ProductosResource(fsClient);
 const productoproveedoresResource = new ProductoproveedoresResource(fsClient);
 const pedidoclientesResource = new PedidoclientesResource(fsClient);
 const facturaclientesResource = new FacturaclientesResource(fsClient);
+
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: 'get_clientes',
+        description: 'Obtiene la lista de clientes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+          },
+        },
+      },
+      {
+        name: 'get_productos',
+        description: 'Obtiene la lista de productos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+          },
+        },
+      },
+      {
+        name: 'get_productoproveedores',
+        description: 'Obtiene la lista de productos por proveedor con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+          },
+        },
+      },
+      {
+        name: 'get_pedidoclientes',
+        description: 'Obtiene la lista de pedidos de clientes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+          },
+        },
+      },
+      {
+        name: 'get_facturaclientes',
+        description: 'Obtiene la lista de facturas de clientes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+          },
+        },
+      },
+    ],
+  };
+});
 
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   return {
@@ -93,6 +196,95 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   }
 
   throw new Error(`Resource not found: ${uri}`);
+});
+
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  const { name, arguments: args } = request.params;
+
+  const limit = args?.limit ?? 50;
+  const offset = args?.offset ?? 0;
+
+  try {
+    switch (name) {
+      case 'get_clientes': {
+        const uri = `facturascripts://clientes?limit=${limit}&offset=${offset}`;
+        const result = await clientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_productos': {
+        const uri = `facturascripts://productos?limit=${limit}&offset=${offset}`;
+        const result = await productosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_productoproveedores': {
+        const uri = `facturascripts://productoproveedores?limit=${limit}&offset=${offset}`;
+        const result = await productoproveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_pedidoclientes': {
+        const uri = `facturascripts://pedidoclientes?limit=${limit}&offset=${offset}`;
+        const result = await pedidoclientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_facturaclientes': {
+        const uri = `facturascripts://facturaclientes?limit=${limit}&offset=${offset}`;
+        const result = await facturaclientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  } catch (error) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Error executing tool ${name}: ${error instanceof Error ? error.message : String(error)}`,
+        },
+      ],
+      isError: true,
+    };
+  }
 });
 
 async function runServer() {
