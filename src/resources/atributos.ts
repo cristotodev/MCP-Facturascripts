@@ -1,23 +1,14 @@
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../fs/client.js';
 import { Atributo } from '../types/facturascripts.js';
+import { parseUrlParameters } from '../utils/filterParser.js';
 
 export class AtributosResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
-    const url = new URL(uri);
-    const limitParam = url.searchParams.get('limit');
-    const offsetParam = url.searchParams.get('offset');
-    const filterParam = url.searchParams.get('filter');
-    const orderParam = url.searchParams.get('order');
-    
-    const limit = limitParam && !isNaN(parseInt(limitParam)) ? parseInt(limitParam) : 50;
-    const offset = offsetParam && !isNaN(parseInt(offsetParam)) ? parseInt(offsetParam) : 0;
-    
-    const additionalParams: Record<string, any> = {};
-    if (filterParam) additionalParams.filter = filterParam;
-    if (orderParam) additionalParams.order = orderParam;
+    // Parse all URL parameters using the new unified parser
+    const { limit, offset, additionalParams } = parseUrlParameters(uri);
 
     try {
       const result = await this.client.getWithPagination<Atributo>(

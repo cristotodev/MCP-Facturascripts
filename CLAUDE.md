@@ -1,12 +1,12 @@
 # MCP FacturaScripts
 
-**Version 0.3.0** - TypeScript ESM project for a Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing comprehensive access to business, accounting, and administrative data.
+**Version 0.4.0** - TypeScript ESM project for a Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing comprehensive access to business, accounting, and administrative data.
 
 ## Project Structure
 
 - `src/index.ts` - Main MCP server entry point
 - `src/env.ts` - Environment validation using Zod
-- `src/facturascripts/client.ts` - Axios-based FacturaScripts API client
+- `src/fs/client.ts` - Axios-based FacturaScripts API client
 - `src/resources/clientes.ts` - MCP resource for clients data
 - `src/resources/productos.ts` - MCP resource for products data
 - `src/resources/productoproveedores.ts` - MCP resource for products by supplier data
@@ -45,6 +45,24 @@
 - `src/resources/emailnotifications.ts` - MCP resource for email notifications data
 - `src/resources/emailsentes.ts` - MCP resource for sent emails data
 - `src/resources/empresas.ts` - MCP resource for companies data
+- `src/resources/estadodocumentos.ts` - MCP resource for document status data
+- `src/resources/fabricantes.ts` - MCP resource for manufacturers data
+- `src/resources/familias.ts` - MCP resource for product families data
+- `src/resources/formapagos.ts` - MCP resource for payment methods data
+- `src/resources/formatodocumentos.ts` - MCP resource for document formats data
+- `src/resources/grupoclientes.ts` - MCP resource for client groups data
+- `src/resources/identificadorfiscales.ts` - MCP resource for fiscal identifiers data
+- `src/resources/impuestos.ts` - MCP resource for taxes data
+- `src/resources/impuestozonas.ts` - MCP resource for tax zones data
+- `src/resources/lineaalbaranclientes.ts` - MCP resource for customer delivery note lines data
+- `src/resources/lineaalbaranproveedores.ts` - MCP resource for supplier delivery note lines data
+- `src/resources/lineafacturaclientes.ts` - MCP resource for customer invoice lines data
+- `src/resources/lineafacturaproveedores.ts` - MCP resource for supplier invoice lines data
+- `src/resources/lineapedidoclientes.ts` - MCP resource for customer order lines data
+- `src/resources/lineapedidoproveedores.ts` - MCP resource for supplier order lines data
+- `src/resources/lineapresupuestoclientes.ts` - MCP resource for customer quote lines data
+- `src/resources/lineapresupuestoproveedores.ts` - MCP resource for supplier quote lines data
+- `src/resources/logmessages.ts` - MCP resource for system log messages data
 - `src/types/facturascripts.ts` - TypeScript interfaces for all FacturaScripts entities
 
 ## Configuration
@@ -66,53 +84,168 @@ Environment variables (see `.env.example`):
 
 ## MCP Resources
 
-The server provides **38 comprehensive MCP resources** covering all major FacturaScripts entities including business transactions, accounting data, contacts, inventory, and system administration.
+The server provides **56 comprehensive MCP resources** covering all major FacturaScripts entities including business transactions, accounting data, contacts, inventory, and system administration.
 
-All resources support the following query parameters:
+### Query Parameters
+
+All resources support advanced filtering and sorting with a simple, dynamic parameter format:
+
+**Core Parameters:**
 - `limit` - Number of records to return (default: 50)
 - `offset` - Number of records to skip (default: 0)
-- `filter` - Filters in format `campo:valor` (e.g., `activo:1`)
-- `order` - Sort order in format `campo:asc|desc` (e.g., `nombre:asc`)
+- `filter` - Dynamic filtering with field:value format
+- `order` - Sorting with field:direction format
 
-Available resources:
-- `facturascripts://clientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated clients list
-- `facturascripts://productos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated products list
-- `facturascripts://productoproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated products by supplier list
-- `facturascripts://pedidoclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer orders list
-- `facturascripts://facturaclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer invoices list
-- `facturascripts://presupuestoclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer quotes list
-- `facturascripts://proveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated suppliers list
-- `facturascripts://stocks?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated inventory stock list
-- `facturascripts://facturaproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier invoices list
-- `facturascripts://agenciatransportes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated transport agencies list
-- `facturascripts://agentes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated agents list
-- `facturascripts://albaranclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer delivery notes list
-- `facturascripts://albaranproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier delivery notes list
-- `facturascripts://almacenes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated warehouses list
-- `facturascripts://apiaccess?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated API access management list
-- `facturascripts://apikeyes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated API keys management list
-- `facturascripts://asientos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting entries list
-- `facturascripts://atributos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attributes list
-- `facturascripts://atributovalores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attribute values list
-- `facturascripts://attachedfiles?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attached files list
-- `facturascripts://attachedfilerelations?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attached file relations list
-- `facturascripts://ciudades?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated cities list
-- `facturascripts://codigopostales?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated postal codes list
-- `facturascripts://conceptopartidas?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting entry concepts list
-- `facturascripts://contactos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated contacts list
-- `facturascripts://cronjobes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated scheduled jobs list
-- `facturascripts://cuentas?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting accounts list
-- `facturascripts://cuentabancos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated bank accounts list
-- `facturascripts://cuentabancoclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated client bank accounts list
-- `facturascripts://cuentabancoproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier bank accounts list
-- `facturascripts://cuentaespeciales?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated special accounts list
-- `facturascripts://diarios?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting journals list
-- `facturascripts://divisas?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated currencies list
-- `facturascripts://doctransformations?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated document transformations list
-- `facturascripts://ejercicios?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated fiscal years list
-- `facturascripts://emailnotifications?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated email notifications list
-- `facturascripts://emailsentes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated sent emails list
-- `facturascripts://empresas?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated companies list
+**Filter Parameter Format:**
+The `filter` parameter supports a flexible format that gets internally converted to FacturaScripts API format:
+
+- **Basic filtering**: `campo:valor` (e.g., `activo:1`)
+- **Multiple filters**: `campo1:valor1,campo2:valor2` (e.g., `activo:1,nombre:Juan`)
+- **Advanced operators**: 
+  - `campo_gt:valor` - Greater than
+  - `campo_gte:valor` - Greater than or equal  
+  - `campo_lt:valor` - Less than
+  - `campo_lte:valor` - Less than or equal
+  - `campo_neq:valor` - Not equal
+  - `campo_like:texto` - Text search (automatically normalized)
+
+**Order Parameter Format:**
+- **Single field**: `campo:asc` or `campo:desc` (e.g., `nombre:asc`)
+- **Multiple fields**: `campo1:asc,campo2:desc` (e.g., `nombre:asc,fechaalta:desc`)
+
+**Important Notes:**
+- **_like searches**: Use lowercase text without accents, no wildcards needed
+- **Duplicate filters**: Only the first occurrence is used if the same filter key appears multiple times
+- **Empty results**: Non-existent column names return empty arrays
+- **Collection endpoints only**: Filters/sorting only work on collection endpoints (not single resource endpoints like `/productos/{id}`)
+
+### Usage Examples
+
+**Simple Filtering:**
+```typescript
+// Basic field filter
+facturascripts://clientes?filter=activo:1
+
+// Multiple filters
+facturascripts://productos?filter=precio_gt:10.00,precio_lt:100.00
+
+// Text search (automatically normalized to lowercase, no accents)
+facturascripts://clientes?filter=nombre_like:acme
+```
+
+**Advanced Filtering:**
+```typescript
+// Range queries with operators
+facturascripts://facturaclientes?filter=fecha_gte:2024-01-01,total_gt:100.00
+
+// Complex text searches
+facturascripts://productos?filter=descripcion_like:laptop,familia:INFOR
+
+// Using different operators
+facturascripts://clientes?filter=fechaalta_neq:2024-01-01,activo:1
+```
+
+**Sorting:**
+```typescript
+// Single field sorting
+facturascripts://clientes?order=nombre:asc
+
+// Multi-field sorting  
+facturascripts://clientes?order=nombre:asc,fechaalta:desc
+
+// Combined filtering and sorting
+facturascripts://productos?filter=activo:1,precio_gt:10.00&order=nombre:asc&limit=25
+```
+
+**Tool Usage (Claude Desktop):**
+```typescript
+// Using tools with dynamic filter parameter
+get_clientes({
+  filter: "activo:1,nombre_like:acme",
+  order: "nombre:asc",
+  limit: 25
+})
+
+// Advanced filtering with operators
+get_productos({
+  filter: "precio_gte:10.00,precio_lte:100.00,descripcion_like:laptop", 
+  order: "precio:asc"
+})
+```
+
+### Available Resources
+
+All resources support advanced filtering and sorting parameters as described above:
+
+**Core Business Resources:**
+- `facturascripts://clientes` - Client management and customer data
+- `facturascripts://productos` - Product catalog and inventory items  
+- `facturascripts://proveedores` - Supplier and vendor management
+- `facturascripts://stocks` - Inventory stock levels and warehouse data
+
+**Sales & Orders:**
+- `facturascripts://pedidoclientes` - Customer orders and order management
+- `facturascripts://facturaclientes` - Customer invoices and billing
+- `facturascripts://presupuestoclientes` - Customer quotes and estimates
+- `facturascripts://albaranclientes` - Customer delivery notes
+- `facturascripts://lineapedidoclientes` - Customer order line items
+- `facturascripts://lineafacturaclientes` - Customer invoice line items
+- `facturascripts://lineapresupuestoclientes` - Customer quote line items
+- `facturascripts://lineaalbaranclientes` - Customer delivery note line items
+
+**Purchasing:**
+- `facturascripts://facturaproveedores` - Supplier invoices and payables
+- `facturascripts://albaranproveedores` - Supplier delivery notes
+- `facturascripts://productoproveedores` - Products by supplier relationships
+- `facturascripts://lineafacturaproveedores` - Supplier invoice line items
+- `facturascripts://lineaalbaranproveedores` - Supplier delivery note line items
+- `facturascripts://lineapedidoproveedores` - Supplier order line items
+- `facturascripts://lineapresupuestoproveedores` - Supplier quote line items
+
+**Accounting & Finance:**
+- `facturascripts://asientos` - Accounting journal entries
+- `facturascripts://cuentas` - Chart of accounts
+- `facturascripts://diarios` - Accounting journals
+- `facturascripts://ejercicios` - Fiscal years and periods
+- `facturascripts://empresas` - Company and organization data
+- `facturascripts://conceptopartidas` - Accounting entry concepts
+- `facturascripts://cuentabancos` - Bank account management
+- `facturascripts://cuentabancoclientes` - Customer bank accounts
+- `facturascripts://cuentabancoproveedores` - Supplier bank accounts
+- `facturascripts://cuentaespeciales` - Special accounting accounts
+- `facturascripts://divisas` - Currency and exchange rates
+
+**Configuration & Master Data:**
+- `facturascripts://almacenes` - Warehouse and location management
+- `facturascripts://agentes` - Sales agents and representatives
+- `facturascripts://agenciatransportes` - Shipping and transport agencies
+- `facturascripts://formapagos` - Payment methods and terms
+- `facturascripts://impuestos` - Tax rates and tax management
+- `facturascripts://impuestozonas` - Tax zones and regional settings
+- `facturascripts://familias` - Product families and categories
+- `facturascripts://fabricantes` - Manufacturers and brands
+- `facturascripts://atributos` - Product attributes and properties
+- `facturascripts://atributovalores` - Product attribute values
+- `facturascripts://estadodocumentos` - Document status definitions
+- `facturascripts://formatodocumentos` - Document format templates
+- `facturascripts://grupoclientes` - Customer groups and classifications
+- `facturascripts://identificadorfiscales` - Tax ID types and formats
+
+**System & Administration:**
+- `facturascripts://apiaccess` - API access control and permissions
+- `facturascripts://apikeyes` - API key management
+- `facturascripts://logmessages` - System logs and audit trails
+- `facturascripts://cronjobes` - Scheduled jobs and automation
+- `facturascripts://emailnotifications` - Email notification templates
+- `facturascripts://emailsentes` - Sent email history
+- `facturascripts://doctransformations` - Document transformation logs
+- `facturascripts://attachedfiles` - File attachments and uploads
+- `facturascripts://attachedfilerelations` - File attachment relationships
+
+**Geographic & Contact Data:**
+- `facturascripts://contactos` - Contact information and details
+- `facturascripts://ciudades` - Cities and urban areas
+- `facturascripts://codigopostales` - Postal codes and ZIP codes
 
 Returns JSON format:
 ```json
@@ -145,14 +278,15 @@ Important files for maintaining context:
 **IMPORTANT**: When adding new MCP resources (files in `src/resources/`):
 1. Automatically update this CLAUDE.md file with the new resource endpoint
 2. Update README.md "Available Resources" section if it exists
-3. Follow the pattern: `facturascripts://{resourceName}?limit={limit}&offset={offset}&filter={filter}&order={order}`
-4. All resources must support: `limit`, `offset`, `filter`, and `order` query parameters
+3. Follow the pattern: `facturascripts://{resourceName}` - Dynamic filtering and sorting support is automatic
+4. All resources must support: `limit`, `offset`, `filter` (dynamic field:value format), and `order` (dynamic field:direction format)
 5. Use consistent naming and documentation format
 5. **CRITICAL**: Always add corresponding tools to `src/index.ts` for Claude Desktop integration:
-   - Add tool definition in `ListToolsRequestSchema` handler
+   - Add tool definition in `ListToolsRequestSchema` handler with simple 4-parameter schema (limit, offset, filter, order)
    - Add tool implementation in `CallToolRequestSchema` handler
-   - Use naming pattern: `get_{resourceName}` (e.g., `get_clientes`, `get_productos`, `get_proveedores`, `get_stocks`, `get_facturaproveedores`, `get_agenciatransportes`, `get_agentes`, `get_albaranclientes`, `get_albaranproveedores`, `get_almacenes`, `get_conceptopartidas`, `get_contactos`, `get_cronjobes`, `get_cuentas`, `get_cuentabancos`, `get_cuentabancoclientes`, `get_cuentabancoproveedores`, `get_cuentaespeciales`, `get_diarios`, `get_divisas`, `get_doctransformations`, `get_ejercicios`, `get_emailnotifications`, `get_emailsentes`, `get_empresas`)
-   - Tools make resources interactive in Claude Desktop interface
+   - Use naming pattern: `get_{resourceName}` with dynamic filtering support
+   - All tools support the same consistent parameter interface with advanced filtering via the `filter` parameter
+   - Tools make resources interactive in Claude Desktop interface with full FacturaScripts API capability
 
 ## Development Standards
 
@@ -223,10 +357,11 @@ All 28 resources return consistent pagination format:
 }
 ```
 
-### Current Project Status (v0.3.0)
-- ✅ **38 MCP Resources** - Complete FacturaScripts API coverage
-- ✅ **38 Interactive Tools** - Full Claude Desktop integration  
-- ✅ **253 Tests Passing** - Comprehensive unit & integration testing
+### Current Project Status (v0.4.0)
+- ✅ **56 MCP Resources** - Complete FacturaScripts API coverage
+- ✅ **56 Interactive Tools** - Full Claude Desktop integration with advanced filtering
+- ✅ **347 Tests Passing** - Comprehensive unit & integration testing
 - ✅ **Live API Integration** - Working with real FacturaScripts instances
+- ✅ **Advanced API Support** - Full FacturaScripts filtering, sorting, and pagination
 - ✅ **TypeScript Strict Mode** - Full type safety and IntelliSense
 - ✅ **Production Ready** - Error handling, documentation, and monitoring

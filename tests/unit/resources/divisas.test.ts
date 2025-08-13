@@ -52,8 +52,8 @@ describe('DivisasResource', () => {
       await resource.getResource('facturascripts://divisas?limit=10&offset=5&filter=activo:1&order=descripcion:asc');
       
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/divisas', 10, 5, {
-        filter: 'activo:1',
-        order: 'descripcion:asc'
+        'filter[activo]': '1',
+        'sort[descripcion]': 'ASC'
       });
     });
 

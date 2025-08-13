@@ -1,5 +1,20 @@
 // TypeScript types generated from FacturaScripts OpenAPI specification
 
+// EstadoDocumento (Document Status) entity
+export interface EstadoDocumento {
+  activo?: number;
+  actualizastock?: number;
+  bloquear?: number;
+  color?: string;
+  editable?: number;
+  generadoc?: string;
+  icon?: string;
+  idestado?: number;
+  nombre?: string;
+  predeterminado?: number;
+  tipodoc?: string;
+}
+
 // DocTransformation (Document Transformations) entity
 export interface DocTransformation {
   cantidad?: number;
@@ -76,12 +91,37 @@ export interface Empresa {
 }
 
 // Common pagination parameters for all endpoints
+// Basic pagination and legacy filtering parameters
 export interface PaginationParams {
   offset?: number;
   limit?: number;
+  // Legacy simple format (maintained for backward compatibility)
   filter?: string;
   order?: string;
 }
+
+// Advanced FacturaScripts API parameters interface
+export interface FacturaScriptsApiParams extends PaginationParams {
+  // Dynamic filter parameters: filter[field] and filter[field_operator]
+  [key: `filter_${string}`]: string | undefined;
+  // Dynamic operation parameters for OR logic: operation[field]
+  [key: `operation_${string}`]: 'OR' | undefined;
+  // Dynamic sort parameters: sort[field]
+  [key: `sort_${string}`]: 'ASC' | 'DESC' | undefined;
+}
+
+// Supported filter operators for FacturaScripts API
+export type FilterOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'neq' | 'like';
+
+// Helper type for building filter parameter keys
+export type FilterParamKey<T extends string, O extends FilterOperator | '' = ''> = 
+  O extends '' ? `filter_${T}` : `filter_${T}_${O}`;
+
+// Helper type for building operation parameter keys  
+export type OperationParamKey<T extends string> = `operation_${T}`;
+
+// Helper type for building sort parameter keys
+export type SortParamKey<T extends string> = `sort_${T}`;
 
 // ConceptoPartida (Accounting Entry Concepts) entity
 export interface ConceptoPartida {
@@ -382,27 +422,27 @@ export interface Agente {
 // Customer Group (GrupoClientes) entity
 export interface GrupoClientes {
   codgrupo: string;
+  codsubcuenta?: string;
+  codtarifa?: string;
   nombre: string;
-  observaciones?: string;
 }
 
 // Product Family (Familia) entity
 export interface Familia {
-  codfamilia: string;
-  descripcion: string;
+  codfamilia?: string;
+  codsubcuentacom?: string;
+  codsubcuentairpfcom?: string;
+  codsubcuentaven?: string;
+  descripcion?: string;
   madre?: string;
-  observaciones?: string;
+  numproductos?: number;
 }
 
 // Manufacturer (Fabricante) entity
 export interface Fabricante {
-  codfabricante: string;
-  nombre: string;
-  telefono?: string;
-  fax?: string;
-  email?: string;
-  web?: string;
-  observaciones?: string;
+  codfabricante?: string;
+  nombre?: string;
+  numproductos?: number;
 }
 
 // Warehouse (Almacen) entity
@@ -558,6 +598,290 @@ export interface CodigoPostal {
   last_update: string;
   nick: string;
   number: number;
+}
+
+// FormaPago (Payment Method) entity
+export interface FormaPago {
+  activa?: number;
+  codcuentabanco?: string;
+  codpago: string;
+  descripcion?: string;
+  domiciliado?: number;
+  idempresa?: number;
+  imprimir?: number;
+  pagado?: number;
+  plazovencimiento?: number;
+  tipovencimiento?: string;
+}
+
+// FormatoDocumento (Document Format) entity
+export interface FormatoDocumento {
+  autoaplicar?: number;
+  codserie?: string;
+  id: number;
+  idempresa?: number;
+  idlogo?: number;
+  nombre?: string;
+  texto?: string;
+  tipodoc?: string;
+  titulo?: string;
+}
+
+// IdentificadorFiscal (Fiscal Identifier) entity
+export interface IdentificadorFiscal {
+  codeid: string;
+  tipoidfiscal?: string;
+  validar?: number;
+}
+
+// Impuesto (Tax) entity
+export interface Impuesto {
+  activo?: number;
+  codimpuesto: string;
+  codsubcuentarep?: string;
+  codsubcuentarepre?: string;
+  codsubcuentasop?: string;
+  codsubcuentasopre?: string;
+  descripcion?: string;
+  tipo?: number;
+  iva?: number;
+  recargo?: number;
+}
+
+// ImpuestoZona (Tax Zone) entity
+export interface ImpuestoZona {
+  codimpuesto?: string;
+  codimpuestosel?: string;
+  codisopro?: string;
+  codpais?: string;
+  id: number;
+  prioridad?: number;
+}
+
+// LineaAlbaranCliente (Customer Delivery Note Line) entity
+export interface LineaAlbaranCliente {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  coste?: number;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idalbaran?: number;
+  idlinea: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  mostrar_cantidad?: number;
+  mostrar_precio?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  salto_pagina?: number;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaAlbaranProveedor (Supplier Delivery Note Line) entity
+export interface LineaAlbaranProveedor {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idalbaran?: number;
+  idlinea: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaFacturaCliente (Customer Invoice Line) entity
+export interface LineaFacturaCliente {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  coste?: number;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idfactura?: number;
+  idlinea: number;
+  idlinearect?: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  mostrar_cantidad?: number;
+  mostrar_precio?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  salto_pagina?: number;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaFacturaProveedor (Supplier Invoice Line) entity
+export interface LineaFacturaProveedor {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idfactura?: number;
+  idlinea: number;
+  idlinearect?: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaPedidoCliente (Customer Order Line) entity
+export interface LineaPedidoCliente {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  coste?: number;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idlinea: number;
+  idpedido?: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  mostrar_cantidad?: number;
+  mostrar_precio?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  salto_pagina?: number;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaPedidoProveedor (Supplier Order Line) entity
+export interface LineaPedidoProveedor {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idlinea: number;
+  idpedido?: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaPresupuestoCliente (Customer Quote Line) entity
+export interface LineaPresupuestoCliente {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  coste?: number;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idlinea: number;
+  idpresupuesto?: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  mostrar_cantidad?: number;
+  mostrar_precio?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  salto_pagina?: number;
+  servido?: number;
+  suplido?: number;
+}
+
+// LineaPresupuestoProveedor (Supplier Quote Line) entity
+export interface LineaPresupuestoProveedor {
+  actualizastock?: number;
+  cantidad?: number;
+  codimpuesto?: string;
+  descripcion?: string;
+  dtopor?: number;
+  dtopor2?: number;
+  excepcioniva?: string;
+  idlinea: number;
+  idpresupuesto?: number;
+  idproducto?: number;
+  irpf?: number;
+  iva?: number;
+  orden?: number;
+  pvpsindto?: number;
+  pvptotal?: number;
+  pvpunitario?: number;
+  recargo?: number;
+  referencia?: string;
+  servido?: number;
+  suplido?: number;
+}
+
+// LogMessage (System Log Message) entity
+export interface LogMessage {
+  channel?: string;
+  context?: string;
+  id: number;
+  idcontacto?: number;
+  ip?: string;
+  level?: string;
+  message?: string;
+  model?: string;
+  modelcode?: string;
+  nick?: string;
+  time?: string;
+  uri?: string;
 }
 
 // Standard response format for paginated data

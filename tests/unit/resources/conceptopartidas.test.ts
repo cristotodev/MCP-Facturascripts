@@ -90,7 +90,7 @@ describe('ConceptopartidasResource', () => {
         '/conceptopartidas',
         50,
         0,
-        { filter: 'activo:1', order: 'descripcion:asc' }
+        { 'filter[activo]': '1', 'sort[descripcion]': 'ASC' }
       );
     });
 

@@ -52,8 +52,8 @@ describe('CuentaespecialesResource', () => {
       await resource.getResource('facturascripts://cuentaespeciales?limit=10&offset=5&filter=activo:1&order=descripcion:asc');
       
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/cuentaespeciales', 10, 5, {
-        filter: 'activo:1',
-        order: 'descripcion:asc'
+        'filter[activo]': '1',
+        'sort[descripcion]': 'ASC'
       });
     });
 

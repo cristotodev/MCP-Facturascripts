@@ -52,8 +52,8 @@ describe('DiariosResource', () => {
       await resource.getResource('facturascripts://diarios?limit=10&offset=5&filter=activo:1&order=descripcion:asc');
       
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/diarios', 10, 5, {
-        filter: 'activo:1',
-        order: 'descripcion:asc'
+        'filter[activo]': '1',
+        'sort[descripcion]': 'ASC'
       });
     });
 

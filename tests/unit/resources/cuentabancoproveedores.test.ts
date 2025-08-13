@@ -52,8 +52,8 @@ describe('CuentabancoproveedoresResource', () => {
       await resource.getResource('facturascripts://cuentabancoproveedores?limit=10&offset=5&filter=activo:1&order=descripcion:asc');
       
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/cuentabancoproveedores', 10, 5, {
-        filter: 'activo:1',
-        order: 'descripcion:asc'
+        'filter[activo]': '1',
+        'sort[descripcion]': 'ASC'
       });
     });
 

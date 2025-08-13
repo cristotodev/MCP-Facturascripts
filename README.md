@@ -1,10 +1,10 @@
 # MCP FacturaScripts
 
-**Version 0.3.0** - A comprehensive Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing seamless access to business, accounting, and administrative data through the MCP protocol.
+**Version 0.4.0** - A comprehensive Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing seamless access to business, accounting, and administrative data through the MCP protocol.
 
 ## Features
 
-- **38 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
+- **41 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
 - **Full Accounting Integration**: Access to accounting accounts, entry concepts, bank accounts, and financial data
 - **Contact & CRM Management**: Comprehensive contact management with customer and supplier relationships
 - **Business Operations**: Orders, invoices, quotes, delivery notes, products, suppliers, and inventory
@@ -14,7 +14,7 @@
 - **TypeScript**: Built with TypeScript for type safety and better development experience
 - **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
 - **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
-- **Comprehensive Testing**: 253 unit and integration tests with Test-Driven Development approach
+- **Comprehensive Testing**: 271 unit and integration tests with Test-Driven Development approach
 
 ## Prerequisites
 
@@ -67,7 +67,7 @@ npx @modelcontextprotocol/inspector npm run dev
 
 ## MCP Resources
 
-All **38 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
+All **41 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
 
 ### 📊 Business Core Resources
 
@@ -337,19 +337,40 @@ All **38 resources** support pagination with `limit`, `offset`, `filter`, and `o
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
 
+### EstadoDocumentos (Document Status)
+- **URI**: `facturascripts://estadodocumentos?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of document status from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Fabricantes (Manufacturers)
+- **URI**: `facturascripts://fabricantes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of manufacturers from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Familias (Product Families)
+- **URI**: `facturascripts://familias?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of product families from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
 ### 📋 Complete Resource Summary
 
-**38 MCP Resources organized by category:**
+**41 MCP Resources organized by category:**
 
 **Business Core (5)**: Clients, Suppliers, Contacts, Sales Agents, Companies
-**Products & Inventory (4)**: Products, Supplier Products, Stock, Warehouses  
+**Products & Inventory (6)**: Products, Supplier Products, Stock, Warehouses, Manufacturers, Product Families
 **Orders & Documents (4)**: Customer Orders, Quotes, Customer Delivery Notes, Supplier Delivery Notes
 **Invoicing & Finance (2)**: Customer Invoices, Supplier Invoices
 **Accounting & Financial (10)**: Accounts, Entries, Entry Concepts, Bank Accounts, Client Bank Accounts, Supplier Bank Accounts, Special Accounts, Accounting Journals, Currencies, Fiscal Years
 **Logistics (1)**: Transport Agencies
 **Product Config (2)**: Attributes, Attribute Values
 **Geographic (2)**: Cities, Postal Codes
-**Document Management (3)**: File Attachments, File Relations, Document Transformations
+**Document Management (4)**: File Attachments, File Relations, Document Transformations, Document Status
 **System Admin (3)**: API Access, API Keys, Scheduled Jobs
 **Communication (2)**: Email Notifications, Sent Emails
 
@@ -361,8 +382,9 @@ All resources have corresponding interactive tools for Claude Desktop:
 - `get_cuentas`, `get_asientos`, `get_conceptopartidas`, `get_cuentabancos`
 - `get_cuentabancoclientes`, `get_cuentabancoproveedores`, `get_cuentaespeciales`
 - `get_diarios`, `get_divisas`, `get_doctransformations`, `get_ejercicios`
-- `get_emailnotifications`, `get_emailsentes`, `get_empresas`, `get_contactos`
-- `get_agentes`, `get_almacenes`, `get_atributos`, and 19 more tools covering all resources
+- `get_emailnotifications`, `get_emailsentes`, `get_empresas`, `get_estadodocumentos`
+- `get_fabricantes`, `get_familias`, `get_contactos`, `get_agentes`
+- `get_almacenes`, `get_atributos`, and 19 more tools covering all resources
 
 **Response Format**:
 ```json
@@ -434,7 +456,10 @@ src/
     ├── ejercicios.ts        # Fiscal years resource implementation
     ├── emailnotifications.ts # Email notifications resource implementation
     ├── emailsentes.ts       # Sent emails resource implementation
-    └── empresas.ts          # Companies resource implementation
+    ├── empresas.ts          # Companies resource implementation
+    ├── estadodocumentos.ts  # Document status resource implementation
+    ├── fabricantes.ts       # Manufacturers resource implementation
+    └── familias.ts          # Product families resource implementation
 
 tests/
 ├── unit/                    # Unit tests for individual classes/functions
@@ -474,7 +499,7 @@ tests/
 
 ### Adding New Resources
 
-The server currently provides **complete coverage** of all major FacturaScripts entities with 38 comprehensive resources. To add new resources:
+The server currently provides **complete coverage** of all major FacturaScripts entities with 41 comprehensive resources. To add new resources:
 
 1. **Create Resource**: Add new resource class in `src/resources/` following existing patterns
 2. **Add Types**: Define TypeScript interfaces in `src/types/facturascripts.ts`

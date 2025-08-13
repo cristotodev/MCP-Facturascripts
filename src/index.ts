@@ -45,6 +45,24 @@ import { EjerciciosResource } from './resources/ejercicios.js';
 import { EmailnotificationsResource } from './resources/emailnotifications.js';
 import { EmailsentesResource } from './resources/emailsentes.js';
 import { EmpresasResource } from './resources/empresas.js';
+import { EstadodocumentosResource } from './resources/estadodocumentos.js';
+import { FabricantesResource } from './resources/fabricantes.js';
+import { FamiliasResource } from './resources/familias.js';
+import { FormaPagosResource } from './resources/formapagos.js';
+import { FormatoDocumentosResource } from './resources/formatodocumentos.js';
+import { GrupoClientesResource } from './resources/grupoclientes.js';
+import { IdentificadorFiscalesResource } from './resources/identificadorfiscales.js';
+import { ImpuestosResource } from './resources/impuestos.js';
+import { ImpuestoZonasResource } from './resources/impuestozonas.js';
+import { LineaAlbaranClientesResource } from './resources/lineaalbaranclientes.js';
+import { LineaAlbaranProveedoresResource } from './resources/lineaalbaranproveedores.js';
+import { LineaFacturaClientesResource } from './resources/lineafacturaclientes.js';
+import { LineaFacturaProveedoresResource } from './resources/lineafacturaproveedores.js';
+import { LineaPedidoClientesResource } from './resources/lineapedidoclientes.js';
+import { LineaPedidoProveedoresResource } from './resources/lineapedidoproveedores.js';
+import { LineaPresupuestoClientesResource } from './resources/lineapresupuestoclientes.js';
+import { LineaPresupuestoProveedoresResource } from './resources/lineapresupuestoproveedores.js';
+import { LogMessagesResource } from './resources/logmessages.js';
 
 const server = new Server(
   {
@@ -98,13 +116,31 @@ const ejerciciosResource = new EjerciciosResource(fsClient);
 const emailnotificationsResource = new EmailnotificationsResource(fsClient);
 const emailsentesResource = new EmailsentesResource(fsClient);
 const empresasResource = new EmpresasResource(fsClient);
+const estadodocumentosResource = new EstadodocumentosResource(fsClient);
+const fabricantesResource = new FabricantesResource(fsClient);
+const familiasResource = new FamiliasResource(fsClient);
+const formaPagosResource = new FormaPagosResource(fsClient);
+const formatoDocumentosResource = new FormatoDocumentosResource(fsClient);
+const grupoClientesResource = new GrupoClientesResource(fsClient);
+const identificadorFiscalesResource = new IdentificadorFiscalesResource(fsClient);
+const impuestosResource = new ImpuestosResource(fsClient);
+const impuestoZonasResource = new ImpuestoZonasResource(fsClient);
+const lineaAlbaranClientesResource = new LineaAlbaranClientesResource(fsClient);
+const lineaAlbaranProveedoresResource = new LineaAlbaranProveedoresResource(fsClient);
+const lineaFacturaClientesResource = new LineaFacturaClientesResource(fsClient);
+const lineaFacturaProveedoresResource = new LineaFacturaProveedoresResource(fsClient);
+const lineaPedidoClientesResource = new LineaPedidoClientesResource(fsClient);
+const lineaPedidoProveedoresResource = new LineaPedidoProveedoresResource(fsClient);
+const lineaPresupuestoClientesResource = new LineaPresupuestoClientesResource(fsClient);
+const lineaPresupuestoProveedoresResource = new LineaPresupuestoProveedoresResource(fsClient);
+const logMessagesResource = new LogMessagesResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
         name: 'get_clientes',
-        description: 'Obtiene la lista de clientes con paginación opcional',
+        description: 'Obtiene la lista de clientes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -120,18 +156,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_productos',
-        description: 'Obtiene la lista de productos con paginación opcional',
+        description: 'Obtiene la lista de productos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -147,18 +183,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_productoproveedores',
-        description: 'Obtiene la lista de productos por proveedor con paginación opcional',
+        description: 'Obtiene la lista de productos por proveedor con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -174,18 +210,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_pedidoclientes',
-        description: 'Obtiene la lista de pedidos de clientes con paginación opcional',
+        description: 'Obtiene la lista de pedidos de clientes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -201,18 +237,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_facturaclientes',
-        description: 'Obtiene la lista de facturas de clientes con paginación opcional',
+        description: 'Obtiene la lista de facturas de clientes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -228,18 +264,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_presupuestoclientes',
-        description: 'Obtiene la lista de presupuestos de clientes con paginación opcional',
+        description: 'Obtiene la lista de presupuestos de clientes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -255,18 +291,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_proveedores',
-        description: 'Obtiene la lista de proveedores con paginación opcional',
+        description: 'Obtiene la lista de proveedores con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -282,18 +318,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_stocks',
-        description: 'Obtiene la lista de stocks con paginación opcional',
+        description: 'Obtiene la lista de stocks con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -309,18 +345,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_facturaproveedores',
-        description: 'Obtiene la lista de facturas de proveedores con paginación opcional',
+        description: 'Obtiene la lista de facturas de proveedores con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -336,18 +372,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_agenciatransportes',
-        description: 'Obtiene la lista de agencias de transporte con paginación opcional',
+        description: 'Obtiene la lista de agencias de transporte con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -363,18 +399,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_agentes',
-        description: 'Obtiene la lista de agentes con paginación opcional',
+        description: 'Obtiene la lista de agentes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -390,18 +426,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_albaranclientes',
-        description: 'Obtiene la lista de albaranes de clientes con paginación opcional',
+        description: 'Obtiene la lista de albaranes de clientes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -417,18 +453,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_albaranproveedores',
-        description: 'Obtiene la lista de albaranes de proveedores con paginación opcional',
+        description: 'Obtiene la lista de albaranes de proveedores con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -444,18 +480,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_almacenes',
-        description: 'Obtiene la lista de almacenes con paginación opcional',
+        description: 'Obtiene la lista de almacenes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -471,18 +507,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_apiaccess',
-        description: 'Obtiene la lista de accesos API con paginación opcional',
+        description: 'Obtiene la lista de accesos API con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -498,18 +534,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_apikeyes',
-        description: 'Obtiene la lista de claves API con paginación opcional',
+        description: 'Obtiene la lista de claves API con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -525,18 +561,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_asientos',
-        description: 'Obtiene la lista de asientos contables con paginación opcional',
+        description: 'Obtiene la lista de asientos contables con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -552,18 +588,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_atributos',
-        description: 'Obtiene la lista de atributos con paginación opcional',
+        description: 'Obtiene la lista de atributos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -579,18 +615,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_atributovalores',
-        description: 'Obtiene la lista de valores de atributos con paginación opcional',
+        description: 'Obtiene la lista de valores de atributos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -606,18 +642,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_attachedfiles',
-        description: 'Obtiene la lista de archivos adjuntos con paginación opcional',
+        description: 'Obtiene la lista de archivos adjuntos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -633,18 +669,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_attachedfilerelations',
-        description: 'Obtiene la lista de relaciones de archivos adjuntos con paginación opcional',
+        description: 'Obtiene la lista de relaciones de archivos adjuntos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -660,18 +696,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_ciudades',
-        description: 'Obtiene la lista de ciudades con paginación opcional',
+        description: 'Obtiene la lista de ciudades con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -687,18 +723,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_codigopostales',
-        description: 'Obtiene la lista de códigos postales con paginación opcional',
+        description: 'Obtiene la lista de códigos postales con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -714,18 +750,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_conceptopartidas',
-        description: 'Obtiene la lista de conceptos de partidas con paginación opcional',
+        description: 'Obtiene la lista de conceptos de partidas con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -741,18 +777,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_contactos',
-        description: 'Obtiene la lista de contactos con paginación opcional',
+        description: 'Obtiene la lista de contactos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -768,18 +804,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_cronjobes',
-        description: 'Obtiene la lista de trabajos cron con paginación opcional',
+        description: 'Obtiene la lista de trabajos cron con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -795,18 +831,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_cuentas',
-        description: 'Obtiene la lista de cuentas contables con paginación opcional',
+        description: 'Obtiene la lista de cuentas contables con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -822,18 +858,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_cuentabancos',
-        description: 'Obtiene la lista de cuentas bancarias con paginación opcional',
+        description: 'Obtiene la lista de cuentas bancarias con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -849,18 +885,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_cuentabancoclientes',
-        description: 'Obtiene la lista de cuentas bancarias de clientes con paginación opcional',
+        description: 'Obtiene la lista de cuentas bancarias de clientes con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -876,18 +912,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_cuentabancoproveedores',
-        description: 'Obtiene la lista de cuentas bancarias de proveedores con paginación opcional',
+        description: 'Obtiene la lista de cuentas bancarias de proveedores con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -903,18 +939,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_cuentaespeciales',
-        description: 'Obtiene la lista de cuentas especiales con paginación opcional',
+        description: 'Obtiene la lista de cuentas especiales con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -930,18 +966,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_diarios',
-        description: 'Obtiene la lista de diarios contables con paginación opcional',
+        description: 'Obtiene la lista de diarios contables con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -957,18 +993,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_divisas',
-        description: 'Obtiene la lista de divisas con paginación opcional',
+        description: 'Obtiene la lista de divisas con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -984,18 +1020,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_doctransformations',
-        description: 'Obtiene la lista de transformaciones de documentos con paginación opcional',
+        description: 'Obtiene la lista de transformaciones de documentos con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -1011,18 +1047,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_ejercicios',
-        description: 'Obtiene la lista de ejercicios fiscales con paginación opcional',
+        description: 'Obtiene la lista de ejercicios fiscales con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -1038,18 +1074,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_emailnotifications',
-        description: 'Obtiene la lista de notificaciones de email con paginación opcional',
+        description: 'Obtiene la lista de notificaciones de email con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -1065,18 +1101,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_emailsentes',
-        description: 'Obtiene la lista de emails enviados con paginación opcional',
+        description: 'Obtiene la lista de emails enviados con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -1092,18 +1128,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
       },
       {
         name: 'get_empresas',
-        description: 'Obtiene la lista de empresas con paginación opcional',
+        description: 'Obtiene la lista de empresas con paginación y filtros avanzados',
         inputSchema: {
           type: 'object',
           properties: {
@@ -1119,11 +1155,497 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros en formato campo:valor',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
             },
             order: {
               type: 'string',
-              description: 'Orden en formato campo:asc|desc',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_estadodocumentos',
+        description: 'Obtiene la lista de estados de documentos con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_fabricantes',
+        description: 'Obtiene la lista de fabricantes con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_familias',
+        description: 'Obtiene la lista de familias de productos con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_formapagos',
+        description: 'Obtiene la lista de formas de pago con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_formatodocumentos',
+        description: 'Obtiene la lista de formatos de documento con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_grupoclientes',
+        description: 'Obtiene la lista de grupos de clientes con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_identificadorfiscales',
+        description: 'Obtiene la lista de identificadores fiscales con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_impuestos',
+        description: 'Obtiene la lista de impuestos con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_impuestozonas',
+        description: 'Obtiene la lista de zonas de impuestos con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineaalbaranclientes',
+        description: 'Obtiene la lista de líneas de albarán de clientes con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineaalbaranproveedores',
+        description: 'Obtiene la lista de líneas de albarán de proveedores con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineafacturaclientes',
+        description: 'Obtiene la lista de líneas de factura de clientes con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineafacturaproveedores',
+        description: 'Obtiene la lista de líneas de factura de proveedores con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineapedidoclientes',
+        description: 'Obtiene la lista de líneas de pedido de clientes con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineapedidoproveedores',
+        description: 'Obtiene la lista de líneas de pedido de proveedores con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineapresupuestoclientes',
+        description: 'Obtiene la lista de líneas de presupuesto de clientes con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_lineapresupuestoproveedores',
+        description: 'Obtiene la lista de líneas de presupuesto de proveedores con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_logmessages',
+        description: 'Obtiene la lista de mensajes de log del sistema con paginación y filtros avanzados',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
         },
@@ -1363,6 +1885,114 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de empresas de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://estadodocumentos',
+        name: 'FacturaScripts EstadoDocumentos',
+        description: 'Lista de estados de documentos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://fabricantes',
+        name: 'FacturaScripts Fabricantes',
+        description: 'Lista de fabricantes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://familias',
+        name: 'FacturaScripts Familias',
+        description: 'Lista de familias de productos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://formapagos',
+        name: 'FacturaScripts FormaPagos',
+        description: 'Lista de formas de pago de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://formatodocumentos',
+        name: 'FacturaScripts FormatoDocumentos',
+        description: 'Lista de formatos de documento de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://grupoclientes',
+        name: 'FacturaScripts GrupoClientes',
+        description: 'Lista de grupos de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://identificadorfiscales',
+        name: 'FacturaScripts IdentificadorFiscales',
+        description: 'Lista de identificadores fiscales de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://impuestos',
+        name: 'FacturaScripts Impuestos',
+        description: 'Lista de impuestos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://impuestozonas',
+        name: 'FacturaScripts ImpuestoZonas',
+        description: 'Lista de zonas de impuestos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineaalbaranclientes',
+        name: 'FacturaScripts LineaAlbaranClientes',
+        description: 'Lista de líneas de albarán de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineaalbaranproveedores',
+        name: 'FacturaScripts LineaAlbaranProveedores',
+        description: 'Lista de líneas de albarán de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineafacturaclientes',
+        name: 'FacturaScripts LineaFacturaClientes',
+        description: 'Lista de líneas de factura de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineafacturaproveedores',
+        name: 'FacturaScripts LineaFacturaProveedores',
+        description: 'Lista de líneas de factura de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineapedidoclientes',
+        name: 'FacturaScripts LineaPedidoClientes',
+        description: 'Lista de líneas de pedido de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineapedidoproveedores',
+        name: 'FacturaScripts LineaPedidoProveedores',
+        description: 'Lista de líneas de pedido de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineapresupuestoclientes',
+        name: 'FacturaScripts LineaPresupuestoClientes',
+        description: 'Lista de líneas de presupuesto de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://lineapresupuestoproveedores',
+        name: 'FacturaScripts LineaPresupuestoProveedores',
+        description: 'Lista de líneas de presupuesto de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://logmessages',
+        name: 'FacturaScripts LogMessages',
+        description: 'Lista de mensajes de log del sistema de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -1522,6 +2152,78 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     return await empresasResource.getResource(uri);
   }
 
+  if (estadodocumentosResource.matchesUri(uri)) {
+    return await estadodocumentosResource.getResource(uri);
+  }
+
+  if (fabricantesResource.matchesUri(uri)) {
+    return await fabricantesResource.getResource(uri);
+  }
+
+  if (familiasResource.matchesUri(uri)) {
+    return await familiasResource.getResource(uri);
+  }
+
+  if (formaPagosResource.matchesUri(uri)) {
+    return await formaPagosResource.getResource(uri);
+  }
+
+  if (formatoDocumentosResource.matchesUri(uri)) {
+    return await formatoDocumentosResource.getResource(uri);
+  }
+
+  if (grupoClientesResource.matchesUri(uri)) {
+    return await grupoClientesResource.getResource(uri);
+  }
+
+  if (identificadorFiscalesResource.matchesUri(uri)) {
+    return await identificadorFiscalesResource.getResource(uri);
+  }
+
+  if (impuestosResource.matchesUri(uri)) {
+    return await impuestosResource.getResource(uri);
+  }
+
+  if (impuestoZonasResource.matchesUri(uri)) {
+    return await impuestoZonasResource.getResource(uri);
+  }
+
+  if (lineaAlbaranClientesResource.matchesUri(uri)) {
+    return await lineaAlbaranClientesResource.getResource(uri);
+  }
+
+  if (lineaAlbaranProveedoresResource.matchesUri(uri)) {
+    return await lineaAlbaranProveedoresResource.getResource(uri);
+  }
+
+  if (lineaFacturaClientesResource.matchesUri(uri)) {
+    return await lineaFacturaClientesResource.getResource(uri);
+  }
+
+  if (lineaFacturaProveedoresResource.matchesUri(uri)) {
+    return await lineaFacturaProveedoresResource.getResource(uri);
+  }
+
+  if (lineaPedidoClientesResource.matchesUri(uri)) {
+    return await lineaPedidoClientesResource.getResource(uri);
+  }
+
+  if (lineaPedidoProveedoresResource.matchesUri(uri)) {
+    return await lineaPedidoProveedoresResource.getResource(uri);
+  }
+
+  if (lineaPresupuestoClientesResource.matchesUri(uri)) {
+    return await lineaPresupuestoClientesResource.getResource(uri);
+  }
+
+  if (lineaPresupuestoProveedoresResource.matchesUri(uri)) {
+    return await lineaPresupuestoProveedoresResource.getResource(uri);
+  }
+
+  if (logMessagesResource.matchesUri(uri)) {
+    return await logMessagesResource.getResource(uri);
+  }
+
   throw new Error(`Resource not found: ${uri}`);
 });
 
@@ -1533,13 +2235,37 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const filter = args?.filter;
   const order = args?.order;
 
-  // Helper function to build URI with query parameters
+  // Helper function to build URI with query parameters supporting advanced FacturaScripts API format
   const buildUri = (resource: string) => {
     const params = new URLSearchParams();
     params.set('limit', String(limit));
     params.set('offset', String(offset));
+    
+    // Backward compatibility - simple filter and order parameters
     if (filter && typeof filter === 'string') params.set('filter', filter);
     if (order && typeof order === 'string') params.set('order', order);
+    
+    // Process all arguments to find advanced filter, operation, and sort parameters
+    if (args) {
+      Object.keys(args).forEach(key => {
+        const value = args[key];
+        if (value !== undefined && value !== null && value !== '') {
+          // Handle filter_* parameters (basic filters and operator filters)
+          if (key.startsWith('filter_') && key !== 'filter') {
+            params.set(key, String(value));
+          }
+          // Handle operation_* parameters (OR logic for specific filters)
+          else if (key.startsWith('operation_')) {
+            params.set(key, String(value));
+          }
+          // Handle sort_* parameters (sorting by specific fields)
+          else if (key.startsWith('sort_')) {
+            params.set(key, String(value));
+          }
+        }
+      });
+    }
+    
     return `facturascripts://${resource}?${params.toString()}`;
   };
 
@@ -2029,6 +2755,240 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_empresas': {
         const uri = buildUri('empresas');
         const result = await empresasResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_estadodocumentos': {
+        const uri = buildUri('estadodocumentos');
+        const result = await estadodocumentosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_fabricantes': {
+        const uri = buildUri('fabricantes');
+        const result = await fabricantesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_familias': {
+        const uri = buildUri('familias');
+        const result = await familiasResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_formapagos': {
+        const uri = buildUri('formapagos');
+        const result = await formaPagosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_formatodocumentos': {
+        const uri = buildUri('formatodocumentos');
+        const result = await formatoDocumentosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_grupoclientes': {
+        const uri = buildUri('grupoclientes');
+        const result = await grupoClientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_identificadorfiscales': {
+        const uri = buildUri('identificadorfiscales');
+        const result = await identificadorFiscalesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_impuestos': {
+        const uri = buildUri('impuestos');
+        const result = await impuestosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_impuestozonas': {
+        const uri = buildUri('impuestozonas');
+        const result = await impuestoZonasResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineaalbaranclientes': {
+        const uri = buildUri('lineaalbaranclientes');
+        const result = await lineaAlbaranClientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineaalbaranproveedores': {
+        const uri = buildUri('lineaalbaranproveedores');
+        const result = await lineaAlbaranProveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineafacturaclientes': {
+        const uri = buildUri('lineafacturaclientes');
+        const result = await lineaFacturaClientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineafacturaproveedores': {
+        const uri = buildUri('lineafacturaproveedores');
+        const result = await lineaFacturaProveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineapedidoclientes': {
+        const uri = buildUri('lineapedidoclientes');
+        const result = await lineaPedidoClientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineapedidoproveedores': {
+        const uri = buildUri('lineapedidoproveedores');
+        const result = await lineaPedidoProveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineapresupuestoclientes': {
+        const uri = buildUri('lineapresupuestoclientes');
+        const result = await lineaPresupuestoClientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_lineapresupuestoproveedores': {
+        const uri = buildUri('lineapresupuestoproveedores');
+        const result = await lineaPresupuestoProveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_logmessages': {
+        const uri = buildUri('logmessages');
+        const result = await logMessagesResource.getResource(uri);
         return {
           content: [
             {

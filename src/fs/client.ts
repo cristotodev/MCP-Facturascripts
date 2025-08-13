@@ -39,12 +39,24 @@ export class FacturaScriptsClient {
       ...additionalParams,
     };
 
-    const response = await this.get<T[]>(endpoint, params);
+    const response = await this.client.get<T[]>(endpoint, { params });
 
     // FacturaScripts returns data directly as an array
-    const dataArray = Array.isArray(response) ? response : [];
-    const total = dataArray.length;
-    const hasMore = offset + limit < total;
+    const dataArray = Array.isArray(response.data) ? response.data : [];
+    
+    // Extract total count from X-Total-Count header if available
+    const totalCountHeader = response.headers['x-total-count'];
+    const totalFromHeader = totalCountHeader ? parseInt(totalCountHeader, 10) : null;
+    
+    // Use header total if available, otherwise fall back to data length
+    const total = totalFromHeader !== null && !isNaN(totalFromHeader) 
+      ? totalFromHeader 
+      : dataArray.length;
+    
+    // Calculate if there are more records based on total count
+    const hasMore = totalFromHeader !== null 
+      ? (offset + limit < total)
+      : (dataArray.length === limit); // If we got a full page, assume there might be more
 
     return {
       meta: {

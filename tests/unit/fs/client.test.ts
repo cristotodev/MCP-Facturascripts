@@ -66,7 +66,10 @@ describe('FacturaScriptsClient', () => {
         { id: 1, name: 'Test 1' },
         { id: 2, name: 'Test 2' }
       ];
-      mockAxiosInstance.get.mockResolvedValue({ data: mockData });
+      mockAxiosInstance.get.mockResolvedValue({ 
+        data: mockData,
+        headers: {}
+      });
 
       const result = await client.getWithPagination('/test-endpoint', 10, 0);
 
@@ -75,7 +78,7 @@ describe('FacturaScriptsClient', () => {
           total: 2,
           limit: 10,
           offset: 0,
-          hasMore: false,
+          hasMore: false, // 2 < 10, so hasMore is false
         },
         data: mockData,
       });
@@ -83,7 +86,10 @@ describe('FacturaScriptsClient', () => {
 
     it('should use default limit and offset', async () => {
       const mockData = [];
-      mockAxiosInstance.get.mockResolvedValue({ data: mockData });
+      mockAxiosInstance.get.mockResolvedValue({ 
+        data: mockData,
+        headers: {}
+      });
 
       await client.getWithPagination('/test-endpoint');
 
@@ -98,7 +104,10 @@ describe('FacturaScriptsClient', () => {
     it('should handle additional params', async () => {
       const mockData = [];
       const additionalParams = { filter: 'active' };
-      mockAxiosInstance.get.mockResolvedValue({ data: mockData });
+      mockAxiosInstance.get.mockResolvedValue({ 
+        data: mockData,
+        headers: {}
+      });
 
       await client.getWithPagination('/test-endpoint', 10, 0, additionalParams);
 
@@ -111,9 +120,14 @@ describe('FacturaScriptsClient', () => {
       });
     });
 
-    it('should calculate hasMore correctly', async () => {
-      const mockData = Array(100).fill(0).map((_, i) => ({ id: i }));
-      mockAxiosInstance.get.mockResolvedValue({ data: mockData });
+    it('should calculate hasMore correctly with X-Total-Count header', async () => {
+      const mockData = Array(50).fill(0).map((_, i) => ({ id: i }));
+      mockAxiosInstance.get.mockResolvedValue({ 
+        data: mockData,
+        headers: {
+          'x-total-count': '100'
+        }
+      });
 
       const result = await client.getWithPagination('/test-endpoint', 50, 0);
 
@@ -121,8 +135,24 @@ describe('FacturaScriptsClient', () => {
       expect(result.meta.total).toBe(100);
     });
 
+    it('should calculate hasMore correctly without X-Total-Count header', async () => {
+      const mockData = Array(30).fill(0).map((_, i) => ({ id: i }));
+      mockAxiosInstance.get.mockResolvedValue({ 
+        data: mockData,
+        headers: {}
+      });
+
+      const result = await client.getWithPagination('/test-endpoint', 50, 0);
+
+      expect(result.meta.hasMore).toBe(false); // Less than limit, so no more data
+      expect(result.meta.total).toBe(30);
+    });
+
     it('should handle non-array response', async () => {
-      mockAxiosInstance.get.mockResolvedValue({ data: null });
+      mockAxiosInstance.get.mockResolvedValue({ 
+        data: null,
+        headers: {}
+      });
 
       const result = await client.getWithPagination('/test-endpoint');
 
