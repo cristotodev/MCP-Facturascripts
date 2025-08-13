@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - TBD - New Resources and Tools
+
+### Added
+- New Resources and Tools
+
+## [0.3.0] - 2025-01-13 - Banking and Financial Resources
+
+### Added
+- **CuentabancocllientesResource**: New MCP resource for client bank accounts data
+- **CuentabancoproveedoresResource**: New MCP resource for supplier bank accounts data  
+- **CuentaespecialesResource**: New MCP resource for special accounts data
+- **DiariosResource**: New MCP resource for accounting journals data
+- **DivisasResource**: New MCP resource for currencies data
+- New TypeScript interfaces for all 5 resources based on OpenAPI specifications
+- Interactive tools for Claude Desktop: `get_cuentabancoclientes`, `get_cuentabancoproveedores`, `get_cuentaespeciales`, `get_diarios`, `get_divisas`
+- Comprehensive unit tests for all new resources (30+ new tests)
+- Full documentation updates across README.md and CLAUDE.md
+
+### Changed
+- Updated resource count from 28 to 33 total MCP resources
+- Enhanced accounting & financial category from 4 to 9 resources
+- Updated project structure documentation with all new resource files
+- Enhanced test coverage to 223 total unit and integration tests
+
+### Fixed
+- Maintained consistent error handling patterns across all new resources
+- Proper TypeScript compilation and type safety validation
+
 ## [0.2.0] - 2025-01-13 - New Resources and Tools
 
 ### Added

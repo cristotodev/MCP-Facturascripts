@@ -93,6 +93,11 @@ Available resources:
 - `facturascripts://cronjobes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated scheduled jobs list
 - `facturascripts://cuentas?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting accounts list
 - `facturascripts://cuentabancos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated bank accounts list
+- `facturascripts://cuentabancoclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated client bank accounts list
+- `facturascripts://cuentabancoproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier bank accounts list
+- `facturascripts://cuentaespeciales?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated special accounts list
+- `facturascripts://diarios?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting journals list
+- `facturascripts://divisas?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated currencies list
 
 Returns JSON format:
 ```json

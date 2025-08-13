@@ -85,6 +85,50 @@ export interface CuentaBanco {
   swift?: string;
 }
 
+// CuentaBancoCliente (Client Bank Account) entity
+export interface CuentaBancoCliente {
+  codcliente?: string;
+  codcuenta?: string;
+  descripcion?: string;
+  fmandato?: string;
+  iban?: string;
+  mandato?: string;
+  principal?: number;
+  swift?: string;
+}
+
+// CuentaBancoProveedor (Supplier Bank Account) entity
+export interface CuentaBancoProveedor {
+  codcuenta?: string;
+  codproveedor?: string;
+  descripcion?: string;
+  iban?: string;
+  swift?: string;
+  principal?: number;
+}
+
+// CuentaEspecial (Special Account) entity
+export interface CuentaEspecial {
+  codcuentaesp: string;
+  descripcion?: string;
+}
+
+// Diario (Accounting Journal) entity
+export interface Diario {
+  descripcion?: string;
+  iddiario: number;
+}
+
+// Divisa (Currency) entity
+export interface Divisa {
+  coddivisa: string;
+  codiso?: string;
+  descripcion?: string;
+  simbolo?: string;
+  tasaconv?: number;
+  tasaconvcompra?: number;
+}
+
 // Supplier (Proveedor) entity
 export interface Proveedor {
   codproveedor: string;

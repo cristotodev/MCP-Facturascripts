@@ -4,7 +4,7 @@
 
 ## Features
 
-- **28 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
+- **33 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
 - **Full Accounting Integration**: Access to accounting accounts, entry concepts, bank accounts, and financial data
 - **Contact & CRM Management**: Comprehensive contact management with customer and supplier relationships
 - **Business Operations**: Orders, invoices, quotes, delivery notes, products, suppliers, and inventory
@@ -14,7 +14,7 @@
 - **TypeScript**: Built with TypeScript for type safety and better development experience
 - **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
 - **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
-- **Comprehensive Testing**: 193 unit and integration tests with Test-Driven Development approach
+- **Comprehensive Testing**: 223 unit and integration tests with Test-Driven Development approach
 
 ## Prerequisites
 
@@ -67,7 +67,7 @@ npx @modelcontextprotocol/inspector npm run dev
 
 ## MCP Resources
 
-All **28 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
+All **33 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
 
 ### 📊 Business Core Resources
 
@@ -267,15 +267,50 @@ All **28 resources** support pagination with `limit`, `offset`, `filter`, and `o
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
 
+### CuentaBancoClientes (Client Bank Accounts)
+- **URI**: `facturascripts://cuentabancoclientes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of client bank accounts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### CuentaBancoProveedores (Supplier Bank Accounts)
+- **URI**: `facturascripts://cuentabancoproveedores?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of supplier bank accounts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### CuentaEspeciales (Special Accounts)
+- **URI**: `facturascripts://cuentaespeciales?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of special accounts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Diarios (Accounting Journals)
+- **URI**: `facturascripts://diarios?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of accounting journals from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Divisas (Currencies)
+- **URI**: `facturascripts://divisas?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of currencies from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
 ### 📋 Complete Resource Summary
 
-**28 MCP Resources organized by category:**
+**33 MCP Resources organized by category:**
 
 **Business Core (4)**: Clients, Suppliers, Contacts, Sales Agents
 **Products & Inventory (4)**: Products, Supplier Products, Stock, Warehouses  
 **Orders & Documents (4)**: Customer Orders, Quotes, Customer Delivery Notes, Supplier Delivery Notes
 **Invoicing & Finance (2)**: Customer Invoices, Supplier Invoices
-**Accounting & Financial (4)**: Accounts, Entries, Entry Concepts, Bank Accounts
+**Accounting & Financial (9)**: Accounts, Entries, Entry Concepts, Bank Accounts, Client Bank Accounts, Supplier Bank Accounts, Special Accounts, Accounting Journals, Currencies
 **Logistics (1)**: Transport Agencies
 **Product Config (2)**: Attributes, Attribute Values
 **Geographic (2)**: Cities, Postal Codes
@@ -288,8 +323,9 @@ All resources have corresponding interactive tools for Claude Desktop:
 - `get_clientes`, `get_productos`, `get_proveedores`, `get_stocks`
 - `get_pedidoclientes`, `get_facturaclientes`, `get_presupuestoclientes`
 - `get_cuentas`, `get_asientos`, `get_conceptopartidas`, `get_cuentabancos`
-- `get_contactos`, `get_agentes`, `get_almacenes`, `get_atributos`
-- And 14 more tools covering all resources
+- `get_cuentabancoclientes`, `get_cuentabancoproveedores`, `get_cuentaespeciales`
+- `get_diarios`, `get_divisas`, `get_contactos`, `get_agentes`
+- `get_almacenes`, `get_atributos`, and 14 more tools covering all resources
 
 **Response Format**:
 ```json
@@ -351,7 +387,12 @@ src/
     ├── contactos.ts         # Contacts resource implementation
     ├── cronjobes.ts         # Scheduled jobs resource implementation
     ├── cuentas.ts           # Accounting accounts resource implementation
-    └── cuentabancos.ts      # Bank accounts resource implementation
+    ├── cuentabancos.ts      # Bank accounts resource implementation
+    ├── cuentabancoclientes.ts # Client bank accounts resource implementation
+    ├── cuentabancoproveedores.ts # Supplier bank accounts resource implementation
+    ├── cuentaespeciales.ts  # Special accounts resource implementation
+    ├── diarios.ts           # Accounting journals resource implementation
+    └── divisas.ts           # Currencies resource implementation
 
 tests/
 ├── unit/                    # Unit tests for individual classes/functions
@@ -391,7 +432,7 @@ tests/
 
 ### Adding New Resources
 
-The server currently provides **complete coverage** of all major FacturaScripts entities with 28 comprehensive resources. To add new resources:
+The server currently provides **complete coverage** of all major FacturaScripts entities with 33 comprehensive resources. To add new resources:
 
 1. **Create Resource**: Add new resource class in `src/resources/` following existing patterns
 2. **Add Types**: Define TypeScript interfaces in `src/types/facturascripts.ts`

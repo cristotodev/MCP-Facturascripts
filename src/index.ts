@@ -35,6 +35,11 @@ import { ContactosResource } from './resources/contactos.js';
 import { CronjobesResource } from './resources/cronjobes.js';
 import { CuentasResource } from './resources/cuentas.js';
 import { CuentabancosResource } from './resources/cuentabancos.js';
+import { CuentabanccllientesResource } from './resources/cuentabancoclientes.js';
+import { CuentabancoproveedoresResource } from './resources/cuentabancoproveedores.js';
+import { CuentaespecialesResource } from './resources/cuentaespeciales.js';
+import { DiariosResource } from './resources/diarios.js';
+import { DivisasResource } from './resources/divisas.js';
 
 const server = new Server(
   {
@@ -78,6 +83,11 @@ const contactosResource = new ContactosResource(fsClient);
 const cronjobesResource = new CronjobesResource(fsClient);
 const cuentasResource = new CuentasResource(fsClient);
 const cuentabancosResource = new CuentabancosResource(fsClient);
+const cuentabanccllientesResource = new CuentabanccllientesResource(fsClient);
+const cuentabancoproveedoresResource = new CuentabancoproveedoresResource(fsClient);
+const cuentaespecialesResource = new CuentaespecialesResource(fsClient);
+const diariosResource = new DiariosResource(fsClient);
+const divisasResource = new DivisasResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -838,6 +848,141 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_cuentabancoclientes',
+        description: 'Obtiene la lista de cuentas bancarias de clientes con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_cuentabancoproveedores',
+        description: 'Obtiene la lista de cuentas bancarias de proveedores con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_cuentaespeciales',
+        description: 'Obtiene la lista de cuentas especiales con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_diarios',
+        description: 'Obtiene la lista de diarios contables con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_divisas',
+        description: 'Obtiene la lista de divisas con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -1013,6 +1158,36 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de cuentas bancarias de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://cuentabancoclientes',
+        name: 'FacturaScripts CuentaBancoClientes',
+        description: 'Lista de cuentas bancarias de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://cuentabancoproveedores',
+        name: 'FacturaScripts CuentaBancoProveedores',
+        description: 'Lista de cuentas bancarias de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://cuentaespeciales',
+        name: 'FacturaScripts CuentaEspeciales',
+        description: 'Lista de cuentas especiales de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://diarios',
+        name: 'FacturaScripts Diarios',
+        description: 'Lista de diarios contables de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://divisas',
+        name: 'FacturaScripts Divisas',
+        description: 'Lista de divisas de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -1130,6 +1305,26 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 
   if (cuentabancosResource.matchesUri(uri)) {
     return await cuentabancosResource.getResource(uri);
+  }
+
+  if (cuentabanccllientesResource.matchesUri(uri)) {
+    return await cuentabanccllientesResource.getResource(uri);
+  }
+
+  if (cuentabancoproveedoresResource.matchesUri(uri)) {
+    return await cuentabancoproveedoresResource.getResource(uri);
+  }
+
+  if (cuentaespecialesResource.matchesUri(uri)) {
+    return await cuentaespecialesResource.getResource(uri);
+  }
+
+  if (diariosResource.matchesUri(uri)) {
+    return await diariosResource.getResource(uri);
+  }
+
+  if (divisasResource.matchesUri(uri)) {
+    return await divisasResource.getResource(uri);
   }
 
   throw new Error(`Resource not found: ${uri}`);
@@ -1509,6 +1704,71 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_cuentabancos': {
         const uri = buildUri('cuentabancos');
         const result = await cuentabancosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_cuentabancoclientes': {
+        const uri = buildUri('cuentabancoclientes');
+        const result = await cuentabanccllientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_cuentabancoproveedores': {
+        const uri = buildUri('cuentabancoproveedores');
+        const result = await cuentabancoproveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_cuentaespeciales': {
+        const uri = buildUri('cuentaespeciales');
+        const result = await cuentaespecialesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_diarios': {
+        const uri = buildUri('diarios');
+        const result = await diariosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_divisas': {
+        const uri = buildUri('divisas');
+        const result = await divisasResource.getResource(uri);
         return {
           content: [
             {
