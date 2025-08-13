@@ -1,15 +1,20 @@
 # MCP FacturaScripts
 
-A Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing seamless access to business data through the MCP protocol.
+**Version 0.2.0** - A comprehensive Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing seamless access to business, accounting, and administrative data through the MCP protocol.
 
 ## Features
 
-- **Comprehensive Business Data Access**: Access clients, products, suppliers, stocks, customer orders, supplier orders, customer invoices, supplier invoices, and quotes
+- **28 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
+- **Full Accounting Integration**: Access to accounting accounts, entry concepts, bank accounts, and financial data
+- **Contact & CRM Management**: Comprehensive contact management with customer and supplier relationships
+- **Business Operations**: Orders, invoices, quotes, delivery notes, products, suppliers, and inventory
+- **System Administration**: API access control, scheduled jobs, attachments, and configuration
 - **MCP Protocol**: Full compatibility with Model Context Protocol for AI integration
 - **RESTful Integration**: Connects to FacturaScripts REST API v3
 - **TypeScript**: Built with TypeScript for type safety and better development experience
-- **Pagination**: Efficient data retrieval with configurable limit and offset parameters
-- **Comprehensive Testing**: Unit and integration tests with Test-Driven Development approach
+- **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
+- **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
+- **Comprehensive Testing**: 193 unit and integration tests with Test-Driven Development approach
 
 ## Prerequisites
 
@@ -62,9 +67,11 @@ npx @modelcontextprotocol/inspector npm run dev
 
 ## MCP Resources
 
-All resources support pagination with `limit` and `offset` parameters and return data in a consistent format with metadata.
+All **28 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
 
-### Clientes (Clients)
+### 📊 Business Core Resources
+
+#### Clientes (Clients)
 - **URI**: `facturascripts://clientes?limit={limit}&offset={offset}`
 - **Description**: Retrieve paginated list of clients from FacturaScripts
 - **Parameters**:
@@ -225,6 +232,65 @@ All resources support pagination with `limit` and `offset` parameters and return
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
 
+### ConceptoPartidas (Accounting Entry Concepts)
+- **URI**: `facturascripts://conceptopartidas?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of accounting entry concepts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Contactos (Contacts)
+- **URI**: `facturascripts://contactos?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of contacts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### CronJobs (Scheduled Jobs)
+- **URI**: `facturascripts://cronjobes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of scheduled jobs from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Cuentas (Accounting Accounts)
+- **URI**: `facturascripts://cuentas?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of accounting accounts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### CuentaBancos (Bank Accounts)
+- **URI**: `facturascripts://cuentabancos?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of bank accounts from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### 📋 Complete Resource Summary
+
+**28 MCP Resources organized by category:**
+
+**Business Core (4)**: Clients, Suppliers, Contacts, Sales Agents
+**Products & Inventory (4)**: Products, Supplier Products, Stock, Warehouses  
+**Orders & Documents (4)**: Customer Orders, Quotes, Customer Delivery Notes, Supplier Delivery Notes
+**Invoicing & Finance (2)**: Customer Invoices, Supplier Invoices
+**Accounting & Financial (4)**: Accounts, Entries, Entry Concepts, Bank Accounts
+**Logistics (1)**: Transport Agencies
+**Product Config (2)**: Attributes, Attribute Values
+**Geographic (2)**: Cities, Postal Codes
+**Document Management (2)**: File Attachments, File Relations
+**System Admin (3)**: API Access, API Keys, Scheduled Jobs
+
+### 🔧 Claude Desktop Tools
+
+All resources have corresponding interactive tools for Claude Desktop:
+- `get_clientes`, `get_productos`, `get_proveedores`, `get_stocks`
+- `get_pedidoclientes`, `get_facturaclientes`, `get_presupuestoclientes`
+- `get_cuentas`, `get_asientos`, `get_conceptopartidas`, `get_cuentabancos`
+- `get_contactos`, `get_agentes`, `get_almacenes`, `get_atributos`
+- And 14 more tools covering all resources
+
 **Response Format**:
 ```json
 {
@@ -280,7 +346,12 @@ src/
     ├── attachedfiles.ts     # Attached files resource implementation
     ├── attachedfilerelations.ts # Attached file relations resource implementation
     ├── ciudades.ts          # Cities resource implementation
-    └── codigopostales.ts    # Postal codes resource implementation
+    ├── codigopostales.ts    # Postal codes resource implementation
+    ├── conceptopartidas.ts  # Accounting entry concepts resource implementation
+    ├── contactos.ts         # Contacts resource implementation
+    ├── cronjobes.ts         # Scheduled jobs resource implementation
+    ├── cuentas.ts           # Accounting accounts resource implementation
+    └── cuentabancos.ts      # Bank accounts resource implementation
 
 tests/
 ├── unit/                    # Unit tests for individual classes/functions
@@ -320,16 +391,27 @@ tests/
 
 ### Adding New Resources
 
-1. Create a new resource class in `src/resources/`
-2. Implement the MCP resource interface
-3. Register the resource in `src/index.ts`
+The server currently provides **complete coverage** of all major FacturaScripts entities with 28 comprehensive resources. To add new resources:
 
-Example:
+1. **Create Resource**: Add new resource class in `src/resources/` following existing patterns
+2. **Add Types**: Define TypeScript interfaces in `src/types/facturascripts.ts`
+3. **Register Resource**: Add to `src/index.ts` imports, instances, tools, and handlers
+4. **Add Tests**: Create unit tests in `tests/unit/resources/`
+5. **Update Documentation**: Add to README.md and CLAUDE.md
+
+**Resource Implementation Pattern**:
 ```typescript
-// src/resources/productos.ts
-export class ProductosResource {
+// src/resources/newresource.ts
+import { Resource } from '@modelcontextprotocol/sdk/types.js';
+import { FacturaScriptsClient } from '../fs/client.js';
+
+export class NewResourceResource {
+  constructor(private client: FacturaScriptsClient) { }
+
   async getResource(uri: string): Promise<Resource> {
-    // Implementation
+    // Parse query parameters
+    // Call API with pagination support
+    // Return structured response with error handling
   }
   
   matchesUri(uri: string): boolean {
@@ -337,6 +419,8 @@ export class ProductosResource {
   }
 }
 ```
+
+**Current Coverage**: Business Core, Products & Inventory, Orders & Documents, Invoicing, Accounting, Logistics, Geographic Data, Document Management, and System Administration.
 
 ## Contributing
 

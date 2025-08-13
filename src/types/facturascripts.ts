@@ -8,6 +8,83 @@ export interface PaginationParams {
   order?: string;
 }
 
+// ConceptoPartida (Accounting Entry Concepts) entity
+export interface ConceptoPartida {
+  codconcepto: string;
+  descripcion?: string;
+}
+
+// Contacto (Contact) entity
+export interface Contacto {
+  aceptaprivacidad?: number;
+  admitemarketing?: number;
+  apellidos?: string;
+  apartado?: string;
+  cargo?: string;
+  cifnif?: string;
+  ciudad?: string;
+  codagente?: string;
+  codcliente?: string;
+  codpais?: string;
+  codpostal?: string;
+  codproveedor?: string;
+  descripcion?: string;
+  direccion?: string;
+  email?: string;
+  empresa?: string;
+  fechaalta?: string;
+  idcontacto: number;
+  langcode?: string;
+  nombre: string;
+  observaciones?: string;
+  personafisica?: number;
+  provincia?: string;
+  telefono1?: string;
+  telefono2?: string;
+  tipoidfiscal?: string;
+  verificado?: number;
+  web?: string;
+}
+
+// CronJob (Scheduled Jobs) entity
+export interface CronJob {
+  date?: string;
+  done?: number;
+  duration?: number;
+  enabled?: number;
+  failed?: number;
+  id: number;
+  jobname: string;
+  pluginname?: string;
+}
+
+// Cuenta (Accounting Account) entity
+export interface Cuenta {
+  codcuenta: string;
+  codcuentaesp?: string;
+  codejercicio?: string;
+  debe?: number;
+  descripcion?: string;
+  haber?: number;
+  idcuenta: number;
+  parent_codcuenta?: string;
+  parent_idcuenta?: number;
+  saldo?: number;
+}
+
+// CuentaBanco (Bank Account) entity
+export interface CuentaBanco {
+  activa?: number;
+  codcuenta?: string;
+  codsubcuenta?: string;
+  codsubcuentagasto?: string;
+  descripcion?: string;
+  iban?: string;
+  idempresa?: number;
+  sufijosepa?: string;
+  swift?: string;
+}
+
 // Supplier (Proveedor) entity
 export interface Proveedor {
   codproveedor: string;
@@ -167,25 +244,6 @@ export interface PresupuestoProveedor {
   editable?: boolean;
 }
 
-// Contact (Contacto) entity
-export interface Contacto {
-  idcontacto: number;
-  codcliente?: string;
-  codproveedor?: string;
-  email?: string;
-  telefono1?: string;
-  telefono2?: string;
-  fax?: string;
-  cargo?: string;
-  nombre: string;
-  apellidos?: string;
-  descripcion?: string;
-  fechaalta?: string;
-  activo?: boolean;
-  admitemarketing?: boolean;
-  puntuacion?: number;
-  observaciones?: string;
-}
 
 // Sales Agent (Agente) entity
 export interface Agente {

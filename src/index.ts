@@ -30,6 +30,11 @@ import { AttachedFilesResource } from './resources/attachedfiles.js';
 import { AttachedFileRelationsResource } from './resources/attachedfilerelations.js';
 import { CiudadesResource } from './resources/ciudades.js';
 import { CodigoPostalesResource } from './resources/codigopostales.js';
+import { ConceptopartidasResource } from './resources/conceptopartidas.js';
+import { ContactosResource } from './resources/contactos.js';
+import { CronjobesResource } from './resources/cronjobes.js';
+import { CuentasResource } from './resources/cuentas.js';
+import { CuentabancosResource } from './resources/cuentabancos.js';
 
 const server = new Server(
   {
@@ -68,6 +73,11 @@ const attachedFilesResource = new AttachedFilesResource(fsClient);
 const attachedFileRelationsResource = new AttachedFileRelationsResource(fsClient);
 const ciudadesResource = new CiudadesResource(fsClient);
 const codigoPostalesResource = new CodigoPostalesResource(fsClient);
+const conceptopartidasResource = new ConceptopartidasResource(fsClient);
+const contactosResource = new ContactosResource(fsClient);
+const cronjobesResource = new CronjobesResource(fsClient);
+const cuentasResource = new CuentasResource(fsClient);
+const cuentabancosResource = new CuentabancosResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -693,6 +703,141 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_conceptopartidas',
+        description: 'Obtiene la lista de conceptos de partidas con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_contactos',
+        description: 'Obtiene la lista de contactos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_cronjobes',
+        description: 'Obtiene la lista de trabajos cron con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_cuentas',
+        description: 'Obtiene la lista de cuentas contables con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_cuentabancos',
+        description: 'Obtiene la lista de cuentas bancarias con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -838,6 +983,36 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de códigos postales de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://conceptopartidas',
+        name: 'FacturaScripts ConceptoPartidas',
+        description: 'Lista de conceptos de partidas de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://contactos',
+        name: 'FacturaScripts Contactos',
+        description: 'Lista de contactos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://cronjobes',
+        name: 'FacturaScripts CronJobs',
+        description: 'Lista de trabajos cron de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://cuentas',
+        name: 'FacturaScripts Cuentas',
+        description: 'Lista de cuentas contables de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://cuentabancos',
+        name: 'FacturaScripts CuentaBancos',
+        description: 'Lista de cuentas bancarias de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -935,6 +1110,26 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 
   if (codigoPostalesResource.matchesUri(uri)) {
     return await codigoPostalesResource.getResource(uri);
+  }
+
+  if (conceptopartidasResource.matchesUri(uri)) {
+    return await conceptopartidasResource.getResource(uri);
+  }
+
+  if (contactosResource.matchesUri(uri)) {
+    return await contactosResource.getResource(uri);
+  }
+
+  if (cronjobesResource.matchesUri(uri)) {
+    return await cronjobesResource.getResource(uri);
+  }
+
+  if (cuentasResource.matchesUri(uri)) {
+    return await cuentasResource.getResource(uri);
+  }
+
+  if (cuentabancosResource.matchesUri(uri)) {
+    return await cuentabancosResource.getResource(uri);
   }
 
   throw new Error(`Resource not found: ${uri}`);
@@ -1249,6 +1444,71 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_codigopostales': {
         const uri = buildUri('codigopostales');
         const result = await codigoPostalesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_conceptopartidas': {
+        const uri = buildUri('conceptopartidas');
+        const result = await conceptopartidasResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_contactos': {
+        const uri = buildUri('contactos');
+        const result = await contactosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_cronjobes': {
+        const uri = buildUri('cronjobes');
+        const result = await cronjobesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_cuentas': {
+        const uri = buildUri('cuentas');
+        const result = await cuentasResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_cuentabancos': {
+        const uri = buildUri('cuentabancos');
+        const result = await cuentabancosResource.getResource(uri);
         return {
           content: [
             {

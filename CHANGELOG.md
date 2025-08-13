@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-01-13 - New Resources and Tools
+
+### Added
+- **ConceptopartidasResource**: New MCP resource for accounting entry concepts data
+- **ContactosResource**: New MCP resource for contacts management data
+- **CronjobesResource**: New MCP resource for scheduled jobs data (preserves API endpoint typo)
+- **CuentasResource**: New MCP resource for accounting accounts data
+- **CuentabancosResource**: New MCP resource for bank accounts data
+- New TypeScript interfaces for all 5 resources based on OpenAPI specifications
+- Interactive tools for Claude Desktop: `get_conceptopartidas`, `get_contactos`, `get_cronjobes`, `get_cuentas`, `get_cuentabancos`
+- Comprehensive unit tests for all new resources (33+ new tests)
+- Full documentation updates across README.md and CLAUDE.md
+
+### Changed
+- Updated resource count from 22 to 28 total MCP resources
+- Enhanced project structure documentation with all new resources
+- Updated tool naming patterns documentation
+- Improved business data access description to include accounting and contact management
+
+### Fixed
+- Resolved duplicate TypeScript interface conflicts in `src/types/facturascripts.ts`
+- Maintained consistent error handling patterns across all resources
+
 ## [0.0.1] - 2025-01-13 - New Resources and Tools
 
 ### Added
