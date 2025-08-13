@@ -243,6 +243,146 @@ export interface Almacen {
   observaciones?: string;
 }
 
+// API Access entity
+export interface ApiAccess {
+  allowdelete: number;
+  allowget: number;
+  allowpost: number;
+  allowput: number;
+  id: number;
+  idapikey: number;
+  resource: string;
+}
+
+// API Key entity
+export interface ApiKey {
+  apikey: string;
+  creationdate: string;
+  description: string;
+  enabled: number;
+  fullaccess: number;
+  id: number;
+  nick: string;
+}
+
+// Accounting Entry (Asiento) entity
+export interface Asiento {
+  canal: number;
+  codejercicio: string;
+  concepto: string;
+  documento: string;
+  editable: number;
+  fecha: string;
+  idasiento: number;
+  iddiario: number;
+  idempresa: number;
+  importe: number;
+  numero: number;
+  operacion: string;
+}
+
+// Attribute (Atributo) entity
+export interface Atributo {
+  codatributo: string;
+  nombre: string;
+  num_selector: number;
+}
+
+// Attribute Value (AtributoValor) entity
+export interface AtributoValor {
+  codatributo: string;
+  descripcion: string;
+  id: number;
+  valor: string;
+  orden: number;
+}
+
+// Attached File (AttachedFile) entity
+export interface AttachedFile {
+  date: string;
+  filename: string;
+  hour: string;
+  idfile: number;
+  mimetype: string;
+  path: string;
+  size: number;
+}
+
+// Attached File Relation (AttachedFileRelation) entity
+export interface AttachedFileRelation {
+  creationdate: string;
+  id: number;
+  idfile: number;
+  model: string;
+  modelid: number;
+  modelcode: string;
+  nick: string;
+  observations: string;
+}
+
+// City (Ciudad) entity
+export interface Ciudad {
+  alias: string;
+  ciudad: string;
+  creation_date: string;
+  codeid: string;
+  idciudad: number;
+  idprovincia: number;
+  last_nick: string;
+  last_update: string;
+  latitude: number;
+  longitude: number;
+  nick: string;
+}
+
+// Client (Cliente) entity
+export interface Cliente {
+  cifnif: string;
+  codagente: string;
+  codcliente: string;
+  codgrupo: string;
+  codpago: string;
+  codproveedor: string;
+  codretencion: string;
+  codserie: string;
+  codsubcuenta: string;
+  codtarifa: string;
+  debaja: number;
+  diaspago: string;
+  excepcioniva: string;
+  email: string;
+  fax: string;
+  fechabaja: string;
+  fechaalta: string;
+  idcontactofact: number;
+  idcontactoenv: number;
+  langcode: string;
+  nombre: string;
+  observaciones: string;
+  personafisica: number;
+  razonsocial: string;
+  regimeniva: string;
+  riesgoalcanzado: number;
+  riesgomax: number;
+  telefono1: string;
+  telefono2: string;
+  tipoidfiscal: string;
+  web: string;
+}
+
+// Postal Code (CodigoPostal) entity
+export interface CodigoPostal {
+  codpais: string;
+  creation_date: string;
+  id: number;
+  idciudad: number;
+  idprovincia: number;
+  last_nick: string;
+  last_update: string;
+  nick: string;
+  number: number;
+}
+
 // Standard response format for paginated data
 export interface PaginatedResponse<T> {
   meta: {

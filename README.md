@@ -127,6 +127,104 @@ All resources support pagination with `limit` and `offset` parameters and return
   - `limit` (optional): Number of records to retrieve (default: 50)
   - `offset` (optional): Number of records to skip (default: 0)
 
+### AgenciaTransportes (Transport Agencies)
+- **URI**: `facturascripts://agenciatransportes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of transport agencies from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Agentes (Agents)
+- **URI**: `facturascripts://agentes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of agents from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### AlbaranClientes (Customer Delivery Notes)
+- **URI**: `facturascripts://albaranclientes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of customer delivery notes from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### AlbaranProveedores (Supplier Delivery Notes)
+- **URI**: `facturascripts://albaranproveedores?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of supplier delivery notes from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Almacenes (Warehouses)
+- **URI**: `facturascripts://almacenes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of warehouses from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### ApiAccess (API Access Management)
+- **URI**: `facturascripts://apiaccess?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of API access management data from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### ApiKeyes (API Keys Management)
+- **URI**: `facturascripts://apikeyes?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of API keys management data from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Asientos (Accounting Entries)
+- **URI**: `facturascripts://asientos?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of accounting entries from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Atributos (Attributes)
+- **URI**: `facturascripts://atributos?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of attributes from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### AtributoValores (Attribute Values)
+- **URI**: `facturascripts://atributovalores?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of attribute values from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### AttachedFiles (Attached Files)
+- **URI**: `facturascripts://attachedfiles?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of attached files from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### AttachedFileRelations (Attached File Relations)
+- **URI**: `facturascripts://attachedfilerelations?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of attached file relations from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### Ciudades (Cities)
+- **URI**: `facturascripts://ciudades?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of cities from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
+### CodigoPostales (Postal Codes)
+- **URI**: `facturascripts://codigopostales?limit={limit}&offset={offset}`
+- **Description**: Retrieve paginated list of postal codes from FacturaScripts
+- **Parameters**:
+  - `limit` (optional): Number of records to retrieve (default: 50)
+  - `offset` (optional): Number of records to skip (default: 0)
+
 **Response Format**:
 ```json
 {
@@ -168,7 +266,21 @@ src/
     ├── presupuestoclientes.ts # Customer quotes resource implementation
     ├── proveedores.ts       # Suppliers resource implementation
     ├── stocks.ts            # Stock levels resource implementation
-    └── facturaproveedores.ts # Supplier invoices resource implementation
+    ├── facturaproveedores.ts # Supplier invoices resource implementation
+    ├── agenciatransportes.ts # Transport agencies resource implementation
+    ├── agentes.ts           # Agents resource implementation
+    ├── albaranclientes.ts   # Customer delivery notes resource implementation
+    ├── albaranproveedores.ts # Supplier delivery notes resource implementation
+    ├── almacenes.ts         # Warehouses resource implementation
+    ├── apiaccess.ts         # API access management resource implementation
+    ├── apikeyes.ts          # API keys management resource implementation
+    ├── asientos.ts          # Accounting entries resource implementation
+    ├── atributos.ts         # Attributes resource implementation
+    ├── atributovalores.ts   # Attribute values resource implementation
+    ├── attachedfiles.ts     # Attached files resource implementation
+    ├── attachedfilerelations.ts # Attached file relations resource implementation
+    ├── ciudades.ts          # Cities resource implementation
+    └── codigopostales.ts    # Postal codes resource implementation
 
 tests/
 ├── unit/                    # Unit tests for individual classes/functions

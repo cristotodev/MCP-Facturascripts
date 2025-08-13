@@ -21,6 +21,15 @@ import { AgentesResource } from './resources/agentes.js';
 import { AlbaranclientesResource } from './resources/albaranclientes.js';
 import { AlbaranproveedoresResource } from './resources/albaranproveedores.js';
 import { AlmacenesResource } from './resources/almacenes.js';
+import { ApiAccessResource } from './resources/apiaccess.js';
+import { ApiKeyesResource } from './resources/apikeyes.js';
+import { AsientosResource } from './resources/asientos.js';
+import { AtributosResource } from './resources/atributos.js';
+import { AtributoValoresResource } from './resources/atributovalores.js';
+import { AttachedFilesResource } from './resources/attachedfiles.js';
+import { AttachedFileRelationsResource } from './resources/attachedfilerelations.js';
+import { CiudadesResource } from './resources/ciudades.js';
+import { CodigoPostalesResource } from './resources/codigopostales.js';
 
 const server = new Server(
   {
@@ -50,6 +59,15 @@ const agentesResource = new AgentesResource(fsClient);
 const albaranclientesResource = new AlbaranclientesResource(fsClient);
 const albaranproveedoresResource = new AlbaranproveedoresResource(fsClient);
 const almacenesResource = new AlmacenesResource(fsClient);
+const apiAccessResource = new ApiAccessResource(fsClient);
+const apiKeyesResource = new ApiKeyesResource(fsClient);
+const asientosResource = new AsientosResource(fsClient);
+const atributosResource = new AtributosResource(fsClient);
+const atributoValoresResource = new AtributoValoresResource(fsClient);
+const attachedFilesResource = new AttachedFilesResource(fsClient);
+const attachedFileRelationsResource = new AttachedFileRelationsResource(fsClient);
+const ciudadesResource = new CiudadesResource(fsClient);
+const codigoPostalesResource = new CodigoPostalesResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -432,6 +450,249 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_apiaccess',
+        description: 'Obtiene la lista de accesos API con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_apikeyes',
+        description: 'Obtiene la lista de claves API con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_asientos',
+        description: 'Obtiene la lista de asientos contables con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_atributos',
+        description: 'Obtiene la lista de atributos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_atributovalores',
+        description: 'Obtiene la lista de valores de atributos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_attachedfiles',
+        description: 'Obtiene la lista de archivos adjuntos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_attachedfilerelations',
+        description: 'Obtiene la lista de relaciones de archivos adjuntos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_ciudades',
+        description: 'Obtiene la lista de ciudades con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_codigopostales',
+        description: 'Obtiene la lista de códigos postales con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -523,6 +784,60 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de almacenes de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://apiaccess',
+        name: 'FacturaScripts API Access',
+        description: 'Lista de accesos API de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://apikeyes',
+        name: 'FacturaScripts API Keys',
+        description: 'Lista de claves API de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://asientos',
+        name: 'FacturaScripts Asientos',
+        description: 'Lista de asientos contables de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://atributos',
+        name: 'FacturaScripts Atributos',
+        description: 'Lista de atributos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://atributovalores',
+        name: 'FacturaScripts AtributoValores',
+        description: 'Lista de valores de atributos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://attachedfiles',
+        name: 'FacturaScripts Attached Files',
+        description: 'Lista de archivos adjuntos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://attachedfilerelations',
+        name: 'FacturaScripts Attached File Relations',
+        description: 'Lista de relaciones de archivos adjuntos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://ciudades',
+        name: 'FacturaScripts Cities',
+        description: 'Lista de ciudades de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://codigopostales',
+        name: 'FacturaScripts Postal Codes',
+        description: 'Lista de códigos postales de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -584,6 +899,42 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 
   if (almacenesResource.matchesUri(uri)) {
     return await almacenesResource.getResource(uri);
+  }
+
+  if (apiAccessResource.matchesUri(uri)) {
+    return await apiAccessResource.getResource(uri);
+  }
+
+  if (apiKeyesResource.matchesUri(uri)) {
+    return await apiKeyesResource.getResource(uri);
+  }
+
+  if (asientosResource.matchesUri(uri)) {
+    return await asientosResource.getResource(uri);
+  }
+
+  if (atributosResource.matchesUri(uri)) {
+    return await atributosResource.getResource(uri);
+  }
+
+  if (atributoValoresResource.matchesUri(uri)) {
+    return await atributoValoresResource.getResource(uri);
+  }
+
+  if (attachedFilesResource.matchesUri(uri)) {
+    return await attachedFilesResource.getResource(uri);
+  }
+
+  if (attachedFileRelationsResource.matchesUri(uri)) {
+    return await attachedFileRelationsResource.getResource(uri);
+  }
+
+  if (ciudadesResource.matchesUri(uri)) {
+    return await ciudadesResource.getResource(uri);
+  }
+
+  if (codigoPostalesResource.matchesUri(uri)) {
+    return await codigoPostalesResource.getResource(uri);
   }
 
   throw new Error(`Resource not found: ${uri}`);
@@ -781,6 +1132,123 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_almacenes': {
         const uri = buildUri('almacenes');
         const result = await almacenesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_apiaccess': {
+        const uri = buildUri('apiaccess');
+        const result = await apiAccessResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_apikeyes': {
+        const uri = buildUri('apikeyes');
+        const result = await apiKeyesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_asientos': {
+        const uri = buildUri('asientos');
+        const result = await asientosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_atributos': {
+        const uri = buildUri('atributos');
+        const result = await atributosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_atributovalores': {
+        const uri = buildUri('atributovalores');
+        const result = await atributoValoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_attachedfiles': {
+        const uri = buildUri('attachedfiles');
+        const result = await attachedFilesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_attachedfilerelations': {
+        const uri = buildUri('attachedfilerelations');
+        const result = await attachedFileRelationsResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_ciudades': {
+        const uri = buildUri('ciudades');
+        const result = await ciudadesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_codigopostales': {
+        const uri = buildUri('codigopostales');
+        const result = await codigoPostalesResource.getResource(uri);
         return {
           content: [
             {

@@ -1,8 +1,8 @@
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../fs/client.js';
-import { Cliente } from '../types/facturascripts.js';
+import { CodigoPostal } from '../types/facturascripts.js';
 
-export class ClientesResource {
+export class CodigoPostalesResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
@@ -20,8 +20,8 @@ export class ClientesResource {
     if (orderParam) additionalParams.order = orderParam;
 
     try {
-      const result = await this.client.getWithPagination<Cliente>(
-        '/clientes',
+      const result = await this.client.getWithPagination<CodigoPostal>(
+        '/codigopostales',
         limit,
         offset,
         additionalParams
@@ -29,7 +29,7 @@ export class ClientesResource {
 
       return {
         uri,
-        name: 'FacturaScripts Clientes',
+        name: 'FacturaScripts Postal Codes',
         mimeType: 'application/json',
         contents: [
           {
@@ -43,13 +43,13 @@ export class ClientesResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts Clientes (Error)',
+        name: 'FacturaScripts Postal Codes (Error)',
         mimeType: 'application/json',
         contents: [
           {
             type: 'text',
             text: JSON.stringify({
-              error: 'Failed to fetch clientes',
+              error: 'Failed to fetch codigopostales',
               message: errorMessage,
               meta: {
                 total: 0,
@@ -69,7 +69,7 @@ export class ClientesResource {
   matchesUri(uri: string): boolean {
     try {
       const url = new URL(uri);
-      return url.protocol === 'facturascripts:' && url.hostname === 'clientes';
+      return url.protocol === 'facturascripts:' && url.hostname === 'codigopostales';
     } catch {
       return false;
     }

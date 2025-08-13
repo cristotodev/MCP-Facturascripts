@@ -21,6 +21,15 @@ TypeScript ESM project for a Model Context Protocol (MCP) server that integrates
 - `src/resources/albaranclientes.ts` - MCP resource for customer delivery notes data
 - `src/resources/albaranproveedores.ts` - MCP resource for supplier delivery notes data
 - `src/resources/almacenes.ts` - MCP resource for warehouses data
+- `src/resources/apiaccess.ts` - MCP resource for API access management data
+- `src/resources/apikeyes.ts` - MCP resource for API keys management data
+- `src/resources/asientos.ts` - MCP resource for accounting entries data
+- `src/resources/atributos.ts` - MCP resource for attributes data
+- `src/resources/atributovalores.ts` - MCP resource for attribute values data
+- `src/resources/attachedfiles.ts` - MCP resource for attached files data
+- `src/resources/attachedfilerelations.ts` - MCP resource for attached file relations data
+- `src/resources/ciudades.ts` - MCP resource for cities data
+- `src/resources/codigopostales.ts` - MCP resource for postal codes data
 - `src/types/facturascripts.ts` - TypeScript interfaces for all FacturaScripts entities
 
 ## Configuration
@@ -63,6 +72,15 @@ Available resources:
 - `facturascripts://albaranclientes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated customer delivery notes list
 - `facturascripts://albaranproveedores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated supplier delivery notes list
 - `facturascripts://almacenes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated warehouses list
+- `facturascripts://apiaccess?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated API access management list
+- `facturascripts://apikeyes?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated API keys management list
+- `facturascripts://asientos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated accounting entries list
+- `facturascripts://atributos?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attributes list
+- `facturascripts://atributovalores?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attribute values list
+- `facturascripts://attachedfiles?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attached files list
+- `facturascripts://attachedfilerelations?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated attached file relations list
+- `facturascripts://ciudades?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated cities list
+- `facturascripts://codigopostales?limit={limit}&offset={offset}&filter={filter}&order={order}` - Paginated postal codes list
 
 Returns JSON format:
 ```json
