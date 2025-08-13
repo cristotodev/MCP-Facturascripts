@@ -7,10 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - TBD - New Resources and Tools
+## [0.4.0] - TBD - New Resources and Tools
 
 ### Added
 - New Resources and Tools
+
+## [0.3.0] - 2025-01-13 - OpenAPI-Based Resources and System Enhancement
+
+### Added
+- **DoctransformationsResource**: New MCP resource for document transformations data
+- **EjerciciosResource**: New MCP resource for fiscal years data
+- **EmailnotificationsResource**: New MCP resource for email notifications data
+- **EmailsentesResource**: New MCP resource for sent emails data  
+- **EmpresasResource**: New MCP resource for companies data
+- New TypeScript interfaces for all 5 resources based on OpenAPI specifications
+- Interactive tools for Claude Desktop: `get_doctransformations`, `get_ejercicios`, `get_emailnotifications`, `get_emailsentes`, `get_empresas`
+- Comprehensive unit tests for all new resources (30 new tests)
+- Full documentation updates across README.md and CLAUDE.md
+
+### Changed
+- Updated resource count from 33 to 38 total MCP resources
+- Enhanced system administration category with email communication resources
+- Enhanced business core category with companies resource
+- Updated project structure documentation with all new resource files
+- Enhanced test coverage to 253 total unit and integration tests
+
+### Fixed
+- Maintained consistent error handling patterns across all new resources
+- Proper TypeScript compilation and type safety validation
 
 ## [0.3.0] - 2025-01-13 - Banking and Financial Resources
 

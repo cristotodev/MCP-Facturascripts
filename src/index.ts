@@ -40,6 +40,11 @@ import { CuentabancoproveedoresResource } from './resources/cuentabancoproveedor
 import { CuentaespecialesResource } from './resources/cuentaespeciales.js';
 import { DiariosResource } from './resources/diarios.js';
 import { DivisasResource } from './resources/divisas.js';
+import { DoctransformationsResource } from './resources/doctransformations.js';
+import { EjerciciosResource } from './resources/ejercicios.js';
+import { EmailnotificationsResource } from './resources/emailnotifications.js';
+import { EmailsentesResource } from './resources/emailsentes.js';
+import { EmpresasResource } from './resources/empresas.js';
 
 const server = new Server(
   {
@@ -88,6 +93,11 @@ const cuentabancoproveedoresResource = new CuentabancoproveedoresResource(fsClie
 const cuentaespecialesResource = new CuentaespecialesResource(fsClient);
 const diariosResource = new DiariosResource(fsClient);
 const divisasResource = new DivisasResource(fsClient);
+const doctransformationsResource = new DoctransformationsResource(fsClient);
+const ejerciciosResource = new EjerciciosResource(fsClient);
+const emailnotificationsResource = new EmailnotificationsResource(fsClient);
+const emailsentesResource = new EmailsentesResource(fsClient);
+const empresasResource = new EmpresasResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -983,6 +993,141 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_doctransformations',
+        description: 'Obtiene la lista de transformaciones de documentos con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_ejercicios',
+        description: 'Obtiene la lista de ejercicios fiscales con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_emailnotifications',
+        description: 'Obtiene la lista de notificaciones de email con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_emailsentes',
+        description: 'Obtiene la lista de emails enviados con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_empresas',
+        description: 'Obtiene la lista de empresas con paginación opcional',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros en formato campo:valor',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato campo:asc|desc',
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -1188,6 +1333,36 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de divisas de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://doctransformations',
+        name: 'FacturaScripts DocTransformations',
+        description: 'Lista de transformaciones de documentos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://ejercicios',
+        name: 'FacturaScripts Ejercicios',
+        description: 'Lista de ejercicios fiscales de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://emailnotifications',
+        name: 'FacturaScripts EmailNotifications',
+        description: 'Lista de notificaciones de email de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://emailsentes',
+        name: 'FacturaScripts EmailSentes',
+        description: 'Lista de emails enviados de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://empresas',
+        name: 'FacturaScripts Empresas',
+        description: 'Lista de empresas de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -1325,6 +1500,26 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 
   if (divisasResource.matchesUri(uri)) {
     return await divisasResource.getResource(uri);
+  }
+
+  if (doctransformationsResource.matchesUri(uri)) {
+    return await doctransformationsResource.getResource(uri);
+  }
+
+  if (ejerciciosResource.matchesUri(uri)) {
+    return await ejerciciosResource.getResource(uri);
+  }
+
+  if (emailnotificationsResource.matchesUri(uri)) {
+    return await emailnotificationsResource.getResource(uri);
+  }
+
+  if (emailsentesResource.matchesUri(uri)) {
+    return await emailsentesResource.getResource(uri);
+  }
+
+  if (empresasResource.matchesUri(uri)) {
+    return await empresasResource.getResource(uri);
   }
 
   throw new Error(`Resource not found: ${uri}`);
@@ -1769,6 +1964,71 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_divisas': {
         const uri = buildUri('divisas');
         const result = await divisasResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_doctransformations': {
+        const uri = buildUri('doctransformations');
+        const result = await doctransformationsResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_ejercicios': {
+        const uri = buildUri('ejercicios');
+        const result = await ejerciciosResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_emailnotifications': {
+        const uri = buildUri('emailnotifications');
+        const result = await emailnotificationsResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_emailsentes': {
+        const uri = buildUri('emailsentes');
+        const result = await emailsentesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_empresas': {
+        const uri = buildUri('empresas');
+        const result = await empresasResource.getResource(uri);
         return {
           content: [
             {

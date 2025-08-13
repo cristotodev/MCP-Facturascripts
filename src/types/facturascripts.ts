@@ -1,5 +1,80 @@
 // TypeScript types generated from FacturaScripts OpenAPI specification
 
+// DocTransformation (Document Transformations) entity
+export interface DocTransformation {
+  cantidad?: number;
+  id?: number;
+  iddoc1?: number;
+  iddoc2?: number;
+  idlinea1?: number;
+  idlinea2?: number;
+  model1?: string;
+  model2?: string;
+}
+
+// Ejercicio (Fiscal Year) entity  
+export interface Ejercicio {
+  codejercicio?: string;
+  estado?: string;
+  fechafin?: string;
+  fechainicio?: string;
+  idempresa?: number;
+  longsubcuenta?: number;
+  nombre?: string;
+}
+
+// EmailNotification (Email Notifications) entity
+export interface EmailNotification {
+  body?: string;
+  creationdate?: string;
+  enabled?: number;
+  name?: string;
+  subject?: string;
+}
+
+// EmailSent (Sent Emails) entity
+export interface EmailSent {
+  addressee?: string;
+  attachment?: number;
+  body?: string;
+  date?: string;
+  email_from?: string;
+  html?: string;
+  id?: number;
+  nick?: string;
+  opened?: number;
+  subject?: string;
+  uuid?: string;
+  verificode?: string;
+}
+
+// Empresa (Company) entity
+export interface Empresa {
+  administrador?: string;
+  apartado?: string;
+  cifnif?: string;
+  ciudad?: string;
+  codpais?: string;
+  codpostal?: string;
+  direccion?: string;
+  excepcioniva?: string;
+  email?: string;
+  fax?: string;
+  fechaalta?: string;
+  idempresa?: number;
+  idlogo?: number;
+  nombre?: string;
+  nombrecorto?: string;
+  observaciones?: string;
+  personafisica?: number;
+  provincia?: string;
+  regimeniva?: string;
+  telefono1?: string;
+  telefono2?: string;
+  tipoidfiscal?: string;
+  web?: string;
+}
+
 // Common pagination parameters for all endpoints
 export interface PaginationParams {
   offset?: number;
