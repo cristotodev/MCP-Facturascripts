@@ -399,13 +399,24 @@ Before completing any task, run:
    ```
 
 **Test Structure:**
-- `tests/unit/` - Unit tests for individual classes/functions
-- `tests/integration/` - Integration tests with real APIs (require env setup)
+The test structure follows the same modular organization as `src/modules/`:
+
+- `tests/unit/modules/core-business/` - Tests for clients, products, suppliers, stock
+- `tests/unit/modules/sales-orders/` - Tests for customer orders, invoices, quotes, delivery notes and their line items
+- `tests/unit/modules/purchasing/` - Tests for supplier orders, invoices, delivery notes and their line items
+- `tests/unit/modules/accounting/` - Tests for accounting entries, accounts, journals, fiscal years
+- `tests/unit/modules/finance/` - Tests for bank accounts, currencies, special accounts
+- `tests/unit/modules/configuration/` - Tests for system configuration entities (taxes, payment methods, etc.)
+- `tests/unit/modules/system/` - Tests for system administration (API access, logs, transformations)
+- `tests/unit/modules/communication/` - Tests for contacts, emails, notifications
+- `tests/unit/modules/geographic/` - Tests for geographic data (cities, postal codes)
+- `tests/unit/fs/` - Tests for core client functionality
+- `tests/integration/modules/{category}/` - Integration tests with real APIs (require env setup)
 - `tests/setup.ts` - Global test setup and teardown
 
 **Writing New Resources (TDD Approach):**
-1. Write unit tests in `tests/unit/resources/{name}.test.ts`
-2. Write integration tests in `tests/integration/{name}.integration.test.ts`
+1. Write unit tests in `tests/unit/modules/{category}/{name}.test.ts`
+2. Write integration tests in `tests/integration/modules/{category}/{name}.integration.test.ts`
 3. Implement the resource to pass the tests
 4. Run quality checks before completion
 
@@ -418,11 +429,43 @@ All 28 resources return consistent pagination format:
 }
 ```
 
-### Current Project Status (v0.4.0)
+### Current Project Status (v1.0.0)
 - ✅ **56 MCP Resources** - Complete FacturaScripts API coverage
 - ✅ **56 Interactive Tools** - Full Claude Desktop integration with advanced filtering
-- ✅ **347 Tests Passing** - Comprehensive unit & integration testing
+- ✅ **347 Tests Passing** - Comprehensive unit & integration testing with modular organization
 - ✅ **Live API Integration** - Working with real FacturaScripts instances
 - ✅ **Advanced API Support** - Full FacturaScripts filtering, sorting, and pagination
 - ✅ **TypeScript Strict Mode** - Full type safety and IntelliSense
 - ✅ **Production Ready** - Error handling, documentation, and monitoring
+- ✅ **Automated Changelog** - Conventional commits and automated release management
+- ✅ **Enhanced Documentation** - Comprehensive guides and best practices
+
+## Changelog Management
+
+### Automated Tools
+- **conventional-changelog-cli**: Generate changelogs from conventional commits
+- **auto-changelog**: Auto-generate changelogs from git history
+- **GitHub Actions**: Automated release creation on tag pushes
+
+### Available Scripts
+```bash
+npm run changelog          # Generate from conventional commits
+npm run changelog:auto     # Auto-generate from git history  
+npm run version           # Create version with updated changelog
+npm run release           # Full release process (version, build, test)
+```
+
+### Conventional Commits Format
+```bash
+feat: add new feature
+fix: bug fix
+docs: documentation changes
+test: add tests
+chore: maintenance tasks
+```
+
+### Release Process
+1. Use conventional commits during development
+2. Run `npm run release` for automated versioning
+3. GitHub Actions creates releases automatically on tag push
+4. See `docs/CHANGELOG_GUIDE.md` for detailed guidelines

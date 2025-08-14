@@ -1,0 +1,24 @@
+{
+  "output": "CHANGELOG.md",
+  "template": "keepachangelog",
+  "unreleased": true,
+  "commitLimit": false,
+  "backfillLimit": false,
+  "tagPrefix": "v",
+  "sortCommits": "date",
+  "includeBranch": ["main", "master", "develop"],
+  "ignoreCommitPattern": "(^Merge)|(^Revert)|(^Update CHANGELOG)",
+  "replaceText": {
+    "feat": "Added",
+    "fix": "Fixed",
+    "docs": "Changed",
+    "style": "Changed",
+    "refactor": "Changed",
+    "test": "Changed",
+    "chore": "Changed"
+  },
+  "commitUrl": "https://github.com/cristotodev/MCP_Facturascripts/commit/{id}",
+  "compareUrl": "https://github.com/cristotodev/MCP_Facturascripts/compare/{from}...{to}",
+  "issueUrl": "https://github.com/cristotodev/MCP_Facturascripts/issues/{id}",
+  "issuePattern": "[Ii]ssues?\\s*#(\\d+)"
+}

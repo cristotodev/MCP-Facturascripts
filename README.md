@@ -4,7 +4,7 @@
 
 ## Features
 
-- **41 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
+- **56 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
 - **Full Accounting Integration**: Access to accounting accounts, entry concepts, bank accounts, and financial data
 - **Contact & CRM Management**: Comprehensive contact management with customer and supplier relationships
 - **Business Operations**: Orders, invoices, quotes, delivery notes, products, suppliers, and inventory
@@ -14,7 +14,7 @@
 - **TypeScript**: Built with TypeScript for type safety and better development experience
 - **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
 - **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
-- **Comprehensive Testing**: 271 unit and integration tests with Test-Driven Development approach
+- **Comprehensive Testing**: 347 unit and integration tests with Test-Driven Development approach and modular test organization
 
 ## Prerequisites
 
@@ -67,7 +67,7 @@ npx @modelcontextprotocol/inspector npm run dev
 
 ## MCP Resources
 
-All **41 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
+All **56 resources** support pagination with `limit`, `offset`, `filter`, and `order` parameters and return data in a consistent format with metadata.
 
 ### 📊 Business Core Resources
 
@@ -360,7 +360,7 @@ All **41 resources** support pagination with `limit`, `offset`, `filter`, and `o
 
 ### 📋 Complete Resource Summary
 
-**41 MCP Resources organized by category:**
+**56 MCP Resources organized by category:**
 
 **Business Core (5)**: Clients, Suppliers, Contacts, Sales Agents, Companies
 **Products & Inventory (6)**: Products, Supplier Products, Stock, Warehouses, Manufacturers, Product Families
@@ -462,10 +462,20 @@ src/
     └── familias.ts          # Product families resource implementation
 
 tests/
-├── unit/                    # Unit tests for individual classes/functions
-│   ├── facturascripts/
-│   └── resources/
-├── integration/             # Integration tests with real APIs
+├── unit/                    # Unit tests organized by module categories
+│   ├── modules/
+│   │   ├── core-business/   # Tests for clients, products, suppliers, stock
+│   │   ├── sales-orders/    # Tests for customer orders, invoices, quotes, delivery notes
+│   │   ├── purchasing/      # Tests for supplier operations and documents
+│   │   ├── accounting/      # Tests for accounting entries, accounts, journals
+│   │   ├── finance/         # Tests for bank accounts, currencies, financial data
+│   │   ├── configuration/   # Tests for system configuration entities
+│   │   ├── system/          # Tests for system administration
+│   │   ├── communication/   # Tests for contacts, emails, notifications
+│   │   └── geographic/      # Tests for geographic data
+│   └── fs/                  # Tests for core client functionality
+├── integration/
+│   └── modules/             # Integration tests organized by same categories
 └── setup.ts                # Global test setup and teardown
 ```
 

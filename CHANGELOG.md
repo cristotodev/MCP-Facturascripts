@@ -7,10 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - TBD - New Resources and Tools
+## [1.0.0] - 2025-01-14 - Test Reorganization and Enhanced Documentation
 
 ### Added
-- New Resources and Tools
+- **Modular Test Organization**: Reorganized all test files to match the modular structure of `src/modules/`
+- **Enhanced Test Structure**: Tests now organized into 9 logical categories (core-business, sales-orders, purchasing, accounting, finance, configuration, system, communication, geographic)
+- **Improved Documentation**: Updated README.md and CLAUDE.md to reflect new test structure and current project statistics
+
+### Changed
+- **Test Structure**: Moved 68 test files (56 unit + 12 integration) from flat structure to modular organization
+- **Import Paths**: Updated all test import paths to work with new directory structure
+- **Test Coverage**: All 347 tests continue to pass with the new organization
+- **Documentation Updates**: Updated resource count from 41 to 56 and test count from 271 to 347
+- **Maintainability**: Related tests are now grouped together for easier maintenance
+- **Navigation**: Test structure now mirrors source code organization for intuitive navigation
+- **Organization**: Better separation of concerns with category-based test organization
 
 ## [0.3.0] - 2025-01-13 - OpenAPI-Based Resources and System Enhancement
 
@@ -36,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Maintained consistent error handling patterns across all new resources
 - Proper TypeScript compilation and type safety validation
 
-## [0.3.0] - 2025-01-13 - Banking and Financial Resources
+## [0.3.1] - 2025-01-13 - Banking and Financial Resources
 
 ### Added
 - **CuentabancocllientesResource**: New MCP resource for client bank accounts data
