@@ -64,6 +64,8 @@ import { EmailsentesResource } from './modules/communication/emailsentes/resourc
 import { CiudadesResource } from './modules/geographic/ciudades/resource.js';
 import { CodigopostalesResource } from './modules/geographic/codigopostales/resource.js';
 import { EmpresasResource } from './modules/geographic/empresas/resource.js';
+// Import new tool functions
+import { toolByCifnifImplementation } from './modules/sales-orders/facturaclientes/tool.js';
 
 const server = new Server(
   {
@@ -272,6 +274,38 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
             },
           },
+        },
+      },
+      {
+        name: 'get_facturas_cliente_por_cifnif',
+        description: 'Obtiene las facturas de un cliente específico mediante su CIF/NIF. Busca primero el cliente por CIF/NIF y luego sus facturas.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            cifnif: {
+              type: 'string',
+              description: 'CIF/NIF del cliente (requerido)',
+            },
+            limit: {
+              type: 'number',
+              description: 'Número máximo de facturas a devolver (1-1000)',
+              minimum: 1,
+              maximum: 1000,
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de facturas a omitir para paginación',
+              minimum: 0,
+              default: 0,
+            },
+            order: {
+              type: 'string',
+              description: 'Ordenación de facturas en formato campo:asc|desc (ej: fecha:desc)',
+              default: '',
+            },
+          },
+          required: ['cifnif'],
         },
       },
       {
@@ -2335,6 +2369,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      }
+
+      case 'get_facturas_cliente_por_cifnif': {
+        return await toolByCifnifImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_presupuestoclientes': {

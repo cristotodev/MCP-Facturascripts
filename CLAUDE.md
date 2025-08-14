@@ -425,10 +425,79 @@ export {
 } from './tool.js';
 ```
 
+### Specialized Business Tools Pattern
+
+**When to Create Specialized Tools:**
+- Complex multi-step operations (e.g., search by tax ID → retrieve related data)
+- Business-specific workflows that combine multiple API calls
+- Enhanced error handling for common business scenarios
+- Simplified interfaces for complex operations
+
+**Example Implementation Pattern:**
+```typescript
+// Specialized tool combining client search + invoice retrieval
+export const toolByCifnifDefinition = {
+  name: 'get_facturas_cliente_por_cifnif',
+  description: 'Obtiene las facturas de un cliente específico mediante su CIF/NIF.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      cifnif: { type: 'string', description: 'CIF/NIF del cliente (requerido)' },
+      limit: { type: 'number', default: 50, minimum: 1, maximum: 1000 },
+      offset: { type: 'number', default: 0, minimum: 0 },
+      order: { type: 'string', description: 'Ordenación (ej: fecha:desc)' }
+    },
+    required: ['cifnif']
+  }
+};
+
+export async function toolByCifnifImplementation(args, client) {
+  try {
+    // Step 1: Find client by CIF/NIF
+    const clientResult = await client.getWithPagination('/clientes', 1, 0, { 
+      'filter[cifnif]': args.cifnif 
+    });
+    
+    if (!clientResult.data.length) {
+      return { 
+        content: [{ type: 'text', text: JSON.stringify({
+          error: 'Client not found',
+          message: `No se encontró ningún cliente con CIF/NIF: ${args.cifnif}`
+        }) }],
+        isError: true 
+      };
+    }
+
+    // Step 2: Get invoices for client
+    const codcliente = clientResult.data[0].codcliente;
+    const invoiceResult = await client.getWithPagination('/facturaclientes', 
+      args.limit, args.offset, { 'filter[codcliente]': codcliente });
+
+    // Step 3: Return combined response
+    return {
+      content: [{ type: 'text', text: JSON.stringify({
+        clientInfo: { /* client details */ },
+        invoices: invoiceResult
+      }) }]
+    };
+  } catch (error) {
+    // Comprehensive error handling
+    return { /* error response */ };
+  }
+}
+```
+
+**Key Principles:**
+- **Multi-step Validation**: Validate each step and provide clear error messages
+- **Parameter Sanitization**: Enforce bounds and normalize inputs
+- **Consistent Response Format**: Follow established patterns while adding business context
+- **Comprehensive Testing**: Unit tests for all scenarios + integration tests with real APIs
+- **Proper Registration**: Export from module index and register in main server
+
 ### Quality Checks
 Before completing any task, run:
 - `npm run build` - Ensure TypeScript compiles (currently: ✅ passing)
-- `npm run test` - Run all tests to ensure nothing is broken (currently: ✅ 193 tests passing)
+- `npm run test` - Run all tests to ensure nothing is broken (currently: ✅ 358 tests passing)
 - Test the resource manually if possible with live FacturaScripts API
 
 ### TDD Workflow
@@ -485,13 +554,48 @@ All 28 resources return consistent pagination format:
 ### Current Project Status (v1.0.1)
 - ✅ **56 MCP Resources** - Complete FacturaScripts API coverage
 - ✅ **56 Interactive Tools** - Full Claude Desktop integration with advanced filtering
-- ✅ **347 Tests Passing** - Comprehensive unit & integration testing with modular organization
+- ✅ **358 Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools
 - ✅ **Live API Integration** - Working with real FacturaScripts instances
 - ✅ **Advanced API Support** - Full FacturaScripts filtering, sorting, and pagination
 - ✅ **TypeScript Strict Mode** - Full type safety and IntelliSense
 - ✅ **Production Ready** - Error handling, documentation, and monitoring
 - ✅ **Automated Changelog** - Conventional commits and automated release management
 - ✅ **Enhanced Documentation** - Comprehensive guides and best practices
+- ✅ **Specialized Business Tools** - Advanced invoice search by CIF/NIF with comprehensive error handling
+
+## Latest Implementation (Current Session)
+
+### New Specialized Tool: `get_facturas_cliente_por_cifnif`
+
+**Implementation Details:**
+- **Purpose**: Search customer invoices by CIF/NIF tax identification number
+- **Location**: `src/modules/sales-orders/facturaclientes/tool.ts`
+- **Registration**: Properly exported from module index and registered in main `src/index.ts`
+- **Parameters**:
+  - `cifnif` (required): Customer tax ID
+  - `limit`, `offset`, `order` (optional): Pagination and sorting
+- **Two-step Process**: Client lookup → Invoice retrieval
+- **Error Handling**: Client not found, invalid client code, API failures
+- **Response Structure**: Combined client info + paginated invoice data
+
+**Testing Coverage:**
+- **11 New Tests**: Comprehensive unit and integration testing
+- **Test Categories**: Success scenarios, error handling, parameter validation
+- **Integration Testing**: Real API validation with non-existent CIF/NIF
+- **Total Test Count**: Increased from 347 to 358 tests
+
+**Key Features:**
+- **Smart Client Resolution**: Handles both `nombre` and `razonsocial` fields
+- **Parameter Validation**: Limit bounds (1-1000), offset normalization
+- **Comprehensive Error Messages**: User-friendly Spanish error responses
+- **Consistent API Pattern**: Follows established filtering and pagination patterns
+
+**Quality Assurance:**
+- ✅ TypeScript compilation success
+- ✅ 100% test success rate (358/358 tests)
+- ✅ Integration testing with real FacturaScripts API
+- ✅ Comprehensive error scenario coverage
+- ✅ Parameter validation and sanitization
 
 ## Changelog Management
 

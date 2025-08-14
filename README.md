@@ -14,7 +14,7 @@
 - **TypeScript**: Built with TypeScript for type safety and better development experience
 - **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
 - **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
-- **Comprehensive Testing**: 347 unit and integration tests with Test-Driven Development approach and modular test organization
+- **Comprehensive Testing**: 358 unit and integration tests with Test-Driven Development approach and modular test organization
 - **MCP Inspector Compatible**: Auto-building entry point ensuring compatibility with MCP Inspector and development tools
 
 ## Prerequisites
@@ -388,6 +388,42 @@ All resources have corresponding interactive tools for Claude Desktop:
 - `get_emailnotifications`, `get_emailsentes`, `get_empresas`, `get_estadodocumentos`
 - `get_fabricantes`, `get_familias`, `get_contactos`, `get_agentes`
 - `get_almacenes`, `get_atributos`, and 19 more tools covering all resources
+
+### 🎯 Specialized Business Tools
+
+**Advanced Customer Invoice Search**:
+- **`get_facturas_cliente_por_cifnif`**: Retrieve customer invoices by CIF/NIF (tax ID)
+  - **Required Parameter**: `cifnif` - Customer's tax identification number
+  - **Optional Parameters**: `limit`, `offset`, `order` (sorting)
+  - **Two-step Process**: 
+    1. Searches for customer by CIF/NIF
+    2. Retrieves all invoices for that customer
+  - **Response**: Includes customer information + paginated invoice list
+  - **Error Handling**: Comprehensive validation and user-friendly error messages
+
+**Usage Example**:
+```typescript
+get_facturas_cliente_por_cifnif({
+  cifnif: "12345678A",
+  limit: 25,
+  order: "fecha:desc"
+})
+```
+
+**Response Structure**:
+```json
+{
+  "clientInfo": {
+    "cifnif": "12345678A",
+    "codcliente": "CLI001",
+    "nombre": "Customer Name"
+  },
+  "invoices": {
+    "meta": { "total": 15, "limit": 25, "offset": 0, "hasMore": false },
+    "data": [/* invoice array */]
+  }
+}
+```
 
 **Response Format**:
 ```json

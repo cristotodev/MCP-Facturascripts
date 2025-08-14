@@ -61,7 +61,6 @@ docker-compose-facturascripts.yml
 facturascripts/
 .claude/
 /mysql/
-/docs/
 
 # OpenAPI files - keep the current one, exclude the old one
 /facturascripts.openapi.json
