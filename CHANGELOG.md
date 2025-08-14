@@ -1,3 +1,27 @@
+## 1.0.1 (2025-08-14)
+
+
+### Bug Fixes
+
+* correct API endpoint names for new MCP resources ([ee5897b](https://github.com/cristotodev/MCP-Facturascripts/commit/ee5897b476d2240c7a448befe74d09db2362e292))
+
+
+### Features
+
+* add 5 banking and financial resources with comprehensive testing ([76969c0](https://github.com/cristotodev/MCP-Facturascripts/commit/76969c012bf53bbfacdbf46b64d4e3dc050f9425))
+* add complete OpenAPI-based resources and enhanced query parameter support ([a26c243](https://github.com/cristotodev/MCP-Facturascripts/commit/a26c243f214f90efe221258425504d93f302cc4b))
+* add comprehensive TDD setup with Vitest ([d8efc92](https://github.com/cristotodev/MCP-Facturascripts/commit/d8efc921d08a85fdd1508876e90c163749d2d579))
+* add interactive tools for Claude Desktop integration ([204526a](https://github.com/cristotodev/MCP-Facturascripts/commit/204526a3533723022851706424b2b7db13ea750a))
+* add presupuestoclientes MCP resource for customer quotes ([623cd38](https://github.com/cristotodev/MCP-Facturascripts/commit/623cd384799525729a926adbd2002332dddd9dc3))
+* add productoproveedores, pedidoclientes, and facturaclientes MCP resources ([acf50be](https://github.com/cristotodev/MCP-Facturascripts/commit/acf50beec57082262ee19acdb01e45ee014d8105))
+* implement 5 new OpenAPI-based resources and comprehensive documentation update (v0.2.0) ([9d04e1c](https://github.com/cristotodev/MCP-Facturascripts/commit/9d04e1cbe38b002cce5fa5f1007fb81fc29f04de))
+* implement 5 new OpenAPI-based resources and comprehensive system enhancement (v0.3.0) ([43393a3](https://github.com/cristotodev/MCP-Facturascripts/commit/43393a35e50c184707bb00f0ba2a021f385d5fca))
+* implement advanced FacturaScripts API integration with dynamic filtering (v0.4.0) ([195e175](https://github.com/cristotodev/MCP-Facturascripts/commit/195e1757ac2dd3a997637e38b0e7d274962cf789))
+* implement comprehensive changelog automation and test reorganization ([08254fb](https://github.com/cristotodev/MCP-Facturascripts/commit/08254fb130ed0e484ebd1dbea3daa513e33a4e9d))
+* implement comprehensive modular architecture and project cleanup (v0.5.0) ([b6e8e3b](https://github.com/cristotodev/MCP-Facturascripts/commit/b6e8e3b6f126f4e65ed890f1743148d463e8de5c))
+
+
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
