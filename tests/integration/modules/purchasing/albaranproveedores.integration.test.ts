@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AlbaranproveedoresResource } from '../../../../src/resources/albaranproveedores.js';
+import { AlbaranproveedoresResource } from '../../../../src/modules/purchasing/albaranproveedores/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('AlbaranproveedoresResource Integration', () => {

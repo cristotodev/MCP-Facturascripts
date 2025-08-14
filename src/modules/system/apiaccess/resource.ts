@@ -20,7 +20,7 @@ export class ApiaccessResource {
 
       return {
         uri,
-        name: 'FacturaScripts Apiaccess',
+        name: 'FacturaScripts API Access',
         mimeType: 'application/json',
         contents: [
           {
@@ -34,7 +34,7 @@ export class ApiaccessResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts Apiaccess (Error)',
+        name: 'FacturaScripts API Access (Error)',
         mimeType: 'application/json',
         contents: [
           {

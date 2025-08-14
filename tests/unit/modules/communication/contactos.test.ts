@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ContactosResource } from '../../../../src/resources/contactos.js';
+import { ContactosResource } from '../../../../src/modules/communication/contactos/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('ContactosResource', () => {

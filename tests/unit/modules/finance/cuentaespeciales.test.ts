@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CuentaespecialesResource } from '../../../../src/resources/cuentaespeciales.js';
+import { CuentaespecialesResource } from '../../../../src/modules/finance/cuentaespeciales/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 const mockClient = {
@@ -40,7 +40,7 @@ describe('CuentaespecialesResource', () => {
       const result = await resource.getResource('facturascripts://cuentaespeciales');
       
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/cuentaespeciales', 50, 0, {});
-      expect(result.name).toBe('FacturaScripts CuentaEspeciales');
+      expect(result.name).toBe('FacturaScripts Cuentaespeciales');
       expect(result.mimeType).toBe('application/json');
       expect(JSON.parse(result.contents[0].text)).toEqual(mockResponse);
     });
@@ -63,7 +63,7 @@ describe('CuentaespecialesResource', () => {
 
       const result = await resource.getResource('facturascripts://cuentaespeciales');
       
-      expect(result.name).toBe('FacturaScripts CuentaEspeciales (Error)');
+      expect(result.name).toBe('FacturaScripts Cuentaespeciales (Error)');
       const content = JSON.parse(result.contents[0].text);
       expect(content.error).toBe('Failed to fetch cuentaespeciales');
       expect(content.message).toBe(errorMessage);

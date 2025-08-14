@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AgenciatransportesResource } from '../../../../src/resources/agenciatransportes.js';
+import { AgenciatransportesResource } from '../../../../src/modules/configuration/agenciatransportes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('AgenciatransportesResource Integration', () => {
@@ -10,7 +10,7 @@ describe('AgenciatransportesResource Integration', () => {
     const result = await resource.getResource('facturascripts://agenciatransportes?limit=5');
     
     // Accept both success and error cases
-    expect(result.name).toMatch(/^FacturaScripts AgenciaTransportes( \(Error\))?$/);
+    expect(result.name).toMatch(/^FacturaScripts Agenciatransportes( \(Error\))?$/);
     expect(result.mimeType).toBe('application/json');
     expect(result.contents).toHaveLength(1);
     

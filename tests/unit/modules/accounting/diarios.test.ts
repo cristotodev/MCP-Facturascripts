@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DiariosResource } from '../../../../src/resources/diarios.js';
+import { DiariosResource } from '../../../../src/modules/accounting/diarios/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 const mockClient = {

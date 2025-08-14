@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AlmacenesResource, Almacen } from '../../../../src/resources/almacenes.js';
+import { AlmacenesResource, Almacen } from '../../../../src/modules/configuration/almacenes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');

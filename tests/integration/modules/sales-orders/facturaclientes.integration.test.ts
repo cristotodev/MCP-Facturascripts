@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
-import { FacturaclientesResource } from '../../../../src/resources/facturaclientes.js';
+import { FacturaclientesResource } from '../../../../src/modules/sales-orders/facturaclientes/resource.js';
 
 // Integration tests - only run if environment is configured
 const shouldRunIntegrationTests = process.env.NODE_ENV === 'test' &&

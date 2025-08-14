@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApiKeyesResource } from '../../../../src/resources/apikeyes.js';
+import { ApikeyesResource } from '../../../../src/modules/system/apikeyes/resource.js';
 import { ApiKey } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('ApiKeyesResource', () => {
-  let apiKeyesResource: ApiKeyesResource;
+describe('ApikeyesResource', () => {
+  let apiKeyesResource: ApikeyesResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    apiKeyesResource = new ApiKeyesResource(mockClient);
+    apiKeyesResource = new ApikeyesResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -53,7 +53,7 @@ describe('ApiKeyesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/apikeyes', 50, 0, {});
       expect(result.uri).toBe('facturascripts://apikeyes');
-      expect(result.name).toBe('FacturaScripts API Keys');
+      expect(result.name).toBe('FacturaScripts Apikeyes');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -76,7 +76,7 @@ describe('ApiKeyesResource', () => {
 
       const result = await apiKeyesResource.getResource('facturascripts://apikeyes?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts API Keys (Error)');
+      expect(result.name).toBe('FacturaScripts Apikeyes (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch apikeyes');

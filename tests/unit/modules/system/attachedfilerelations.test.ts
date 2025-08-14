@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AttachedFileRelationsResource } from '../../../../src/resources/attachedfilerelations.js';
+import { AttachedfilerelationsResource } from '../../../../src/modules/system/attachedfilerelations/resource.js';
 import { AttachedFileRelation } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('AttachedFileRelationsResource', () => {
-  let attachedFileRelationsResource: AttachedFileRelationsResource;
+describe('AttachedfilerelationsResource', () => {
+  let attachedFileRelationsResource: AttachedfilerelationsResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    attachedFileRelationsResource = new AttachedFileRelationsResource(mockClient);
+    attachedFileRelationsResource = new AttachedfilerelationsResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -54,7 +54,7 @@ describe('AttachedFileRelationsResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/attachedfilerelations', 50, 0, {});
       expect(result.uri).toBe('facturascripts://attachedfilerelations');
-      expect(result.name).toBe('FacturaScripts Attached File Relations');
+      expect(result.name).toBe('FacturaScripts Attachedfilerelations');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -77,7 +77,7 @@ describe('AttachedFileRelationsResource', () => {
 
       const result = await attachedFileRelationsResource.getResource('facturascripts://attachedfilerelations?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts Attached File Relations (Error)');
+      expect(result.name).toBe('FacturaScripts Attachedfilerelations (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch attachedfilerelations');

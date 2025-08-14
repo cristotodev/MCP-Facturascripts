@@ -20,7 +20,7 @@ export class AsientosResource {
 
       return {
         uri,
-        name: 'FacturaScripts Accounting Entries',
+        name: 'FacturaScripts Asientos',
         mimeType: 'application/json',
         contents: [
           {
@@ -34,7 +34,7 @@ export class AsientosResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts Accounting Entries (Error)',
+        name: 'FacturaScripts Asientos (Error)',
         mimeType: 'application/json',
         contents: [
           {

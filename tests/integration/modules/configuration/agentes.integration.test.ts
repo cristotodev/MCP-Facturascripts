@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AgentesResource } from '../../../../src/resources/agentes.js';
+import { AgentesResource } from '../../../../src/modules/configuration/agentes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('AgentesResource Integration', () => {

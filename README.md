@@ -1,6 +1,6 @@
 # MCP FacturaScripts
 
-**Version 0.4.0** - A comprehensive Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing seamless access to business, accounting, and administrative data through the MCP protocol.
+**Version 1.0.1** - A comprehensive Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing seamless access to business, accounting, and administrative data through the MCP protocol.
 
 ## Features
 
@@ -15,6 +15,7 @@
 - **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
 - **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
 - **Comprehensive Testing**: 347 unit and integration tests with Test-Driven Development approach and modular test organization
+- **MCP Inspector Compatible**: Auto-building entry point ensuring compatibility with MCP Inspector and development tools
 
 ## Prerequisites
 
@@ -62,8 +63,10 @@ npm start
 
 ### Testing with MCP Inspector
 ```bash
-npx @modelcontextprotocol/inspector npm run dev
+npx @modelcontextprotocol/inspector npm run mcp
 ```
+
+**Important**: Use `npm run mcp` (not `npm run dev`) to ensure JavaScript execution for MCP Inspector compatibility.
 
 ## MCP Resources
 
@@ -416,50 +419,61 @@ All resources have corresponding interactive tools for Claude Desktop:
 src/
 ├── env.ts                    # Environment configuration and validation
 ├── index.ts                  # Main MCP server entry point
-├── facturascripts/
+├── fs/
 │   └── client.ts            # FacturaScripts API client
-└── resources/
-    ├── clientes.ts          # Clients resource implementation
-    ├── productos.ts         # Products resource implementation
-    ├── productoproveedores.ts # Supplier products resource implementation
-    ├── pedidoclientes.ts    # Customer orders resource implementation
-    ├── facturaclientes.ts   # Customer invoices resource implementation
-    ├── presupuestoclientes.ts # Customer quotes resource implementation
-    ├── proveedores.ts       # Suppliers resource implementation
-    ├── stocks.ts            # Stock levels resource implementation
-    ├── facturaproveedores.ts # Supplier invoices resource implementation
-    ├── agenciatransportes.ts # Transport agencies resource implementation
-    ├── agentes.ts           # Agents resource implementation
-    ├── albaranclientes.ts   # Customer delivery notes resource implementation
-    ├── albaranproveedores.ts # Supplier delivery notes resource implementation
-    ├── almacenes.ts         # Warehouses resource implementation
-    ├── apiaccess.ts         # API access management resource implementation
-    ├── apikeyes.ts          # API keys management resource implementation
-    ├── asientos.ts          # Accounting entries resource implementation
-    ├── atributos.ts         # Attributes resource implementation
-    ├── atributovalores.ts   # Attribute values resource implementation
-    ├── attachedfiles.ts     # Attached files resource implementation
-    ├── attachedfilerelations.ts # Attached file relations resource implementation
-    ├── ciudades.ts          # Cities resource implementation
-    ├── codigopostales.ts    # Postal codes resource implementation
-    ├── conceptopartidas.ts  # Accounting entry concepts resource implementation
-    ├── contactos.ts         # Contacts resource implementation
-    ├── cronjobes.ts         # Scheduled jobs resource implementation
-    ├── cuentas.ts           # Accounting accounts resource implementation
-    ├── cuentabancos.ts      # Bank accounts resource implementation
-    ├── cuentabancoclientes.ts # Client bank accounts resource implementation
-    ├── cuentabancoproveedores.ts # Supplier bank accounts resource implementation
-    ├── cuentaespeciales.ts  # Special accounts resource implementation
-    ├── diarios.ts           # Accounting journals resource implementation
-    ├── divisas.ts           # Currencies resource implementation
-    ├── doctransformations.ts # Document transformations resource implementation
-    ├── ejercicios.ts        # Fiscal years resource implementation
-    ├── emailnotifications.ts # Email notifications resource implementation
-    ├── emailsentes.ts       # Sent emails resource implementation
-    ├── empresas.ts          # Companies resource implementation
-    ├── estadodocumentos.ts  # Document status resource implementation
-    ├── fabricantes.ts       # Manufacturers resource implementation
-    └── familias.ts          # Product families resource implementation
+├── types/
+│   └── facturascripts.ts    # TypeScript interfaces for all entities
+├── utils/
+│   └── filterParser.ts      # Dynamic filtering and sorting utilities
+└── modules/                  # Modular architecture organized by categories
+    ├── core-business/        # Essential business entities
+    │   ├── clientes/         # Customer management
+    │   ├── productos/        # Product catalog
+    │   ├── proveedores/      # Supplier management
+    │   └── stocks/           # Inventory management
+    ├── sales-orders/         # Sales and order processing
+    │   ├── pedidoclientes/   # Customer orders
+    │   ├── facturaclientes/  # Customer invoices
+    │   ├── presupuestoclientes/ # Customer quotes
+    │   ├── albaranclientes/  # Customer delivery notes
+    │   └── line-items/       # All document line items
+    ├── purchasing/           # Procurement and supplier operations
+    │   ├── facturaproveedores/ # Supplier invoices
+    │   ├── albaranproveedores/ # Supplier delivery notes
+    │   └── productoproveedores/ # Products by supplier
+    ├── accounting/           # General accounting
+    │   ├── asientos/         # Accounting entries
+    │   ├── cuentas/          # Chart of accounts
+    │   ├── diarios/          # Accounting journals
+    │   ├── ejercicios/       # Fiscal years
+    │   └── conceptopartidas/ # Entry concepts
+    ├── finance/              # Financial management
+    │   ├── cuentabancos/     # Bank accounts
+    │   ├── cuentabancoclientes/ # Customer bank accounts
+    │   ├── cuentabancoproveedores/ # Supplier bank accounts
+    │   ├── cuentaespeciales/ # Special accounts
+    │   └── divisas/          # Currencies
+    ├── configuration/        # System configuration (14 modules)
+    │   ├── almacenes/        # Warehouses
+    │   ├── agentes/          # Sales agents
+    │   ├── formapagos/       # Payment methods
+    │   ├── impuestos/        # Tax rates
+    │   ├── familias/         # Product families
+    │   ├── fabricantes/      # Manufacturers
+    │   └── [8 more...]       # Additional configuration
+    ├── system/               # System administration (7 modules)
+    │   ├── apiaccess/        # API access control
+    │   ├── apikeyes/         # API key management
+    │   ├── logmessages/      # System logs
+    │   └── [4 more...]       # Additional system modules
+    ├── communication/        # Communications (3 modules)
+    │   ├── emailnotifications/ # Email templates
+    │   ├── emailsentes/      # Email history
+    │   └── contactos/        # Contact management
+    └── geographic/           # Geographic data (3 modules)
+        ├── ciudades/         # Cities
+        ├── codigopostales/   # Postal codes
+        └── empresas/         # Company locations
 
 tests/
 ├── unit/                    # Unit tests organized by module categories
@@ -509,33 +523,53 @@ tests/
 
 ### Adding New Resources
 
-The server currently provides **complete coverage** of all major FacturaScripts entities with 41 comprehensive resources. To add new resources:
+The server currently provides **complete coverage** of all major FacturaScripts entities with 56 comprehensive resources. To add new resources:
 
-1. **Create Resource**: Add new resource class in `src/resources/` following existing patterns
-2. **Add Types**: Define TypeScript interfaces in `src/types/facturascripts.ts`
-3. **Register Resource**: Add to `src/index.ts` imports, instances, tools, and handlers
-4. **Add Tests**: Create unit tests in `tests/unit/resources/`
-5. **Update Documentation**: Add to README.md and CLAUDE.md
+1. **Create Module**: Add new module in `src/modules/{category}/{name}/` following modular patterns
+2. **Resource Implementation**: Create `resource.ts` with MCP resource implementation
+3. **Tool Definition**: Create `tool.ts` with Claude Desktop tool definition
+4. **Module Exports**: Create `index.ts` with module exports
+5. **Add Types**: Define TypeScript interfaces in `src/types/facturascripts.ts`
+6. **Register Module**: Add to `src/index.ts` imports, instances, tools, and handlers
+7. **Add Tests**: Create unit tests in `tests/unit/modules/{category}/`
+8. **Update Documentation**: Add to README.md and CLAUDE.md
 
-**Resource Implementation Pattern**:
+**Module Implementation Pattern**:
 ```typescript
-// src/resources/newresource.ts
+// src/modules/{category}/{name}/resource.ts
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
-import { FacturaScriptsClient } from '../fs/client.js';
+import { FacturaScriptsClient } from '../../../fs/client.js';
+import { parseUrlParameters } from '../../../utils/filterParser.js';
 
-export class NewResourceResource {
+export class NewEntityResource {
   constructor(private client: FacturaScriptsClient) { }
 
   async getResource(uri: string): Promise<Resource> {
-    // Parse query parameters
-    // Call API with pagination support
+    const { limit, offset, additionalParams } = parseUrlParameters(uri);
+    // Call API with advanced filtering/sorting support
     // Return structured response with error handling
   }
   
   matchesUri(uri: string): boolean {
-    // URI matching logic
+    return uri === 'facturascripts://newentity' || 
+           uri.startsWith('facturascripts://newentity?');
   }
 }
+
+// src/modules/{category}/{name}/tool.ts
+export const toolDefinition = {
+  name: 'get_newentity',
+  description: 'Spanish description of functionality',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      limit: { type: 'number', default: 50 },
+      offset: { type: 'number', default: 0 },
+      filter: { type: 'string', description: 'Dynamic filtering...' },
+      order: { type: 'string', description: 'Dynamic sorting...' }
+    }
+  }
+};
 ```
 
 **Current Coverage**: Business Core, Products & Inventory, Orders & Documents, Invoicing, Accounting, Logistics, Geographic Data, Document Management, and System Administration.

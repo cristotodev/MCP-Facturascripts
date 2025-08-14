@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AtributosResource } from '../../../../src/resources/atributos.js';
+import { AtributosResource } from '../../../../src/modules/configuration/atributos/resource.js';
 import { Atributo } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
@@ -49,7 +49,7 @@ describe('AtributosResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/atributos', 50, 0, {});
       expect(result.uri).toBe('facturascripts://atributos');
-      expect(result.name).toBe('FacturaScripts Attributes');
+      expect(result.name).toBe('FacturaScripts Atributos');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -72,7 +72,7 @@ describe('AtributosResource', () => {
 
       const result = await atributosResource.getResource('facturascripts://atributos?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts Attributes (Error)');
+      expect(result.name).toBe('FacturaScripts Atributos (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch atributos');

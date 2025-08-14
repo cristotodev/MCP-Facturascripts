@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ConceptopartidasResource } from '../../../../src/resources/conceptopartidas.js';
+import { ConceptopartidasResource } from '../../../../src/modules/accounting/conceptopartidas/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('ConceptopartidasResource', () => {
@@ -50,7 +50,7 @@ describe('ConceptopartidasResource', () => {
         {}
       );
       
-      expect(result.name).toBe('FacturaScripts ConceptoPartidas');
+      expect(result.name).toBe('FacturaScripts Conceptopartidas');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents).toHaveLength(1);
       
@@ -99,7 +99,7 @@ describe('ConceptopartidasResource', () => {
       
       const result = await resource.getResource('facturascripts://conceptopartidas');
       
-      expect(result.name).toBe('FacturaScripts ConceptoPartidas (Error)');
+      expect(result.name).toBe('FacturaScripts Conceptopartidas (Error)');
       expect(result.mimeType).toBe('application/json');
       
       const content = JSON.parse(result.contents[0].text);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CuentasResource } from '../../../../src/resources/cuentas.js';
+import { CuentasResource } from '../../../../src/modules/accounting/cuentas/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('CuentasResource', () => {

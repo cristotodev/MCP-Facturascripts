@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PedidoclientesResource, PedidoCliente } from '../../../../src/resources/pedidoclientes.js';
+import { PedidoclientesResource, PedidoCliente } from '../../../../src/modules/sales-orders/pedidoclientes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');

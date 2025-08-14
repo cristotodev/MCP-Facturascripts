@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { StocksResource } from '../../../../src/resources/stocks.js';
+import { StocksResource } from '../../../../src/modules/core-business/stocks/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import type { Stock } from '../../../../src/types/facturascripts.js';
 

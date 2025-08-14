@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { GrupoClientesResource } from '../../../../src/resources/grupoclientes.js';
+import { GrupoclientesResource } from '../../../../src/modules/configuration/grupoclientes/resource.js';
 import { GrupoClientes } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('GrupoClientesResource', () => {
-  let grupoClientesResource: GrupoClientesResource;
+describe('GrupoclientesResource', () => {
+  let grupoClientesResource: GrupoclientesResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    grupoClientesResource = new GrupoClientesResource(mockClient);
+    grupoClientesResource = new GrupoclientesResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -50,7 +50,7 @@ describe('GrupoClientesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/grupoclientes', 50, 0, {});
       expect(result.uri).toBe('facturascripts://grupoclientes');
-      expect(result.name).toBe('FacturaScripts GrupoClientes');
+      expect(result.name).toBe('FacturaScripts Grupoclientes');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -73,7 +73,7 @@ describe('GrupoClientesResource', () => {
 
       const result = await grupoClientesResource.getResource('facturascripts://grupoclientes?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts GrupoClientes (Error)');
+      expect(result.name).toBe('FacturaScripts Grupoclientes (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch grupoclientes');

@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { LogMessagesResource } from '../../../../src/resources/logmessages.js';
+import { LogmessagesResource } from '../../../../src/modules/system/logmessages/resource.js';
 import { LogMessage } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('LogMessagesResource', () => {
-  let logMessagesResource: LogMessagesResource;
+describe('LogmessagesResource', () => {
+  let logMessagesResource: LogmessagesResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    logMessagesResource = new LogMessagesResource(mockClient);
+    logMessagesResource = new LogmessagesResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -58,7 +58,7 @@ describe('LogMessagesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/logmessages', 50, 0, {});
       expect(result.uri).toBe('facturascripts://logmessages');
-      expect(result.name).toBe('FacturaScripts LogMessages');
+      expect(result.name).toBe('FacturaScripts Logmessages');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -81,7 +81,7 @@ describe('LogMessagesResource', () => {
 
       const result = await logMessagesResource.getResource('facturascripts://logmessages?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts LogMessages (Error)');
+      expect(result.name).toBe('FacturaScripts Logmessages (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch logmessages');

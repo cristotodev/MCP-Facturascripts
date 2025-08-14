@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ImpuestosResource } from '../../../../src/resources/impuestos.js';
+import { ImpuestosResource } from '../../../../src/modules/configuration/impuestos/resource.js';
 import { Impuesto } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 

@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CodigoPostalesResource } from '../../../../src/resources/codigopostales.js';
+import { CodigopostalesResource } from '../../../../src/modules/geographic/codigopostales/resource.js';
 import { CodigoPostal } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('CodigoPostalesResource', () => {
-  let codigoPostalesResource: CodigoPostalesResource;
+describe('CodigopostalesResource', () => {
+  let codigoPostalesResource: CodigopostalesResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    codigoPostalesResource = new CodigoPostalesResource(mockClient);
+    codigoPostalesResource = new CodigopostalesResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -55,7 +55,7 @@ describe('CodigoPostalesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/codigopostales', 50, 0, {});
       expect(result.uri).toBe('facturascripts://codigopostales');
-      expect(result.name).toBe('FacturaScripts Postal Codes');
+      expect(result.name).toBe('FacturaScripts Codigopostales');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -78,7 +78,7 @@ describe('CodigoPostalesResource', () => {
 
       const result = await codigoPostalesResource.getResource('facturascripts://codigopostales?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts Postal Codes (Error)');
+      expect(result.name).toBe('FacturaScripts Codigopostales (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch codigopostales');

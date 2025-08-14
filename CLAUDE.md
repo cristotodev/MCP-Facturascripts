@@ -1,6 +1,6 @@
 # MCP FacturaScripts
 
-**Version 0.4.0** - TypeScript ESM project for a Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing comprehensive access to business, accounting, and administrative data.
+**Version 1.0.1** - TypeScript ESM project for a Model Context Protocol (MCP) server that integrates with FacturaScripts ERP system, providing comprehensive access to business, accounting, and administrative data.
 
 ## Project Structure
 
@@ -92,13 +92,42 @@ Environment variables (see `.env.example`):
 
 ## Available Scripts
 
-- `npm run dev` - Run development server with tsx
+- `npm run dev` - Run development server (auto-builds, runs JavaScript)
 - `npm run build` - Build TypeScript to dist/
-- `npm run start` - Run built server
+- `npm run start` - Run built server (same as mcp)
+- `npm run mcp` - Build and run MCP server (recommended for MCP Inspector)
+- `npm run dev:ts` - Run TypeScript directly with tsx (development only, not for MCP Inspector)
 - `npm run test` - Run tests with Vitest
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:ui` - Run tests with Vitest UI
 - `npm run test:run` - Run tests once and exit
+
+## MCP Inspector Usage
+
+The server includes a robust entry point (`mcp-server.js`) that automatically builds the project and runs the JavaScript version for maximum compatibility.
+
+**✅ Recommended for MCP Inspector**:
+```bash
+# Using MCP Inspector
+npx @modelcontextprotocol/inspector npm run mcp
+
+# Or directly with node
+node mcp-server.js
+
+# Or any of these npm scripts
+npm start
+npm run dev
+npm run mcp
+```
+
+**✅ All scripts now use the built JavaScript version** - The project automatically builds and runs the compiled code to avoid ESM module resolution issues.
+
+**⚠️ Development only**: TypeScript source execution
+```bash
+npm run dev:ts  # Only for development - may have import issues with MCP Inspector
+```
+
+The `mcp-server.js` entry point ensures consistent behavior across all environments including MCP Inspector, Claude Desktop, and other MCP clients.
 
 ## MCP Resources
 
@@ -285,6 +314,30 @@ This project runs a local FacturaScripts instance via Docker for development:
 - Local directories: `facturascripts/` (app files), `mysql/` (database)
 - Use `.claudeignore` to exclude large directories from Claude Code operations
 
+### MCP Inspector Compatibility
+
+**Entry Point**: The project uses `mcp-server.js` as the main entry point for maximum compatibility:
+```javascript
+// Auto-building entry point that ensures JavaScript execution
+// Resolves ESM import issues with TypeScript source files
+```
+
+**Usage with MCP Inspector**:
+```bash
+# Recommended usage
+npx @modelcontextprotocol/inspector npm run mcp
+
+# Alternative commands
+npm run start    # Same as mcp
+npm run dev      # Same as mcp (JavaScript execution)
+```
+
+**Important Notes**:
+- Always use `npm run mcp` or `npm start` for MCP Inspector
+- Do NOT use `npm run dev:ts` with MCP Inspector (TypeScript runtime issues)
+- The auto-building entry point ensures compiled JavaScript execution
+- Resolves ESM module resolution conflicts between `.ts` source and `.js` imports
+
 ## Claude Code Configuration
 
 Important files for maintaining context:
@@ -293,7 +346,7 @@ Important files for maintaining context:
 
 ### Auto-Documentation Rules
 
-**IMPORTANT**: When adding new MCP resources (files in `src/resources/`):
+**IMPORTANT**: When adding new MCP resources (modules in `src/modules/`):
 1. Automatically update this CLAUDE.md file with the new resource endpoint
 2. Update README.md "Available Resources" section if it exists
 3. Follow the pattern: `facturascripts://{resourceName}` - Dynamic filtering and sorting support is automatic
@@ -429,7 +482,7 @@ All 28 resources return consistent pagination format:
 }
 ```
 
-### Current Project Status (v1.0.0)
+### Current Project Status (v1.0.1)
 - ✅ **56 MCP Resources** - Complete FacturaScripts API coverage
 - ✅ **56 Interactive Tools** - Full Claude Desktop integration with advanced filtering
 - ✅ **347 Tests Passing** - Comprehensive unit & integration testing with modular organization

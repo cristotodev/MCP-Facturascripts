@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CiudadesResource } from '../../../../src/resources/ciudades.js';
+import { CiudadesResource } from '../../../../src/modules/geographic/ciudades/resource.js';
 import { Ciudad } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
@@ -57,7 +57,7 @@ describe('CiudadesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/ciudades', 50, 0, {});
       expect(result.uri).toBe('facturascripts://ciudades');
-      expect(result.name).toBe('FacturaScripts Cities');
+      expect(result.name).toBe('FacturaScripts Ciudades');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -80,7 +80,7 @@ describe('CiudadesResource', () => {
 
       const result = await ciudadesResource.getResource('facturascripts://ciudades?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts Cities (Error)');
+      expect(result.name).toBe('FacturaScripts Ciudades (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch ciudades');

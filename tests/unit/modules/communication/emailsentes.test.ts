@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { EmailsentesResource } from '../../../../src/resources/emailsentes.js';
+import { EmailsentesResource } from '../../../../src/modules/communication/emailsentes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('EmailsentesResource', () => {
@@ -63,7 +63,7 @@ describe('EmailsentesResource', () => {
         {}
       );
       
-      expect(result.name).toBe('FacturaScripts EmailSentes');
+      expect(result.name).toBe('FacturaScripts Emailsentes');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents).toHaveLength(1);
       
@@ -76,7 +76,7 @@ describe('EmailsentesResource', () => {
       
       const result = await resource.getResource('facturascripts://emailsentes');
       
-      expect(result.name).toBe('FacturaScripts EmailSentes (Error)');
+      expect(result.name).toBe('FacturaScripts Emailsentes (Error)');
       expect(result.mimeType).toBe('application/json');
       
       const content = JSON.parse(result.contents[0].text);

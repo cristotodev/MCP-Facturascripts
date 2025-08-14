@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ProductoproveedoresResource, ProductoProveedor } from '../../../../src/resources/productoproveedores.js';
+import { ProductoproveedoresResource, ProductoProveedor } from '../../../../src/modules/purchasing/productoproveedores/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
@@ -51,7 +51,7 @@ describe('ProductoproveedoresResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/productoproveedores', 50, 0, {});
       expect(result.uri).toBe('facturascripts://productoproveedores');
-      expect(result.name).toBe('FacturaScripts ProductoProveedores');
+      expect(result.name).toBe('FacturaScripts Productoproveedores');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -86,7 +86,7 @@ describe('ProductoproveedoresResource', () => {
 
       const result = await productoproveedoresResource.getResource('facturascripts://productoproveedores?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts ProductoProveedores (Error)');
+      expect(result.name).toBe('FacturaScripts Productoproveedores (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch productoproveedores');

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CuentabanccllientesResource } from '../../../../src/resources/cuentabancoclientes.js';
+import { CuentabanccllientesResource } from '../../../../src/modules/finance/cuentabancoclientes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 const mockClient = {

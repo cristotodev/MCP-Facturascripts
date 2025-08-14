@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
-import { ProductoproveedoresResource } from '../../../../src/resources/productoproveedores.js';
+import { ProductoproveedoresResource } from '../../../../src/modules/purchasing/productoproveedores/resource.js';
 
 // Integration tests - only run if environment is configured
 const shouldRunIntegrationTests = process.env.NODE_ENV === 'test' &&
@@ -22,7 +22,7 @@ describe.skipIf(!shouldRunIntegrationTests)('Productoproveedores Integration Tes
 
     expect(result.uri).toBe('facturascripts://productoproveedores?limit=5');
     // Accept both success and error cases
-    expect(result.name).toMatch(/^FacturaScripts ProductoProveedores( \(Error\))?$/);
+    expect(result.name).toMatch(/^FacturaScripts Productoproveedores( \(Error\))?$/);
     expect(result.mimeType).toBe('application/json');
 
     const content = (result as Resource as any).contents[0];

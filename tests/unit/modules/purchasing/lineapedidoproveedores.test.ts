@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { LineaPedidoProveedoresResource } from '../../../../src/resources/lineapedidoproveedores.js';
+import { LineaPedidoProveedoresResource } from '../../../../src/modules/sales-orders/line-items/lineapedidoproveedores/resource.js';
 import { LineaPedidoProveedor } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 

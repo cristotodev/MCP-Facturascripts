@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DivisasResource } from '../../../../src/resources/divisas.js';
+import { DivisasResource } from '../../../../src/modules/finance/divisas/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 const mockClient = {

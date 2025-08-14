@@ -20,7 +20,7 @@ export class ConceptopartidasResource {
 
       return {
         uri,
-        name: 'FacturaScripts ConceptoPartidas',
+        name: 'FacturaScripts Conceptopartidas',
         mimeType: 'application/json',
         contents: [
           {
@@ -34,7 +34,7 @@ export class ConceptopartidasResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts ConceptoPartidas (Error)',
+        name: 'FacturaScripts Conceptopartidas (Error)',
         mimeType: 'application/json',
         contents: [
           {

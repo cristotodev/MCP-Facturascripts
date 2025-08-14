@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FamiliasResource } from '../../../../src/resources/familias.js';
+import { FamiliasResource } from '../../../../src/modules/configuration/familias/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('FamiliasResource', () => {

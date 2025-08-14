@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FormaPagosResource } from '../../../../src/resources/formapagos.js';
+import { FormaPagosResource } from '../../../../src/modules/configuration/formapagos/resource.js';
 import { FormaPago } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 

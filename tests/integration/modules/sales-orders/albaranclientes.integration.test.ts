@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AlbaranclientesResource } from '../../../../src/resources/albaranclientes.js';
+import { AlbaranclientesResource } from '../../../../src/modules/sales-orders/albaranclientes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('AlbaranclientesResource Integration', () => {

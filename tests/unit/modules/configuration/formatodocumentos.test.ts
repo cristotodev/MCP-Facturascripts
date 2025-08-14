@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FormatoDocumentosResource } from '../../../../src/resources/formatodocumentos.js';
+import { FormatodocumentosResource } from '../../../../src/modules/configuration/formatodocumentos/resource.js';
 import { FormatoDocumento } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('FormatoDocumentosResource', () => {
-  let formatoDocumentosResource: FormatoDocumentosResource;
+describe('FormatodocumentosResource', () => {
+  let formatoDocumentosResource: FormatodocumentosResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    formatoDocumentosResource = new FormatoDocumentosResource(mockClient);
+    formatoDocumentosResource = new FormatodocumentosResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -51,7 +51,7 @@ describe('FormatoDocumentosResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/formatodocumentos', 50, 0, {});
       expect(result.uri).toBe('facturascripts://formatodocumentos');
-      expect(result.name).toBe('FacturaScripts FormatoDocumentos');
+      expect(result.name).toBe('FacturaScripts Formatodocumentos');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -74,7 +74,7 @@ describe('FormatoDocumentosResource', () => {
 
       const result = await formatoDocumentosResource.getResource('facturascripts://formatodocumentos?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts FormatoDocumentos (Error)');
+      expect(result.name).toBe('FacturaScripts Formatodocumentos (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch formatodocumentos');

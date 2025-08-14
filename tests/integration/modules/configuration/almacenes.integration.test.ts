@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { AlmacenesResource } from '../../../../src/resources/almacenes.js';
+import { AlmacenesResource } from '../../../../src/modules/configuration/almacenes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('AlmacenesResource Integration', () => {

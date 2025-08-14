@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AgenciatransportesResource, AgenciaTransporte } from '../../../../src/resources/agenciatransportes.js';
+import { AgenciatransportesResource, AgenciaTransporte } from '../../../../src/modules/configuration/agenciatransportes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
@@ -50,7 +50,7 @@ describe('AgenciatransportesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/agenciatransportes', 50, 0, {});
       expect(result.uri).toBe('facturascripts://agenciatransportes');
-      expect(result.name).toBe('FacturaScripts AgenciaTransportes');
+      expect(result.name).toBe('FacturaScripts Agenciatransportes');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -85,7 +85,7 @@ describe('AgenciatransportesResource', () => {
 
       const result = await agenciatransportesResource.getResource('facturascripts://agenciatransportes');
 
-      expect(result.name).toBe('FacturaScripts AgenciaTransportes (Error)');
+      expect(result.name).toBe('FacturaScripts Agenciatransportes (Error)');
       const errorData = JSON.parse(result.contents[0].text);
       expect(errorData.error).toBe('Failed to fetch agenciatransportes');
       expect(errorData.message).toBe(errorMessage);

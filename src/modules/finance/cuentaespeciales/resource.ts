@@ -20,7 +20,7 @@ export class CuentaespecialesResource {
 
       return {
         uri,
-        name: 'FacturaScripts CuentaEspeciales',
+        name: 'FacturaScripts Cuentaespeciales',
         mimeType: 'application/json',
         contents: [
           {
@@ -34,7 +34,7 @@ export class CuentaespecialesResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts CuentaEspeciales (Error)',
+        name: 'FacturaScripts Cuentaespeciales (Error)',
         mimeType: 'application/json',
         contents: [
           {

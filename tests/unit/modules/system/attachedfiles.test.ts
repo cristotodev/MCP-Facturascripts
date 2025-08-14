@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AttachedFilesResource } from '../../../../src/resources/attachedfiles.js';
+import { AttachedfilesResource } from '../../../../src/modules/system/attachedfiles/resource.js';
 import { AttachedFile } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('AttachedFilesResource', () => {
-  let attachedFilesResource: AttachedFilesResource;
+describe('AttachedfilesResource', () => {
+  let attachedFilesResource: AttachedfilesResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    attachedFilesResource = new AttachedFilesResource(mockClient);
+    attachedFilesResource = new AttachedfilesResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -53,7 +53,7 @@ describe('AttachedFilesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/attachedfiles', 50, 0, {});
       expect(result.uri).toBe('facturascripts://attachedfiles');
-      expect(result.name).toBe('FacturaScripts Attached Files');
+      expect(result.name).toBe('FacturaScripts Attachedfiles');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -76,7 +76,7 @@ describe('AttachedFilesResource', () => {
 
       const result = await attachedFilesResource.getResource('facturascripts://attachedfiles?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts Attached Files (Error)');
+      expect(result.name).toBe('FacturaScripts Attachedfiles (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch attachedfiles');

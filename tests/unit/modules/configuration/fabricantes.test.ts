@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FabricantesResource } from '../../../../src/resources/fabricantes.js';
+import { FabricantesResource } from '../../../../src/modules/configuration/fabricantes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('FabricantesResource', () => {

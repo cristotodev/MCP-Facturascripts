@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DoctransformationsResource } from '../../../../src/resources/doctransformations.js';
+import { DoctransformationsResource } from '../../../../src/modules/system/doctransformations/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('DoctransformationsResource', () => {
@@ -59,7 +59,7 @@ describe('DoctransformationsResource', () => {
         {}
       );
       
-      expect(result.name).toBe('FacturaScripts DocTransformations');
+      expect(result.name).toBe('FacturaScripts Doctransformations');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents).toHaveLength(1);
       
@@ -72,7 +72,7 @@ describe('DoctransformationsResource', () => {
       
       const result = await resource.getResource('facturascripts://doctransformations');
       
-      expect(result.name).toBe('FacturaScripts DocTransformations (Error)');
+      expect(result.name).toBe('FacturaScripts Doctransformations (Error)');
       expect(result.mimeType).toBe('application/json');
       
       const content = JSON.parse(result.contents[0].text);

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { CronjobesResource } from '../../../../src/resources/cronjobes.js';
+import { CronjobesResource } from '../../../../src/modules/system/cronjobes/resource.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 describe('CronjobesResource', () => {
@@ -56,7 +56,7 @@ describe('CronjobesResource', () => {
         {}
       );
       
-      expect(result.name).toBe('FacturaScripts CronJobs');
+      expect(result.name).toBe('FacturaScripts Cronjobes');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents).toHaveLength(1);
       
@@ -69,7 +69,7 @@ describe('CronjobesResource', () => {
       
       const result = await resource.getResource('facturascripts://cronjobes');
       
-      expect(result.name).toBe('FacturaScripts CronJobs (Error)');
+      expect(result.name).toBe('FacturaScripts Cronjobes (Error)');
       expect(result.mimeType).toBe('application/json');
       
       const content = JSON.parse(result.contents[0].text);

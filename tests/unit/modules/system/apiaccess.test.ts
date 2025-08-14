@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ApiAccessResource } from '../../../../src/resources/apiaccess.js';
+import { ApiaccessResource } from '../../../../src/modules/system/apiaccess/resource.js';
 import { ApiAccess } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('ApiAccessResource', () => {
-  let apiAccessResource: ApiAccessResource;
+describe('ApiaccessResource', () => {
+  let apiAccessResource: ApiaccessResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    apiAccessResource = new ApiAccessResource(mockClient);
+    apiAccessResource = new ApiaccessResource(mockClient);
   });
 
   describe('matchesUri', () => {

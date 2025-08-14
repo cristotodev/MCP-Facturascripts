@@ -28,7 +28,7 @@ export class ProductoproveedoresResource {
 
       return {
         uri,
-        name: 'FacturaScripts ProductoProveedores',
+        name: 'FacturaScripts Productoproveedores',
         mimeType: 'application/json',
         contents: [
           {
@@ -42,7 +42,7 @@ export class ProductoproveedoresResource {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return {
         uri,
-        name: 'FacturaScripts ProductoProveedores (Error)',
+        name: 'FacturaScripts Productoproveedores (Error)',
         mimeType: 'application/json',
         contents: [
           {

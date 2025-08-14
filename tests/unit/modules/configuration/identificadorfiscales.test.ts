@@ -1,19 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { IdentificadorFiscalesResource } from '../../../../src/resources/identificadorfiscales.js';
+import { IdentificadorfiscalesResource } from '../../../../src/modules/configuration/identificadorfiscales/resource.js';
 import { IdentificadorFiscal } from '../../../../src/types/facturascripts.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
 
-describe('IdentificadorFiscalesResource', () => {
-  let identificadorFiscalesResource: IdentificadorFiscalesResource;
+describe('IdentificadorfiscalesResource', () => {
+  let identificadorFiscalesResource: IdentificadorfiscalesResource;
   let mockClient: any;
 
   beforeEach(() => {
     mockClient = {
       getWithPagination: vi.fn()
     };
-    identificadorFiscalesResource = new IdentificadorFiscalesResource(mockClient);
+    identificadorFiscalesResource = new IdentificadorfiscalesResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -49,7 +49,7 @@ describe('IdentificadorFiscalesResource', () => {
 
       expect(mockClient.getWithPagination).toHaveBeenCalledWith('/identificadorfiscales', 50, 0, {});
       expect(result.uri).toBe('facturascripts://identificadorfiscales');
-      expect(result.name).toBe('FacturaScripts IdentificadorFiscales');
+      expect(result.name).toBe('FacturaScripts Identificadorfiscales');
       expect(result.mimeType).toBe('application/json');
       expect(result.contents[0].text).toBe(JSON.stringify(mockResponse, null, 2));
     });
@@ -72,7 +72,7 @@ describe('IdentificadorFiscalesResource', () => {
 
       const result = await identificadorFiscalesResource.getResource('facturascripts://identificadorfiscales?limit=10&offset=5');
 
-      expect(result.name).toBe('FacturaScripts IdentificadorFiscales (Error)');
+      expect(result.name).toBe('FacturaScripts Identificadorfiscales (Error)');
       
       const errorResponse = JSON.parse(result.contents[0].text);
       expect(errorResponse.error).toBe('Failed to fetch identificadorfiscales');
