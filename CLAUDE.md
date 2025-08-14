@@ -4,66 +4,84 @@
 
 ## Project Structure
 
+The project follows a **modular architecture** that groups related functionality for better organization and maintainability:
+
 - `src/index.ts` - Main MCP server entry point
 - `src/env.ts` - Environment validation using Zod
 - `src/fs/client.ts` - Axios-based FacturaScripts API client
-- `src/resources/clientes.ts` - MCP resource for clients data
-- `src/resources/productos.ts` - MCP resource for products data
-- `src/resources/productoproveedores.ts` - MCP resource for products by supplier data
-- `src/resources/pedidoclientes.ts` - MCP resource for customer orders data
-- `src/resources/facturaclientes.ts` - MCP resource for customer invoices data
-- `src/resources/presupuestoclientes.ts` - MCP resource for customer quotes data
-- `src/resources/proveedores.ts` - MCP resource for suppliers data
-- `src/resources/stocks.ts` - MCP resource for inventory stock data
-- `src/resources/facturaproveedores.ts` - MCP resource for supplier invoices data
-- `src/resources/agenciatransportes.ts` - MCP resource for transport agencies data
-- `src/resources/agentes.ts` - MCP resource for agents data
-- `src/resources/albaranclientes.ts` - MCP resource for customer delivery notes data
-- `src/resources/albaranproveedores.ts` - MCP resource for supplier delivery notes data
-- `src/resources/almacenes.ts` - MCP resource for warehouses data
-- `src/resources/apiaccess.ts` - MCP resource for API access management data
-- `src/resources/apikeyes.ts` - MCP resource for API keys management data
-- `src/resources/asientos.ts` - MCP resource for accounting entries data
-- `src/resources/atributos.ts` - MCP resource for attributes data
-- `src/resources/atributovalores.ts` - MCP resource for attribute values data
-- `src/resources/attachedfiles.ts` - MCP resource for attached files data
-- `src/resources/attachedfilerelations.ts` - MCP resource for attached file relations data
-- `src/resources/ciudades.ts` - MCP resource for cities data
-- `src/resources/codigopostales.ts` - MCP resource for postal codes data
-- `src/resources/conceptopartidas.ts` - MCP resource for accounting entry concepts data
-- `src/resources/contactos.ts` - MCP resource for contacts data
-- `src/resources/cronjobes.ts` - MCP resource for scheduled jobs data
-- `src/resources/cuentas.ts` - MCP resource for accounting accounts data
-- `src/resources/cuentabancos.ts` - MCP resource for bank accounts data
-- `src/resources/cuentabancoclientes.ts` - MCP resource for client bank accounts data
-- `src/resources/cuentabancoproveedores.ts` - MCP resource for supplier bank accounts data
-- `src/resources/cuentaespeciales.ts` - MCP resource for special accounts data
-- `src/resources/diarios.ts` - MCP resource for accounting journals data
-- `src/resources/divisas.ts` - MCP resource for currencies data
-- `src/resources/doctransformations.ts` - MCP resource for document transformations data
-- `src/resources/ejercicios.ts` - MCP resource for fiscal years data
-- `src/resources/emailnotifications.ts` - MCP resource for email notifications data
-- `src/resources/emailsentes.ts` - MCP resource for sent emails data
-- `src/resources/empresas.ts` - MCP resource for companies data
-- `src/resources/estadodocumentos.ts` - MCP resource for document status data
-- `src/resources/fabricantes.ts` - MCP resource for manufacturers data
-- `src/resources/familias.ts` - MCP resource for product families data
-- `src/resources/formapagos.ts` - MCP resource for payment methods data
-- `src/resources/formatodocumentos.ts` - MCP resource for document formats data
-- `src/resources/grupoclientes.ts` - MCP resource for client groups data
-- `src/resources/identificadorfiscales.ts` - MCP resource for fiscal identifiers data
-- `src/resources/impuestos.ts` - MCP resource for taxes data
-- `src/resources/impuestozonas.ts` - MCP resource for tax zones data
-- `src/resources/lineaalbaranclientes.ts` - MCP resource for customer delivery note lines data
-- `src/resources/lineaalbaranproveedores.ts` - MCP resource for supplier delivery note lines data
-- `src/resources/lineafacturaclientes.ts` - MCP resource for customer invoice lines data
-- `src/resources/lineafacturaproveedores.ts` - MCP resource for supplier invoice lines data
-- `src/resources/lineapedidoclientes.ts` - MCP resource for customer order lines data
-- `src/resources/lineapedidoproveedores.ts` - MCP resource for supplier order lines data
-- `src/resources/lineapresupuestoclientes.ts` - MCP resource for customer quote lines data
-- `src/resources/lineapresupuestoproveedores.ts` - MCP resource for supplier quote lines data
-- `src/resources/logmessages.ts` - MCP resource for system log messages data
 - `src/types/facturascripts.ts` - TypeScript interfaces for all FacturaScripts entities
+- `src/utils/filterParser.ts` - Dynamic filtering and sorting utilities
+
+### Modular Organization
+
+```
+src/modules/
+├── core-business/          # Essential business entities
+│   ├── clientes/           # Customer management
+│   ├── productos/          # Product catalog
+│   ├── proveedores/        # Supplier management
+│   └── stocks/             # Inventory management
+├── sales-orders/           # Sales and order processing
+│   ├── pedidoclientes/     # Customer orders
+│   ├── facturaclientes/    # Customer invoices
+│   ├── presupuestoclientes/# Customer quotes
+│   ├── albaranclientes/    # Customer delivery notes
+│   └── line-items/         # All document line items
+├── purchasing/             # Procurement and supplier operations
+│   ├── facturaproveedores/ # Supplier invoices
+│   ├── albaranproveedores/ # Supplier delivery notes
+│   └── productoproveedores/# Products by supplier
+├── accounting/             # General accounting
+│   ├── asientos/           # Accounting entries
+│   ├── cuentas/            # Chart of accounts
+│   ├── diarios/            # Accounting journals
+│   ├── ejercicios/         # Fiscal years
+│   └── conceptopartidas/   # Entry concepts
+├── finance/                # Financial management
+│   ├── cuentabancos/       # Bank accounts
+│   ├── cuentabancoclientes/# Customer bank accounts
+│   ├── cuentabancoproveedores/# Supplier bank accounts
+│   ├── cuentaespeciales/   # Special accounts
+│   └── divisas/            # Currencies
+├── configuration/          # System configuration
+│   ├── almacenes/          # Warehouses
+│   ├── agentes/            # Sales agents
+│   ├── formapagos/         # Payment methods
+│   ├── impuestos/          # Tax rates
+│   ├── familias/           # Product families
+│   ├── fabricantes/        # Manufacturers
+│   └── [14 more modules]   # Complete configuration coverage
+├── system/                 # System administration
+│   ├── apiaccess/          # API access control
+│   ├── apikeyes/           # API key management
+│   ├── logmessages/        # System logs
+│   └── [4 more modules]    # System management
+├── communication/          # Communications
+│   ├── emailnotifications/ # Email templates
+│   ├── emailsentes/        # Email history
+│   └── contactos/          # Contact management
+└── geographic/             # Geographic data
+    ├── ciudades/           # Cities
+    ├── codigopostales/     # Postal codes
+    └── empresas/           # Company locations
+```
+
+### Module Structure
+
+Each module follows a consistent pattern:
+```
+module-name/
+├── resource.ts    # MCP resource implementation
+├── tool.ts        # Claude Desktop tool definition
+└── index.ts       # Module exports
+```
+
+This modular architecture provides:
+- **Better Organization**: Related functionality grouped together
+- **Easier Maintenance**: Changes isolated to specific modules
+- **Cleaner Code**: Smaller, focused files instead of large monoliths
+- **Enhanced Testability**: Individual modules can be tested in isolation
+- **Scalability**: Easy to add new modules or modify existing ones
 
 ## Configuration
 
@@ -296,19 +314,62 @@ Important files for maintaining context:
 - **TypeScript**: Strict types, use interfaces for API responses
 - **Imports**: Use `.js` extensions for ESM compatibility
 
-### Resource Implementation Pattern
+### Module Implementation Pattern
+
+**1. Resource Implementation (`resource.ts`):**
 ```typescript
-// src/resources/{name}.ts
-export const {Name}Resource: Resource = {
-  uri: new McpError(...),
-  name: "facturascripts://{name}",
-  description: "...",
-  async read(uri) {
-    // Parse limit/offset from uri.query
-    // Use client.getWithPagination()
-    // Return standardized response format
+// src/modules/{category}/{name}/resource.ts
+import { Resource } from '@modelcontextprotocol/sdk/types.js';
+import { FacturaScriptsClient } from '../../../fs/client.js';
+import { Entity } from '../../../types/facturascripts.js';
+import { parseUrlParameters } from '../../../utils/filterParser.js';
+
+export class EntityResource {
+  constructor(private client: FacturaScriptsClient) { }
+
+  async getResource(uri: string): Promise<Resource> {
+    const { limit, offset, additionalParams } = parseUrlParameters(uri);
+    // Resource implementation...
   }
+
+  matchesUri(uri: string): boolean {
+    // URI matching logic...
+  }
+}
+```
+
+**2. Tool Implementation (`tool.ts`):**
+```typescript
+// src/modules/{category}/{name}/tool.ts
+export const toolDefinition = {
+  name: 'get_{name}',
+  description: 'Spanish description of the tool functionality',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      limit: { type: 'number', description: '...', default: 50 },
+      offset: { type: 'number', description: '...', default: 0 },
+      filter: { type: 'string', description: 'Dynamic filtering...' },
+      order: { type: 'string', description: 'Dynamic sorting...' },
+    },
+  },
 };
+
+export const toolImplementation = async (resource: any, buildUri: Function) => {
+  const uri = buildUri('{name}');
+  const result = await resource.getResource(uri);
+  return { content: [{ type: 'text', text: result.contents[0].text }] };
+};
+```
+
+**3. Module Exports (`index.ts`):**
+```typescript
+// src/modules/{category}/{name}/index.ts
+export { EntityResource } from './resource.js';
+export { 
+  toolDefinition as entityToolDefinition,
+  toolImplementation as entityToolImplementation 
+} from './tool.js';
 ```
 
 ### Quality Checks

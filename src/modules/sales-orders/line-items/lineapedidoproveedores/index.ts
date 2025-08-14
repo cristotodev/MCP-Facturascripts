@@ -1,0 +1,2 @@
+export { LineaPedidoProveedoresResource, type LineaPedidoProveedor } from './resource.js';
+export { toolDefinition as lineapedidoproveedoresToolDefinition, toolImplementation as lineapedidoproveedoresToolImplementation } from './tool.js';

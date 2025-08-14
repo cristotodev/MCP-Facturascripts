@@ -1,0 +1,2 @@
+export { LineaFacturaClientesResource, type LineaFacturaCliente } from './resource.js';
+export { toolDefinition as lineafacturaclientesToolDefinition, toolImplementation as lineafacturaclientesToolImplementation } from './tool.js';

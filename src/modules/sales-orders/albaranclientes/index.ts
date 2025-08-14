@@ -1,0 +1,2 @@
+export { AlbaranclientesResource, type AlbaranCliente } from './resource.js';
+export { toolDefinition as albaranclientesToolDefinition, toolImplementation as albaranclientesToolImplementation } from './tool.js';

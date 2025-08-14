@@ -1,0 +1,2 @@
+export { PedidoclientesResource, type PedidoCliente } from './resource.js';
+export { toolDefinition as pedidoclientesToolDefinition, toolImplementation as pedidoclientesToolImplementation } from './tool.js';

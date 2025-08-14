@@ -1,0 +1,2 @@
+export { LineaPresupuestoClientesResource, type LineaPresupuestoCliente } from './resource.js';
+export { toolDefinition as lineapresupuestoclientesToolDefinition, toolImplementation as lineapresupuestoclientesToolImplementation } from './tool.js';

@@ -1,0 +1,2 @@
+export { LineaPresupuestoProveedoresResource, type LineaPresupuestoProveedor } from './resource.js';
+export { toolDefinition as lineapresupuestoproveedoresToolDefinition, toolImplementation as lineapresupuestoproveedoresToolImplementation } from './tool.js';
