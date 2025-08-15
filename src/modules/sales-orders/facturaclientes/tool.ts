@@ -77,14 +77,14 @@ export async function toolImplementation(
 // New tool definition for searching invoices by client CIF/NIF
 export const toolByCifnifDefinition = {
   name: 'get_facturas_cliente_por_cifnif',
-  description: 'Obtiene las facturas de un cliente específico mediante su CIF/NIF. Busca primero el cliente por CIF/NIF y luego sus facturas.',
+  description: 'Obtiene las facturas de un cliente específico mediante su CIF/NIF. Realiza una búsqueda en dos pasos: 1) Busca el cliente por CIF/NIF, 2) Obtiene sus facturas con filtros opcionales. Ejemplos: filtros por fechas (fecha_gte:2024-01-01), importes (total_gt:100.00), estado (pagada:false). Útil para atención al cliente, gestión de cobros y análisis financiero.',
   inputSchema: {
     type: 'object',
     properties: {
       cifnif: { type: 'string', description: 'CIF/NIF del cliente (requerido)' },
       limit: { type: 'number', description: 'Número máximo de facturas a devolver (1-1000)', minimum: 1, maximum: 1000, default: 50 },
       offset: { type: 'number', description: 'Número de facturas a omitir para paginación', minimum: 0, default: 0 },
-      filter: { type: 'string', description: 'Filtros adicionales para facturas en formato campo:valor (ej: fecha_gte:2024-01-01,total_gt:100)', default: '' },
+      filter: { type: 'string', description: 'Filtros adicionales para facturas. Formato: campo:valor separados por comas. Ejemplos: "fecha_gte:2024-01-01,total_gt:100.00,pagada:false" para facturas desde enero 2024, >100€, no pagadas. Operadores: _gt, _gte, _lt, _lte, _neq, _like', default: '' },
       order: { type: 'string', description: 'Ordenación de facturas en formato campo:asc|desc (ej: fecha:desc)', default: '' }
     },
     required: ['cifnif']

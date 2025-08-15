@@ -278,7 +278,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'get_facturas_cliente_por_cifnif',
-        description: 'Obtiene las facturas de un cliente específico mediante su CIF/NIF. Busca primero el cliente por CIF/NIF y luego sus facturas.',
+        description: 'Obtiene las facturas de un cliente específico mediante su CIF/NIF. Realiza una búsqueda en dos pasos: 1) Busca el cliente por CIF/NIF, 2) Obtiene sus facturas con filtros opcionales. Ejemplos: filtros por fechas (fecha_gte:2024-01-01), importes (total_gt:100.00), estado (pagada:false). Útil para atención al cliente, gestión de cobros y análisis financiero.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -301,7 +301,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             filter: {
               type: 'string',
-              description: 'Filtros adicionales para facturas en formato campo:valor (ej: fecha_gte:2024-01-01,total_gt:100)',
+              description: 'Filtros adicionales para facturas. Formato: campo:valor separados por comas. Ejemplos: "fecha_gte:2024-01-01,total_gt:100.00,pagada:false" para facturas desde enero 2024, >100€, no pagadas. Operadores: _gt, _gte, _lt, _lte, _neq, _like',
               default: '',
             },
             order: {
