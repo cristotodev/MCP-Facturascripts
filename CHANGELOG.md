@@ -8,13 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Comprehensive developer onboarding guide with 10-section documentation
-- Quick start reference guide with code templates and patterns
-- Specialized business tool: `get_facturas_cliente_por_cifnif` for invoice search by CIF/NIF
+- **Advanced Business Analytics Tool**: `get_productos_mas_vendidos` for best-selling products analysis with date range filtering
+- **TypeScript SDK Examples**: Comprehensive production-ready code samples in `examples/typescript-sdk/`
+- **Business Intelligence Features**: Product ranking by quantity sold and total revenue with flexible sorting
+- **Enhanced Tool Usage Documentation**: Detailed business scenarios and usage patterns in `docs/TOOL_USAGE_EXAMPLES.md`
+- **Implementation Status Documentation**: Complete project status overview in `docs/IMPLEMENTATION_STATUS.md`
+- **Multi-step Data Aggregation**: Advanced API operations with invoice lookup → line item aggregation → product grouping
+- **Smart Product Grouping**: Handles both catalog products (by referencia) and custom services (by descripcion)
 
 ### Changed
-- Updated `.gitignore` to include documentation folder in version control
-- Enhanced documentation structure and developer experience
+- **Test Coverage**: Increased from 358 to 374 comprehensive tests with business scenario validation
+- **Tool Count**: Enhanced from 56 to 57 interactive tools with specialized business analytics
+- **Documentation Structure**: Updated all documentation to reflect new analytics capabilities and SDK examples
+- **Developer Experience**: Enhanced onboarding guide with TypeScript SDK examples and patterns
+
+### Fixed
+- **Parameter Validation**: Improved limit bounds enforcement with nullish coalescing for edge cases
+- **Date Range Handling**: Robust validation and error messaging for business date periods
+- **Integration Testing**: Enhanced real API testing with malformed parameter scenarios
 
 ## [1.0.1] - 2025-01-14 - Complete Modular Architecture and Production Ready
 

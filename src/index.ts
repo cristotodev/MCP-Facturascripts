@@ -66,6 +66,7 @@ import { CodigopostalesResource } from './modules/geographic/codigopostales/reso
 import { EmpresasResource } from './modules/geographic/empresas/resource.js';
 // Import new tool functions
 import { toolByCifnifImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
 
 const server = new Server(
   {
@@ -1529,6 +1530,44 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: 'get_productos_mas_vendidos',
+        description: 'Obtiene un ranking de los productos más vendidos en un período determinado basado en líneas de facturas de clientes. Agrupa por referencia y descripción, sumando cantidades e importes facturados.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            fecha_desde: {
+              type: 'string',
+              format: 'date',
+              description: 'Fecha de inicio del período (YYYY-MM-DD, requerida)',
+            },
+            fecha_hasta: {
+              type: 'string',
+              format: 'date',
+              description: 'Fecha de fin del período (YYYY-MM-DD, requerida)',
+            },
+            limit: {
+              type: 'number',
+              description: 'Número máximo de productos a devolver en el ranking (1-1000)',
+              minimum: 1,
+              maximum: 1000,
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de productos a omitir para paginación',
+              minimum: 0,
+              default: 0,
+            },
+            order: {
+              type: 'string',
+              description: 'Ordenación del ranking: "cantidad_total:desc", "total_facturado:desc", etc.',
+              default: 'cantidad_total:desc',
+            },
+          },
+          required: ['fecha_desde', 'fecha_hasta'],
+        },
+      },
+      {
         name: 'get_lineafacturaproveedores',
         description: 'Obtiene la lista de líneas de factura de proveedores con paginación y filtros avanzados',
         inputSchema: {
@@ -2963,6 +3002,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      }
+
+      case 'get_productos_mas_vendidos': {
+        return await toolProductosMasVendidosImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_lineafacturaproveedores': {

@@ -23,10 +23,11 @@
 
 ### Key Stats (v1.0.1)
 - **56 MCP Resources**: Complete FacturaScripts API coverage
-- **57 Interactive Tools**: Including specialized business logic tools
-- **358 Tests**: Comprehensive unit & integration testing
+- **57 Interactive Tools**: Including specialized business analytics tools
+- **374 Tests**: Comprehensive unit & integration testing
 - **8 Module Categories**: Modular, well-organized architecture
 - **Production Ready**: Live API integration, error handling, monitoring
+- **TypeScript SDK Examples**: Comprehensive developer documentation with business-focused examples
 
 ### Business Context
 FacturaScripts is a popular Spanish ERP system used by businesses for:
@@ -397,6 +398,8 @@ git commit -m "chore: update changelog"
 2. **FacturaScripts API Documentation**: API v3 reference
 3. **TypeScript Handbook**: [typescriptlang.org](https://www.typescriptlang.org/)
 4. **Vitest Testing Framework**: [vitest.dev](https://vitest.dev/)
+5. **Tool Usage Examples**: `docs/TOOL_USAGE_EXAMPLES.md` - Comprehensive business scenarios
+6. **TypeScript SDK Examples**: `examples/typescript-sdk/` - Production-ready code samples
 
 ### Hands-On Tutorials
 
@@ -426,6 +429,31 @@ const filtered = await client.getWithPagination('/productos', 50, 0, {
   'filter[activo]': '1',
   'filter[precio][gt]': '10.00'
 });
+```
+
+#### TypeScript SDK Examples
+```typescript
+// Quick start with MCP TypeScript SDK
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+
+// Get best-selling products for business analysis
+const result = await client.request({
+  method: "tools/call",
+  params: {
+    name: "get_productos_mas_vendidos",
+    arguments: {
+      fecha_desde: "2024-01-01",
+      fecha_hasta: "2024-01-31",
+      limit: 10,
+      order: "cantidad_total:desc"
+    }
+  }
+});
+
+// See examples/typescript-sdk/ for comprehensive examples:
+// - productos-mas-vendidos.ts (advanced business scenarios)
+// - quick-start.ts (minimal implementation)
 ```
 
 #### Testing Patterns
@@ -627,4 +655,4 @@ You're now ready to start your journey as a MCP FacturaScripts developer. Rememb
 
 ---
 
-*This guide is maintained by the MCP FacturaScripts development team. Last updated: December 2024*
+*This guide is maintained by the MCP FacturaScripts development team. Last updated: August 2025*

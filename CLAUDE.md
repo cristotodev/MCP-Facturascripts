@@ -553,49 +553,74 @@ All 28 resources return consistent pagination format:
 
 ### Current Project Status (v1.0.1)
 - ✅ **56 MCP Resources** - Complete FacturaScripts API coverage
-- ✅ **56 Interactive Tools** - Full Claude Desktop integration with advanced filtering
-- ✅ **358 Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools
+- ✅ **57 Interactive Tools** - Full Claude Desktop integration with advanced filtering including specialized business analytics
+- ✅ **374 Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools
 - ✅ **Live API Integration** - Working with real FacturaScripts instances
 - ✅ **Advanced API Support** - Full FacturaScripts filtering, sorting, and pagination
 - ✅ **TypeScript Strict Mode** - Full type safety and IntelliSense
 - ✅ **Production Ready** - Error handling, documentation, and monitoring
 - ✅ **Automated Changelog** - Conventional commits and automated release management
 - ✅ **Enhanced Documentation** - Comprehensive guides and best practices
-- ✅ **Specialized Business Tools** - Advanced invoice search by CIF/NIF with comprehensive error handling
+- ✅ **Specialized Business Tools** - Advanced invoice search by CIF/NIF and best-selling products analytics with comprehensive error handling
+- ✅ **MCP TypeScript SDK Examples** - Comprehensive SDK documentation with business-focused examples
 
 ## Latest Implementation (Current Session)
 
-### New Specialized Tool: `get_facturas_cliente_por_cifnif`
+### New Specialized Tool: `get_productos_mas_vendidos`
+
+**Implementation Details:**
+- **Purpose**: Generate rankings of best-selling products/services within specified date periods based on invoice line items
+- **Location**: `src/modules/sales-orders/line-items/lineafacturaclientes/tool.ts`
+- **Registration**: Properly exported from module index and registered in main `src/index.ts`
+- **Parameters**:
+  - `fecha_desde`, `fecha_hasta` (required): Date range for analysis (YYYY-MM-DD)
+  - `limit`, `offset` (optional): Pagination (1-1000, default: 50)
+  - `order` (optional): Sort by quantity or revenue (default: "cantidad_total:desc")
+- **Multi-step Process**: Invoice lookup → Line item aggregation → Product grouping → Ranking generation
+- **Error Handling**: No invoices found, invalid IDs, API failures, empty descriptions
+- **Response Structure**: Period info + aggregated product rankings with totals
+
+**Advanced Features:**
+- **Smart Product Grouping**: Groups by `referencia` when available, otherwise by `descripcion`
+- **Data Aggregation**: Sums quantities (`cantidad_total`) and revenue (`total_facturado`) per product
+- **Flexible Sorting**: Supports sorting by units sold or total revenue (ascending/descending)
+- **Business Analytics**: Handles both catalog products and custom services seamlessly
+
+**Testing Coverage:**
+- **16 New Tests**: Comprehensive unit and integration testing
+- **Test Categories**: Success scenarios, error handling, parameter validation, pagination, sorting
+- **Integration Testing**: Real API validation with various date ranges and edge cases
+- **Total Test Count**: Increased from 358 to 374 tests
+
+**Key Features:**
+- **Date Range Validation**: Robust handling of date periods and edge cases
+- **Parameter Validation**: Limit bounds (1-1000), offset normalization, order validation
+- **Comprehensive Error Messages**: User-friendly Spanish error responses for business scenarios
+- **Consistent API Pattern**: Follows established filtering and pagination patterns
+- **Business Intelligence**: Provides actionable insights for inventory, marketing, and sales analysis
+
+**SDK Documentation & Examples:**
+- **Comprehensive Tool Usage Guide**: Added detailed examples to `docs/TOOL_USAGE_EXAMPLES.md`
+- **TypeScript SDK Examples**: Created `examples/typescript-sdk/` with production-ready code samples
+- **Business Scenarios**: Inventory management, revenue analysis, seasonal planning, performance monitoring
+- **Developer Experience**: Quick-start examples, advanced patterns, error handling, best practices
+
+**Quality Assurance:**
+- ✅ TypeScript compilation success
+- ✅ 100% test success rate (374/374 tests)
+- ✅ Integration testing with real FacturaScripts API
+- ✅ Comprehensive error scenario coverage
+- ✅ Parameter validation and sanitization
+- ✅ SDK documentation with business-focused examples
+
+### Previous Implementation: `get_facturas_cliente_por_cifnif`
 
 **Implementation Details:**
 - **Purpose**: Search customer invoices by CIF/NIF tax identification number
 - **Location**: `src/modules/sales-orders/facturaclientes/tool.ts`
-- **Registration**: Properly exported from module index and registered in main `src/index.ts`
-- **Parameters**:
-  - `cifnif` (required): Customer tax ID
-  - `limit`, `offset`, `order` (optional): Pagination and sorting
 - **Two-step Process**: Client lookup → Invoice retrieval
-- **Error Handling**: Client not found, invalid client code, API failures
-- **Response Structure**: Combined client info + paginated invoice data
-
-**Testing Coverage:**
-- **11 New Tests**: Comprehensive unit and integration testing
-- **Test Categories**: Success scenarios, error handling, parameter validation
-- **Integration Testing**: Real API validation with non-existent CIF/NIF
-- **Total Test Count**: Increased from 347 to 358 tests
-
-**Key Features:**
-- **Smart Client Resolution**: Handles both `nombre` and `razonsocial` fields
-- **Parameter Validation**: Limit bounds (1-1000), offset normalization
-- **Comprehensive Error Messages**: User-friendly Spanish error responses
-- **Consistent API Pattern**: Follows established filtering and pagination patterns
-
-**Quality Assurance:**
-- ✅ TypeScript compilation success
-- ✅ 100% test success rate (358/358 tests)
-- ✅ Integration testing with real FacturaScripts API
-- ✅ Comprehensive error scenario coverage
-- ✅ Parameter validation and sanitization
+- **Testing**: 11 comprehensive tests for business scenarios
+- **Status**: ✅ Complete and production-ready
 
 ## Changelog Management
 

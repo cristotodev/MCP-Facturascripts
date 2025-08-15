@@ -300,4 +300,375 @@ Check `hasMore` in the response to determine if there are additional pages.
 
 ---
 
-*This documentation helps AI assistants understand the tool's capabilities and use it effectively for various business scenarios.*
+## 🏆 Specialized Business Tool: `get_productos_mas_vendidos`
+
+### Overview
+Generate rankings of best-selling products or services within a specified date period, based on customer invoice line items. This tool performs comprehensive data aggregation:
+1. **Date Range Query**: Find all invoices within the specified period
+2. **Line Item Aggregation**: Group invoice lines by product (referencia or descripcion)
+3. **Sales Analysis**: Sum quantities and revenue for each product
+4. **Ranking Generation**: Sort by quantity sold or total revenue
+
+### Parameters
+- **`fecha_desde`** (required): Start date of analysis period (YYYY-MM-DD)
+- **`fecha_hasta`** (required): End date of analysis period (YYYY-MM-DD)
+- **`limit`** (optional): Maximum products in ranking (1-1000, default: 50)
+- **`offset`** (optional): Skip products for pagination (default: 0)
+- **`order`** (optional): Sort order - "cantidad_total:desc" or "total_facturado:desc" (default: "cantidad_total:desc")
+
+---
+
+## 📈 Usage Examples
+
+### 1. Monthly Best Sellers by Quantity
+**Scenario**: Find top 10 products sold in January 2024 by units sold
+
+```typescript
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-01-31",
+  limit: 10,
+  order: "cantidad_total:desc"
+})
+```
+
+**Expected Response**:
+```json
+{
+  "period": { "fecha_desde": "2024-01-01", "fecha_hasta": "2024-01-31" },
+  "meta": { "total": 45, "limit": 10, "offset": 0, "hasMore": true },
+  "data": [
+    {
+      "referencia": "HOST001",
+      "descripcion": "Hosting Básico 1GB",
+      "cantidad_total": 28,
+      "total_facturado": 1400.00
+    },
+    {
+      "referencia": "DOM001", 
+      "descripcion": "Dominio .com",
+      "cantidad_total": 15,
+      "total_facturado": 375.00
+    },
+    {
+      "referencia": null,
+      "descripcion": "Consultoría SEO Personalizada",
+      "cantidad_total": 8,
+      "total_facturado": 2400.00
+    }
+  ]
+}
+```
+
+### 2. Revenue-Based Ranking
+**Scenario**: Find products that generated most revenue in Q1 2024
+
+```typescript
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-03-31",
+  order: "total_facturado:desc",
+  limit: 15
+})
+```
+
+**Use Case**: Revenue analysis, high-value product identification, pricing strategy
+
+### 3. Annual Product Performance
+**Scenario**: Complete yearly analysis of all products sold
+
+```typescript
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  order: "cantidad_total:desc",
+  limit: 100
+})
+```
+
+**Use Case**: Annual reports, inventory planning, product discontinuation decisions
+
+### 4. Seasonal Analysis (Summer Period)
+**Scenario**: Analyze summer sales performance (June-August)
+
+```typescript
+get_productos_mas_vendidos({
+  fecha_desde: "2024-06-01",
+  fecha_hasta: "2024-08-31",
+  order: "total_facturado:desc",
+  limit: 20
+})
+```
+
+**Use Case**: Seasonal trend analysis, marketing campaign planning
+
+### 5. Weekly Performance with Pagination
+**Scenario**: Detailed weekly analysis with pagination through results
+
+```typescript
+// First page - top performers
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-15",
+  fecha_hasta: "2024-01-21",
+  limit: 5,
+  offset: 0,
+  order: "cantidad_total:desc"
+})
+
+// Second page - next tier
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-15", 
+  fecha_hasta: "2024-01-21",
+  limit: 5,
+  offset: 5,
+  order: "cantidad_total:desc"
+})
+```
+
+**Use Case**: Short-term performance tracking, promotional campaign analysis
+
+### 6. Product Discovery (Low-Volume High-Value)
+**Scenario**: Find products with lower sales volume but high revenue per unit
+
+```typescript
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  order: "total_facturado:desc",
+  limit: 50
+})
+```
+
+**Use Case**: Premium product analysis, profit margin optimization
+
+---
+
+## 📊 Advanced Analysis Examples
+
+### Monthly Comparison
+```typescript
+// January analysis
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-01-31",
+  order: "cantidad_total:desc"
+})
+
+// February analysis  
+get_productos_mas_vendidos({
+  fecha_desde: "2024-02-01",
+  fecha_hasta: "2024-02-29",
+  order: "cantidad_total:desc"
+})
+```
+
+### Product Category Analysis
+```typescript
+// Focus on specific time period for trend analysis
+get_productos_mas_vendidos({
+  fecha_desde: "2024-03-01",
+  fecha_hasta: "2024-03-31",
+  order: "total_facturado:desc",
+  limit: 25
+})
+```
+
+---
+
+## 🔍 Data Interpretation Guide
+
+### Understanding the Response
+
+**Product Grouping Logic**:
+- Products with `referencia` are grouped by their product code
+- Services without `referencia` are grouped by `descripcion`
+- This handles both catalog products and custom services
+
+**Metrics Explained**:
+- **`cantidad_total`**: Total units sold (sum of all line item quantities)
+- **`total_facturado`**: Total revenue generated (sum of all line item totals)
+- **Average price per unit**: `total_facturado / cantidad_total`
+
+**Sorting Options**:
+- **`cantidad_total:desc`**: Best sellers by volume (most units sold)
+- **`total_facturado:desc`**: Top revenue generators (highest income)
+- **`cantidad_total:asc`**: Least popular products
+- **`total_facturado:asc`**: Lowest revenue products
+
+---
+
+## ⚠️ Error Scenarios
+
+### 1. No Invoices in Period
+```typescript
+get_productos_mas_vendidos({
+  fecha_desde: "2030-01-01",
+  fecha_hasta: "2030-01-31"
+})
+```
+
+**Response**:
+```json
+{
+  "message": "No se encontraron facturas en el período especificado",
+  "period": { "fecha_desde": "2030-01-01", "fecha_hasta": "2030-01-31" },
+  "meta": { "total": 0, "limit": 50, "offset": 0, "hasMore": false },
+  "data": []
+}
+```
+
+### 2. Invalid Invoice IDs
+**Scenario**: Invoices found but contain invalid ID references
+
+**Response**:
+```json
+{
+  "message": "No se encontraron IDs de facturas válidos",
+  "period": { "fecha_desde": "2024-01-01", "fecha_hasta": "2024-01-31" },
+  "meta": { "total": 0, "limit": 50, "offset": 0, "hasMore": false },
+  "data": []
+}
+```
+
+### 3. API Connection Error
+**Response**:
+```json
+{
+  "error": "Failed to fetch productos más vendidos",
+  "message": "Connection timeout",
+  "period": { "fecha_desde": "2024-01-01", "fecha_hasta": "2024-01-31" },
+  "meta": { "total": 0, "limit": 50, "offset": 0, "hasMore": false },
+  "data": []
+}
+```
+
+---
+
+## 🎯 Business Use Cases
+
+### Inventory Management
+```typescript
+// Identify fast-moving products for restock planning
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-03-31",
+  order: "cantidad_total:desc",
+  limit: 20
+})
+```
+
+### Marketing Strategy
+```typescript
+// Find top revenue products for promotional focus
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  order: "total_facturado:desc",
+  limit: 10
+})
+```
+
+### Performance Monitoring
+```typescript
+// Weekly performance tracking
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-08",
+  fecha_hasta: "2024-01-14",
+  order: "cantidad_total:desc"
+})
+```
+
+### Product Lifecycle Analysis
+```typescript
+// Quarterly analysis for product decisions
+get_productos_mas_vendidos({
+  fecha_desde: "2024-04-01",
+  fecha_hasta: "2024-06-30",
+  order: "total_facturado:desc",
+  limit: 50
+})
+```
+
+### Seasonal Planning
+```typescript
+// Holiday season analysis (November-December)
+get_productos_mas_vendidos({
+  fecha_desde: "2024-11-01",
+  fecha_hasta: "2024-12-31",
+  order: "cantidad_total:desc",
+  limit: 30
+})
+```
+
+---
+
+## 💡 Tips for AI Assistants
+
+### 1. **Date Range Selection**
+- Use meaningful business periods (months, quarters, years)
+- Consider seasonal variations in product sales
+- Validate date formats (YYYY-MM-DD) before calling
+
+### 2. **Sort Order Strategy**
+- Use `cantidad_total:desc` for volume-based analysis
+- Use `total_facturado:desc` for revenue-focused insights
+- Consider business context when choosing sort order
+
+### 3. **Result Interpretation**
+- Explain the difference between volume and revenue rankings
+- Highlight products that appear in both top lists
+- Identify products with high revenue-per-unit ratios
+
+### 4. **Pagination Best Practices**
+- Start with reasonable limits (10-25 for summaries)
+- Use pagination for detailed analysis
+- Check `hasMore` to determine if additional data exists
+
+### 5. **Business Context**
+- Relate findings to business seasons and cycles
+- Consider external factors (promotions, market changes)
+- Suggest actionable insights based on the data
+
+### 6. **Data Quality**
+- Handle products without `referencia` appropriately
+- Explain grouping logic to users when relevant
+- Note when services vs products are being analyzed
+
+---
+
+## 🔄 Pagination Example for Large Datasets
+
+For businesses with extensive product catalogs:
+
+```typescript
+// Page 1 (top 20 products)
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  limit: 20,
+  offset: 0,
+  order: "cantidad_total:desc"
+})
+
+// Page 2 (next 20 products)
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  limit: 20,
+  offset: 20,
+  order: "cantidad_total:desc"
+})
+
+// Page 3 (next 20 products)  
+get_productos_mas_vendidos({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  limit: 20,
+  offset: 40,
+  order: "cantidad_total:desc"
+})
+```
+
+---
+
+*This documentation helps AI assistants understand both tools' capabilities and use them effectively for comprehensive business analysis scenarios.*

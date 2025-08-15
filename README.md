@@ -5,7 +5,9 @@
 ## Features
 
 - **56 MCP Resources**: Complete coverage of FacturaScripts entities including business transactions, accounting accounts, contacts, inventory, system administration, and more
+- **57 Interactive Tools**: Including specialized business analytics tools for advanced data analysis
 - **Full Accounting Integration**: Access to accounting accounts, entry concepts, bank accounts, and financial data
+- **Business Analytics**: Best-selling products analysis, invoice search by tax ID, and comprehensive business intelligence
 - **Contact & CRM Management**: Comprehensive contact management with customer and supplier relationships
 - **Business Operations**: Orders, invoices, quotes, delivery notes, products, suppliers, and inventory
 - **System Administration**: API access control, scheduled jobs, attachments, and configuration
@@ -14,7 +16,8 @@
 - **TypeScript**: Built with TypeScript for type safety and better development experience
 - **Advanced Filtering**: Support for filters, sorting, and pagination on all resources
 - **Claude Desktop Integration**: Interactive tools for seamless AI assistant integration
-- **Comprehensive Testing**: 358 unit and integration tests with Test-Driven Development approach and modular test organization
+- **Comprehensive Testing**: 374 unit and integration tests with Test-Driven Development approach and modular test organization
+- **TypeScript SDK Examples**: Production-ready code samples and comprehensive developer documentation
 - **MCP Inspector Compatible**: Auto-building entry point ensuring compatibility with MCP Inspector and development tools
 
 ## Prerequisites
@@ -530,6 +533,56 @@ tests/
 │   └── modules/             # Integration tests organized by same categories
 └── setup.ts                # Global test setup and teardown
 ```
+
+## Examples & Documentation
+
+### TypeScript SDK Examples
+
+The `examples/` directory contains comprehensive examples for using the MCP FacturaScripts server with the TypeScript SDK:
+
+```
+examples/
+├── typescript-sdk/
+│   ├── productos-mas-vendidos.ts  # Comprehensive business analytics example
+│   ├── quick-start.ts              # Minimal quick-start example  
+│   └── README.md                   # Complete setup and usage guide
+└── README.md                       # Examples overview and documentation
+```
+
+**Quick Start Example**:
+```typescript
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+
+// Get best-selling products for January 2024
+const result = await client.request({
+  method: "tools/call", 
+  params: {
+    name: "get_productos_mas_vendidos",
+    arguments: {
+      fecha_desde: "2024-01-01",
+      fecha_hasta: "2024-01-31",
+      limit: 10
+    }
+  }
+});
+```
+
+### Documentation
+
+- **`docs/TOOL_USAGE_EXAMPLES.md`**: Comprehensive business scenarios and usage patterns
+- **`docs/DEVELOPER_ONBOARDING_GUIDE.md`**: Complete developer setup and workflow guide
+- **`docs/IMPLEMENTATION_STATUS.md`**: Detailed project status and implementation coverage
+- **`CLAUDE.md`**: Project context and implementation guidelines for AI assistants
+
+### Business Use Cases
+
+The specialized business tools support various real-world scenarios:
+
+- **📊 Sales Analytics**: `get_productos_mas_vendidos` for product performance analysis
+- **🔍 Customer Service**: `get_facturas_cliente_por_cifnif` for invoice lookup by tax ID
+- **📈 Inventory Management**: Fast-moving product identification for restock planning
+- **💰 Revenue Analysis**: Top revenue generators and profit margin optimization
+- **📅 Seasonal Planning**: Quarterly and seasonal sales trend analysis
 
 ## Configuration
 
