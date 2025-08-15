@@ -84,6 +84,7 @@ export const toolByCifnifDefinition = {
       cifnif: { type: 'string', description: 'CIF/NIF del cliente (requerido)' },
       limit: { type: 'number', description: 'Número máximo de facturas a devolver (1-1000)', minimum: 1, maximum: 1000, default: 50 },
       offset: { type: 'number', description: 'Número de facturas a omitir para paginación', minimum: 0, default: 0 },
+      filter: { type: 'string', description: 'Filtros adicionales para facturas en formato campo:valor (ej: fecha_gte:2024-01-01,total_gt:100)', default: '' },
       order: { type: 'string', description: 'Ordenación de facturas en formato campo:asc|desc (ej: fecha:desc)', default: '' }
     },
     required: ['cifnif']
@@ -91,7 +92,7 @@ export const toolByCifnifDefinition = {
 };
 
 export async function toolByCifnifImplementation(
-  args: { cifnif: string; limit?: number; offset?: number; order?: string },
+  args: { cifnif: string; limit?: number; offset?: number; filter?: string; order?: string },
   client: FacturaScriptsClient
 ) {
   const { cifnif } = args;
@@ -165,8 +166,13 @@ export async function toolByCifnifImplementation(
       };
     }
 
-    // Step 3: Search for invoices using the client code
-    const invoiceFilter = `codcliente:${codcliente}`;
+    // Step 3: Search for invoices using the client code and additional filters
+    let invoiceFilter = `codcliente:${codcliente}`;
+    if (args.filter) {
+      // Combine client filter with additional filters
+      invoiceFilter += `,${args.filter}`;
+    }
+    
     const invoiceParams = new URLSearchParams();
     invoiceParams.append('limit', limit.toString());
     invoiceParams.append('offset', offset.toString());

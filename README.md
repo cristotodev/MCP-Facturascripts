@@ -394,10 +394,11 @@ All resources have corresponding interactive tools for Claude Desktop:
 **Advanced Customer Invoice Search**:
 - **`get_facturas_cliente_por_cifnif`**: Retrieve customer invoices by CIF/NIF (tax ID)
   - **Required Parameter**: `cifnif` - Customer's tax identification number
-  - **Optional Parameters**: `limit`, `offset`, `order` (sorting)
+  - **Optional Parameters**: `limit`, `offset`, `filter`, `order`
+  - **Dynamic Filtering**: Supports additional filters for invoices (e.g., `fecha_gte:2024-01-01,total_gt:100`)
   - **Two-step Process**: 
     1. Searches for customer by CIF/NIF
-    2. Retrieves all invoices for that customer
+    2. Retrieves filtered invoices for that customer
   - **Response**: Includes customer information + paginated invoice list
   - **Error Handling**: Comprehensive validation and user-friendly error messages
 
@@ -406,6 +407,7 @@ All resources have corresponding interactive tools for Claude Desktop:
 get_facturas_cliente_por_cifnif({
   cifnif: "12345678A",
   limit: 25,
+  filter: "fecha_gte:2024-01-01,total_gt:100.00",
   order: "fecha:desc"
 })
 ```

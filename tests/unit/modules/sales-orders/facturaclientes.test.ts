@@ -264,6 +264,62 @@ describe('toolByCifnifImplementation', () => {
       const parsedResult = JSON.parse(result.content[0].text);
       expect(parsedResult.clientInfo.nombre).toBe('Test Company Ltd.');
     });
+
+    it('should handle additional filter parameter for invoices', async () => {
+      const mockClientData = {
+        codcliente: 'CLI001',
+        cifnif: '12345678A',
+        nombre: 'Test Client'
+      };
+
+      const mockInvoices = [
+        {
+          codigo: 'FAC001',
+          codcliente: 'CLI001',
+          fecha: '2024-01-15',
+          total: 100.00,
+          pagada: false
+        }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: [mockClientData],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 1, limit: 50, offset: 0, hasMore: false }
+        });
+
+      const result = await toolByCifnifImplementation(
+        { 
+          cifnif: '12345678A',
+          filter: 'fecha_gte:2024-01-01,total_gt:50.00',
+          order: 'fecha:desc'
+        },
+        mockClient
+      );
+
+      // Verify invoice search was called with combined filters
+      expect(mockClient.getWithPagination).toHaveBeenNthCalledWith(
+        2,
+        '/facturaclientes',
+        50,
+        0,
+        { 
+          'filter[codcliente]': 'CLI001',
+          'filter[fecha_gte]': '2024-01-01',
+          'filter[total_gt]': '50.00',
+          'sort[fecha]': 'DESC'
+        }
+      );
+
+      expect(result.content[0].type).toBe('text');
+      const parsedResult = JSON.parse(result.content[0].text);
+      expect(parsedResult.clientInfo.codcliente).toBe('CLI001');
+      expect(parsedResult.invoices.data).toEqual(mockInvoices);
+    });
   });
 
   describe('error scenarios', () => {

@@ -299,6 +299,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               minimum: 0,
               default: 0,
             },
+            filter: {
+              type: 'string',
+              description: 'Filtros adicionales para facturas en formato campo:valor (ej: fecha_gte:2024-01-01,total_gt:100)',
+              default: '',
+            },
             order: {
               type: 'string',
               description: 'Ordenación de facturas en formato campo:asc|desc (ej: fecha:desc)',
