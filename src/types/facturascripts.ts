@@ -129,6 +129,31 @@ export interface ConceptoPartida {
   descripcion?: string;
 }
 
+// Partida (Accounting Entry Line) entity
+export interface Partida {
+  idpartida: number;
+  idasiento: number;
+  codsubcuenta?: string;
+  idsubcuenta?: number;
+  concepto?: string;
+  debe?: number;
+  haber?: number;
+  baseimponible?: number;
+  iva?: number;
+  recargo?: number;
+  saldo?: number;
+  coddivisa?: string;
+  tasaconv?: number;
+  cifnif?: string;
+  documento?: string;
+  factura?: string;
+  punteada?: number;
+  orden?: number;
+  codcontrapartida?: string;
+  idcontrapartida?: number;
+  codserie?: string;
+}
+
 // Contacto (Contact) entity
 export interface Contacto {
   aceptaprivacidad?: number;
@@ -293,16 +318,17 @@ export interface FacturaProveedor {
 // Stock entity
 export interface Stock {
   idstock: number;
-  referencia: string;
-  codalmacen: string;
+  referencia?: string;
+  codalmacen?: string;
   descripcion?: string;
-  cantidad: number;
+  cantidad?: number;
   reservada?: number;
   disponible?: number;
   pterecibir?: number;
   stockmin?: number;
   stockmax?: number;
   ubicacion?: string;
+  idproducto?: number;
 }
 
 // Delivery Note (AlbaranCliente) entity
@@ -425,6 +451,58 @@ export interface GrupoClientes {
   codsubcuenta?: string;
   codtarifa?: string;
   nombre: string;
+}
+
+// Product (Producto) entity
+export interface Producto {
+  idproducto: number;
+  referencia?: string;
+  descripcion?: string;
+  precio?: number;
+  codfamilia?: string;
+  codfabricante?: string;
+  codimpuesto?: string;
+  stockfis?: number;
+  nostock?: number;
+  secompra?: number;
+  sevende?: number;
+  publico?: number;
+  bloqueado?: number;
+  ventasinstock?: number;
+  codsubcuentacom?: string;
+  codsubcuentaven?: string;
+  codsubcuentairpfcom?: string;
+  excepcioniva?: string;
+  tipo?: string;
+  observaciones?: string;
+  fechaalta?: string;
+  actualizado?: string;
+}
+
+// Product Image (ProductoImagen) entity
+export interface ProductoImagen {
+  id: number;
+  idproducto: number;
+  idfile: number;
+  referencia?: string;
+  orden?: number;
+}
+
+// Province (Provincia) entity
+export interface Provincia {
+  idprovincia: number;
+  provincia?: string;
+  codpais?: string;
+  codisoprov?: string;
+  codeid?: string;
+  alias?: string;
+  latitude?: number;
+  longitude?: number;
+  telephone_prefix?: string;
+  nick?: string;
+  last_nick?: string;
+  creation_date?: string;
+  last_update?: string;
 }
 
 // Product Family (Familia) entity
@@ -882,6 +960,238 @@ export interface LogMessage {
   nick?: string;
   time?: string;
   uri?: string;
+}
+
+// Page (Page Definition) entity
+export interface Page {
+  icon?: string;
+  menu?: string;
+  name?: string;
+  ordernum?: number;
+  showonmenu?: number;
+  submenu?: string;
+  title?: string;
+}
+
+// PageFilter (Page Filter) entity
+export interface PageFilter {
+  description?: string;
+  filters?: string;
+  id?: number;
+  name?: string;
+  nick?: string;
+}
+
+// PagoCliente (Customer Payment) entity
+export interface PagoCliente {
+  codpago?: string;
+  customid?: string;
+  customstatus?: string;
+  fecha?: string;
+  gastos?: number;
+  hora?: string;
+  idasiento?: number;
+  idpago?: number;
+  idrecibo?: number;
+  importe?: number;
+  nick?: string;
+}
+
+// PagoProveedor (Supplier Payment) entity
+export interface PagoProveedor {
+  codpago?: string;
+  fecha?: string;
+  hora?: string;
+  idasiento?: number;
+  idpago?: number;
+  idrecibo?: number;
+  importe?: number;
+  nick?: string;
+}
+
+// Pais (Country) entity
+export interface Pais {
+  alias?: string;
+  codiso?: string;
+  codpais?: string;
+  creation_date?: string;
+  last_nick?: string;
+  last_update?: string;
+  latitude?: number;
+  longitude?: number;
+  nick?: string;
+  nombre?: string;
+  telephone_prefix?: string;
+}
+
+// PuntoInteresCiudad (City Point of Interest) entity
+export interface PuntoInteresCiudad {
+  alias?: string;
+  creation_date?: string;
+  id: number;
+  idciudad?: number;
+  last_nick?: string;
+  last_update?: string;
+  latitude?: number;
+  longitude?: number;
+  name?: string;
+  nick?: string;
+}
+
+// ReciboCliente (Customer Receipt) entity
+export interface ReciboCliente {
+  codcliente?: string;
+  coddivisa?: string;
+  codigofactura?: string;
+  codpago?: string;
+  fecha?: string;
+  fechapago?: string;
+  gastos?: number;
+  idempresa?: number;
+  idfactura?: number;
+  idrecibo: number;
+  importe?: number;
+  liquidado?: number;
+  nick?: string;
+  numero?: number;
+  observaciones?: string;
+  pagado?: number;
+  vencido?: number;
+  vencimiento?: string;
+}
+
+// ReciboProveedor (Supplier Receipt) entity
+export interface ReciboProveedor {
+  coddivisa?: string;
+  codigofactura?: string;
+  codpago?: string;
+  codproveedor?: string;
+  fecha?: string;
+  fechapago?: string;
+  idempresa?: number;
+  idfactura?: number;
+  idrecibo: number;
+  importe?: number;
+  liquidado?: number;
+  nick?: string;
+  numero?: number;
+  observaciones?: string;
+  pagado?: number;
+  vencido?: number;
+  vencimiento?: string;
+}
+
+// RegularizacionImpuesto (Tax Regularization) entity
+export interface RegularizacionImpuesto {
+  bloquear?: number;
+  codejercicio?: string;
+  codsubcuentaacr?: string;
+  codsubcuentadeu?: string;
+  fechaasiento?: string;
+  fechafin?: string;
+  fechainicio?: string;
+  idasiento?: number;
+  idempresa?: number;
+  idregiva: number;
+  idsubcuentaacr?: number;
+  idsubcuentadeu?: number;
+  periodo?: string;
+}
+
+// Retencion (Retention/Withholding) entity
+export interface Retencion {
+  activa?: number;
+  codretencion: string;
+  codsubcuentaret?: string;
+  codsubcuentaacr?: string;
+  descripcion?: string;
+  porcentaje?: number;
+}
+
+// SecuenciaDocumento (Document Sequence) entity
+export interface SecuenciaDocumento {
+  codejercicio?: string;
+  codserie?: string;
+  idempresa?: number;
+  idsecuencia: number;
+  inicio?: number;
+  longnumero?: number;
+  numero?: number;
+  patron?: string;
+  tipodoc?: string;
+  usarhuecos?: number;
+}
+
+// Serie (Series) entity
+export interface Serie {
+  canal?: number;
+  codserie: string;
+  descripcion?: string;
+  iddiario?: number;
+  siniva?: number;
+  tipo?: string;
+}
+
+// Subcuenta (Sub-account) entity
+export interface Subcuenta {
+  codcuenta?: string;
+  codcuentaesp?: string;
+  codejercicio?: string;
+  codsubcuenta: string;
+  debe?: number;
+  descripcion?: string;
+  haber?: number;
+  idcuenta?: number;
+  idsubcuenta: number;
+  saldo?: number;
+}
+
+// Tarifa (Tariff/Price List) entity
+export interface Tarifa {
+  aplicar?: string;
+  codtarifa: string;
+  maxpvp?: number;
+  mincoste?: number;
+  nombre?: string;
+  valorx?: number;
+  valory?: number;
+}
+
+// TotalModel (Analytics/Aggregation Model) entity
+export interface TotalModel {
+  // Based on OpenAPI spec, this appears to be a flexible analytics entity
+  // The example shows an empty array, so this is likely a dynamic structure
+  [key: string]: any;
+}
+
+// Variante (Product Variant) entity
+export interface Variante {
+  codbarras?: string;
+  coste?: number;
+  idatributovalor1?: number;
+  idatributovalor2?: number;
+  idatributovalor3?: number;
+  idatributovalor4?: number;
+  idproducto?: number;
+  idvariante: number;
+  margen?: number;
+  precio?: number;
+  referencia?: string;
+  stockfis?: number;
+}
+
+// WorkEvent (Work/Job Event) entity
+export interface WorkEvent {
+  creation_date?: string;
+  done?: number;
+  done_date?: string;
+  id: number;
+  name?: string;
+  nick?: string;
+  params?: string;
+  value?: string;
+  workers?: number;
+  worker_list?: string;
 }
 
 // Standard response format for paginated data

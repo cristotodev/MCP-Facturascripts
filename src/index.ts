@@ -12,9 +12,13 @@ import { ClientesResource } from './modules/core-business/clientes/resource.js';
 import { ProductosResource } from './modules/core-business/productos/resource.js';
 import { ProveedoresResource } from './modules/core-business/proveedores/resource.js';
 import { StocksResource } from './modules/core-business/stocks/resource.js';
+import { ProductoimagenesResource } from './modules/core-business/productoimagenes/resource.js';
+import { VariantesResource } from './modules/core-business/variantes/resource.js';
 import { ProductoproveedoresResource } from './modules/purchasing/productoproveedores/resource.js';
 import { FacturaproveedoresResource } from './modules/purchasing/facturaproveedores/resource.js';
 import { AlbaranproveedoresResource } from './modules/purchasing/albaranproveedores/resource.js';
+import { PedidoproveedoresResource } from './modules/purchasing/pedidoproveedores/resource.js';
+import { PresupuestoproveedoresResource } from './modules/purchasing/presupuestoproveedores/resource.js';
 import { PedidoclientesResource } from './modules/sales-orders/pedidoclientes/resource.js';
 import { FacturaclientesResource } from './modules/sales-orders/facturaclientes/resource.js';
 import { PresupuestoclientesResource } from './modules/sales-orders/presupuestoclientes/resource.js';
@@ -32,6 +36,7 @@ import { CuentasResource } from './modules/accounting/cuentas/resource.js';
 import { DiariosResource } from './modules/accounting/diarios/resource.js';
 import { EjerciciosResource } from './modules/accounting/ejercicios/resource.js';
 import { ConceptopartidasResource } from './modules/accounting/conceptopartidas/resource.js';
+import { PartidasResource } from './modules/accounting/partidas/resource.js';
 import { CuentabancosResource } from './modules/finance/cuentabancos/resource.js';
 import { CuentabanccllientesResource } from './modules/finance/cuentabancoclientes/resource.js';
 import { CuentabancoproveedoresResource } from './modules/finance/cuentabancoproveedores/resource.js';
@@ -58,17 +63,51 @@ import { AttachedfilerelationsResource } from './modules/system/attachedfilerela
 import { CronjobesResource } from './modules/system/cronjobes/resource.js';
 import { DoctransformationsResource } from './modules/system/doctransformations/resource.js';
 import { LogmessagesResource } from './modules/system/logmessages/resource.js';
+import { TotalModelesResource } from './modules/system/totalmodeles/resource.js';
+import { WorkEventesResource } from './modules/system/workeventes/resource.js';
 import { ContactosResource } from './modules/communication/contactos/resource.js';
 import { EmailnotificationsResource } from './modules/communication/emailnotifications/resource.js';
 import { EmailsentesResource } from './modules/communication/emailsentes/resource.js';
 import { CiudadesResource } from './modules/geographic/ciudades/resource.js';
 import { CodigopostalesResource } from './modules/geographic/codigopostales/resource.js';
 import { EmpresasResource } from './modules/geographic/empresas/resource.js';
+import { PaisResource } from './modules/geographic/pais/resource.js';
+import { ProvinciasResource } from './modules/geographic/provincias/resource.js';
+import { PagesResource } from './modules/system/pages/resource.js';
+import { PagefilteresResource } from './modules/system/pagefilteres/resource.js';
+import { PagoclientesResource } from './modules/finance/pagoclientes/resource.js';
+import { PagoproveedoresResource } from './modules/finance/pagoproveedores/resource.js';
+import { PuntointeresciudadesResource } from './modules/geographic/puntointeresciudades/resource.js';
+import { ReciboclientesResource } from './modules/finance/reciboclientes/resource.js';
+import { ReciboproveedoresResource } from './modules/finance/reciboproveedores/resource.js';
+import { RegularizacionimpuestosResource } from './modules/configuration/regularizacionimpuestos/resource.js';
+import { RetencionesResource } from './modules/configuration/retenciones/resource.js';
+import { SecuenciadocumentosResource } from './modules/configuration/secuenciadocumentos/resource.js';
+import { SeriesResource } from './modules/configuration/series/resource.js';
+import { SubcuentasResource } from './modules/accounting/subcuentas/resource.js';
+import { TarifasResource } from './modules/configuration/tarifas/resource.js';
 // Import new tool functions
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolExportarFacturaImplementation } from './modules/sales-orders/facturaclientes/tool.js';
 import { lowStockToolImplementation } from './modules/core-business/stocks/tool.js';
 import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
 import { productosNoVendidosToolDefinition, productosNoVendidosToolImplementation } from './modules/core-business/productos/index.js';
+import { partidasToolDefinition, partidasToolImplementation } from './modules/accounting/partidas/index.js';
+import { pedidoproveedoresToolDefinition, pedidoproveedoresToolImplementation } from './modules/purchasing/pedidoproveedores/index.js';
+import { presupuestoproveedoresToolDefinition, presupuestoproveedoresToolImplementation } from './modules/purchasing/presupuestoproveedores/index.js';
+import { productoimagenesToolDefinition, productoimagenesToolImplementation } from './modules/core-business/productoimagenes/index.js';
+import { provinciasToolDefinition, provinciasToolImplementation } from './modules/geographic/provincias/index.js';
+import { puntointeresciudadesToolDefinition, puntointeresciudadesToolImplementation } from './modules/geographic/puntointeresciudades/index.js';
+import { reciboclientesToolDefinition, reciboclientesToolImplementation } from './modules/finance/reciboclientes/index.js';
+import { reciboproveedoresToolDefinition, reciboproveedoresToolImplementation } from './modules/finance/reciboproveedores/index.js';
+import { regularizacionimpuestosToolDefinition, regularizacionimpuestosToolImplementation } from './modules/configuration/regularizacionimpuestos/index.js';
+import { retencionesToolDefinition, retencionesToolImplementation } from './modules/configuration/retenciones/index.js';
+import { secuenciadocumentosToolDefinition, secuenciadocumentosToolImplementation } from './modules/configuration/secuenciadocumentos/index.js';
+import { seriesToolDefinition, seriesToolImplementation } from './modules/configuration/series/index.js';
+import { subcuentasToolDefinition, subcuentasToolImplementation } from './modules/accounting/subcuentas/index.js';
+import { tarifasToolDefinition, tarifasToolImplementation } from './modules/configuration/tarifas/index.js';
+import { totalModelesToolDefinition, totalModelesToolImplementation } from './modules/system/totalmodeles/index.js';
+import { variantesToolDefinition, variantesToolImplementation } from './modules/core-business/variantes/index.js';
+import { workEventesToolDefinition, workEventesToolImplementation } from './modules/system/workeventes/index.js';
 
 const server = new Server(
   {
@@ -87,11 +126,15 @@ const fsClient = new FacturaScriptsClient();
 const clientesResource = new ClientesResource(fsClient);
 const productosResource = new ProductosResource(fsClient);
 const productoproveedoresResource = new ProductoproveedoresResource(fsClient);
+const pedidoproveedoresResource = new PedidoproveedoresResource(fsClient);
+const presupuestoproveedoresResource = new PresupuestoproveedoresResource(fsClient);
 const pedidoclientesResource = new PedidoclientesResource(fsClient);
 const facturaclientesResource = new FacturaclientesResource(fsClient);
 const presupuestoclientesResource = new PresupuestoclientesResource(fsClient);
 const proveedoresResource = new ProveedoresResource(fsClient);
 const stocksResource = new StocksResource(fsClient);
+const productoimagenesResource = new ProductoimagenesResource(fsClient);
+const variantesResource = new VariantesResource(fsClient);
 const facturaproveedoresResource = new FacturaproveedoresResource(fsClient);
 const agenciatransportesResource = new AgenciatransportesResource(fsClient);
 const agentesResource = new AgentesResource(fsClient);
@@ -108,6 +151,7 @@ const attachedFileRelationsResource = new AttachedfilerelationsResource(fsClient
 const ciudadesResource = new CiudadesResource(fsClient);
 const codigoPostalesResource = new CodigopostalesResource(fsClient);
 const conceptopartidasResource = new ConceptopartidasResource(fsClient);
+const partidasResource = new PartidasResource(fsClient);
 const contactosResource = new ContactosResource(fsClient);
 const cronjobesResource = new CronjobesResource(fsClient);
 const cuentasResource = new CuentasResource(fsClient);
@@ -140,6 +184,23 @@ const lineaPedidoProveedoresResource = new LineaPedidoProveedoresResource(fsClie
 const lineaPresupuestoClientesResource = new LineaPresupuestoClientesResource(fsClient);
 const lineaPresupuestoProveedoresResource = new LineaPresupuestoProveedoresResource(fsClient);
 const logMessagesResource = new LogmessagesResource(fsClient);
+const pagesResource = new PagesResource(fsClient);
+const pagefilteresResource = new PagefilteresResource(fsClient);
+const pagoclientesResource = new PagoclientesResource(fsClient);
+const pagoproveedoresResource = new PagoproveedoresResource(fsClient);
+const paisResource = new PaisResource(fsClient);
+const provinciasResource = new ProvinciasResource(fsClient);
+const puntointeresciudadesResource = new PuntointeresciudadesResource(fsClient);
+const reciboclientesResource = new ReciboclientesResource(fsClient);
+const reciboproveedoresResource = new ReciboproveedoresResource(fsClient);
+const regularizacionimpuestosResource = new RegularizacionimpuestosResource(fsClient);
+const retencionesResource = new RetencionesResource(fsClient);
+const secuenciadocumentosResource = new SecuenciadocumentosResource(fsClient);
+const seriesResource = new SeriesResource(fsClient);
+const subcuentasResource = new SubcuentasResource(fsClient);
+const tarifasResource = new TarifasResource(fsClient);
+const totalModelesResource = new TotalModelesResource(fsClient);
+const workEventesResource = new WorkEventesResource(fsClient);
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -199,6 +260,37 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       productosNoVendidosToolDefinition,
+      partidasToolDefinition,
+      pedidoproveedoresToolDefinition,
+      presupuestoproveedoresToolDefinition,
+      productoimagenesToolDefinition,
+      provinciasToolDefinition,
+      puntointeresciudadesToolDefinition,
+      reciboclientesToolDefinition,
+      reciboproveedoresToolDefinition,
+      regularizacionimpuestosToolDefinition,
+      retencionesToolDefinition,
+      secuenciadocumentosToolDefinition,
+      seriesToolDefinition,
+      subcuentasToolDefinition,
+      tarifasToolDefinition,
+      totalModelesToolDefinition,
+      variantesToolDefinition,
+      workEventesToolDefinition,
+      {
+        name: 'exportar_factura_cliente',
+        description: 'Exporta una factura de cliente en formato PDF. Proporciona el código de la factura y obtiene el documento PDF listo para descarga. Útil para envío de facturas a clientes, archivo de documentos y gestión documental.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            code: { type: 'string', description: 'Código de la factura a exportar (requerido)' },
+            type: { type: 'string', description: 'Tipo de exportación', enum: ['PDF'], default: 'PDF' },
+            format: { type: 'number', description: 'Formato del documento (0 por defecto)', default: 0 },
+            lang: { type: 'string', description: 'Código de idioma para el documento', default: 'es' }
+          },
+          required: ['code']
+        }
+      },
       {
         name: 'get_productoproveedores',
         description: 'Obtiene la lista de productos por proveedor con paginación y filtros avanzados',
@@ -1789,6 +1881,141 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_pages',
+        description: 'Obtiene la lista de páginas del sistema con información de menús, iconos y configuraciones de visualización',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_pagefilteres',
+        description: 'Obtiene la lista de filtros de página para configuración de vistas y filtros personalizados de usuarios',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_pagoclientes',
+        description: 'Obtiene la lista de pagos de clientes con información de importes, fechas, asientos contables y estados de pago',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_pagoproveedores',
+        description: 'Obtiene la lista de pagos a proveedores con información de importes, fechas, asientos contables y métodos de pago',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_pais',
+        description: 'Obtiene la lista de países con información de códigos ISO, coordenadas geográficas, prefijos telefónicos y configuraciones regionales',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: {
+              type: 'number',
+              description: 'Número máximo de registros a devolver (por defecto: 50)',
+              default: 50,
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de registros a omitir (por defecto: 0)',
+              default: 0,
+            },
+            filter: {
+              type: 'string',
+              description: 'Filtros dinámicos. Formato: "campo:valor" o "campo1:valor1,campo2:valor2". Soporta operadores avanzados: campo_gt:valor, campo_like:texto, etc.',
+            },
+            order: {
+              type: 'string',
+              description: 'Orden en formato "campo:asc|desc" o múltiple "campo1:asc,campo2:desc"',
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -2132,6 +2359,138 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
         description: 'Lista de mensajes de log del sistema de FacturaScripts con paginación',
         mimeType: 'application/json',
       },
+      {
+        uri: 'facturascripts://pages',
+        name: 'FacturaScripts Pages',
+        description: 'Lista de páginas del sistema de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://pagefilteres',
+        name: 'FacturaScripts Page Filters',
+        description: 'Lista de filtros de página de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://pagoclientes',
+        name: 'FacturaScripts Customer Payments',
+        description: 'Lista de pagos de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://pagoproveedores',
+        name: 'FacturaScripts Supplier Payments',
+        description: 'Lista de pagos a proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://pais',
+        name: 'FacturaScripts Countries',
+        description: 'Lista de países de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://partidas',
+        name: 'FacturaScripts Accounting Entry Lines',
+        description: 'Lista de líneas de asientos contables de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://pedidoproveedores',
+        name: 'FacturaScripts Supplier Orders',
+        description: 'Lista de pedidos de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://presupuestoproveedores',
+        name: 'FacturaScripts Supplier Quotes',
+        description: 'Lista de presupuestos de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://productoimagenes',
+        name: 'FacturaScripts Product Images',
+        description: 'Lista de imágenes de productos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://provincias',
+        name: 'FacturaScripts Provinces',
+        description: 'Lista de provincias de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://puntointeresciudades',
+        name: 'FacturaScripts City Points of Interest',
+        description: 'Lista de puntos de interés de ciudades de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://reciboclientes',
+        name: 'FacturaScripts Customer Receipts',
+        description: 'Lista de recibos de clientes de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://reciboproveedores',
+        name: 'FacturaScripts Supplier Receipts',
+        description: 'Lista de recibos de proveedores de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://regularizacionimpuestos',
+        name: 'FacturaScripts Tax Regularizations',
+        description: 'Lista de regularizaciones de impuestos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://retenciones',
+        name: 'FacturaScripts Retentions/Withholdings',
+        description: 'Lista de retenciones de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://secuenciadocumentos',
+        name: 'FacturaScripts Document Sequences',
+        description: 'Lista de secuencias de documentos de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://series',
+        name: 'FacturaScripts Series',
+        description: 'Lista de series de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://subcuentas',
+        name: 'FacturaScripts Sub-accounts',
+        description: 'Lista de subcuentas contables de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://tarifas',
+        name: 'FacturaScripts Tariffs/Price Lists',
+        description: 'Lista de tarifas y listas de precios de FacturaScripts con paginación',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://totalmodeles',
+        name: 'FacturaScripts Analytics/Total Models',
+        description: 'Lista de modelos de análisis y agregación de datos del sistema FacturaScripts',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://variantes',
+        name: 'FacturaScripts Product Variants',
+        description: 'Lista de variantes de productos con diferentes atributos, precios y stock',
+        mimeType: 'application/json',
+      },
+      {
+        uri: 'facturascripts://workeventes',
+        name: 'FacturaScripts Work Events',
+        description: 'Lista de eventos y trabajos del sistema para monitoreo y seguimiento de procesos',
+        mimeType: 'application/json',
+      },
     ],
   };
 });
@@ -2363,6 +2722,94 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     return await logMessagesResource.getResource(uri);
   }
 
+  if (pagesResource.matchesUri(uri)) {
+    return await pagesResource.getResource(uri);
+  }
+
+  if (pagefilteresResource.matchesUri(uri)) {
+    return await pagefilteresResource.getResource(uri);
+  }
+
+  if (pagoclientesResource.matchesUri(uri)) {
+    return await pagoclientesResource.getResource(uri);
+  }
+
+  if (pagoproveedoresResource.matchesUri(uri)) {
+    return await pagoproveedoresResource.getResource(uri);
+  }
+
+  if (paisResource.matchesUri(uri)) {
+    return await paisResource.getResource(uri);
+  }
+
+  if (partidasResource.matchesUri(uri)) {
+    return await partidasResource.getResource(uri);
+  }
+
+  if (pedidoproveedoresResource.matchesUri(uri)) {
+    return await pedidoproveedoresResource.getResource(uri);
+  }
+
+  if (presupuestoproveedoresResource.matchesUri(uri)) {
+    return await presupuestoproveedoresResource.getResource(uri);
+  }
+
+  if (productoimagenesResource.matchesUri(uri)) {
+    return await productoimagenesResource.getResource(uri);
+  }
+
+  if (provinciasResource.matchesUri(uri)) {
+    return await provinciasResource.getResource(uri);
+  }
+
+  if (puntointeresciudadesResource.matchesUri(uri)) {
+    return await puntointeresciudadesResource.getResource(uri);
+  }
+
+  if (reciboclientesResource.matchesUri(uri)) {
+    return await reciboclientesResource.getResource(uri);
+  }
+
+  if (reciboproveedoresResource.matchesUri(uri)) {
+    return await reciboproveedoresResource.getResource(uri);
+  }
+
+  if (regularizacionimpuestosResource.matchesUri(uri)) {
+    return await regularizacionimpuestosResource.getResource(uri);
+  }
+
+  if (retencionesResource.matchesUri(uri)) {
+    return await retencionesResource.getResource(uri);
+  }
+
+  if (secuenciadocumentosResource.matchesUri(uri)) {
+    return await secuenciadocumentosResource.getResource(uri);
+  }
+
+  if (seriesResource.matchesUri(uri)) {
+    return await seriesResource.getResource(uri);
+  }
+
+  if (subcuentasResource.matchesUri(uri)) {
+    return await subcuentasResource.getResource(uri);
+  }
+
+  if (tarifasResource.matchesUri(uri)) {
+    return await tarifasResource.getResource(uri);
+  }
+
+  if (totalModelesResource.matchesUri(uri)) {
+    return await totalModelesResource.getResource(uri);
+  }
+
+  if (variantesResource.matchesUri(uri)) {
+    return await variantesResource.getResource(uri);
+  }
+
+  if (workEventesResource.matchesUri(uri)) {
+    return await workEventesResource.getResource(uri);
+  }
+
   throw new Error(`Resource not found: ${uri}`);
 });
 
@@ -2438,6 +2885,65 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_productos_no_vendidos': {
         return await productosNoVendidosToolImplementation(request.params.arguments as any, fsClient);
+      }
+
+      case 'get_partidas': {
+        return await partidasToolImplementation(partidasResource, buildUri);
+      }
+
+      case 'get_pedidoproveedores': {
+        return await pedidoproveedoresToolImplementation(pedidoproveedoresResource, buildUri);
+      }
+
+      case 'get_presupuestoproveedores': {
+        return await presupuestoproveedoresToolImplementation(presupuestoproveedoresResource, buildUri);
+      }
+
+      case 'get_productoimagenes': {
+        return await productoimagenesToolImplementation(productoimagenesResource, buildUri);
+      }
+
+      case 'get_provincias': {
+        return await provinciasToolImplementation(provinciasResource, buildUri);
+      }
+      case 'get_puntointeresciudades': {
+        return await puntointeresciudadesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_reciboclientes': {
+        return await reciboclientesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_reciboproveedores': {
+        return await reciboproveedoresToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_regularizacionimpuestos': {
+        return await regularizacionimpuestosToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_retenciones': {
+        return await retencionesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_secuenciadocumentos': {
+        return await secuenciadocumentosToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_series': {
+        return await seriesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_subcuentas': {
+        return await subcuentasToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_tarifas': {
+        return await tarifasToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_totalmodeles': {
+        return await totalModelesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_variantes': {
+        return await variantesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'get_workeventes': {
+        return await workEventesToolImplementation(request.params.arguments, fsClient, buildUri);
+      }
+      case 'exportar_factura_cliente': {
+        return await toolExportarFacturaImplementation(request.params.arguments as { code: string; type?: string; format?: number; lang?: string }, fsClient);
       }
 
       case 'get_productoproveedores': {
@@ -3152,6 +3658,71 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case 'get_logmessages': {
         const uri = buildUri('logmessages');
         const result = await logMessagesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_pages': {
+        const uri = buildUri('pages');
+        const result = await pagesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_pagefilteres': {
+        const uri = buildUri('pagefilteres');
+        const result = await pagefilteresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_pagoclientes': {
+        const uri = buildUri('pagoclientes');
+        const result = await pagoclientesResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_pagoproveedores': {
+        const uri = buildUri('pagoproveedores');
+        const result = await pagoproveedoresResource.getResource(uri);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: (result as any).contents?.[0]?.text || 'No data',
+            },
+          ],
+        };
+      }
+
+      case 'get_pais': {
+        const uri = buildUri('pais');
+        const result = await paisResource.getResource(uri);
         return {
           content: [
             {

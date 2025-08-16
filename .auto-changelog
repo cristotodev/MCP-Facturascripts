@@ -4,21 +4,21 @@
   "unreleased": true,
   "commitLimit": false,
   "backfillLimit": false,
-  "tagPrefix": "v",
-  "sortCommits": "date",
-  "includeBranch": ["main", "master", "develop"],
-  "ignoreCommitPattern": "(^Merge)|(^Revert)|(^Update CHANGELOG)",
+  "issueUrl": "https://github.com/cristotodev/MCP-Facturascripts/issues/{id}",
   "replaceText": {
     "feat": "Added",
-    "fix": "Fixed",
+    "fix": "Fixed", 
+    "perf": "Changed",
+    "refactor": "Changed",
     "docs": "Changed",
     "style": "Changed",
-    "refactor": "Changed",
     "test": "Changed",
-    "chore": "Changed"
+    "chore": "Changed",
+    "ci": "Changed"
   },
-  "commitUrl": "https://github.com/cristotodev/MCP_Facturascripts/commit/{id}",
-  "compareUrl": "https://github.com/cristotodev/MCP_Facturascripts/compare/{from}...{to}",
-  "issueUrl": "https://github.com/cristotodev/MCP_Facturascripts/issues/{id}",
-  "issuePattern": "[Ii]ssues?\\s*#(\\d+)"
+  "includeBranch": ["main", "master"],
+  "ignoreCommitPattern": "^(chore|style|docs|test):",
+  "handlebarsOptions": {
+    "partials": {}
+  }
 }

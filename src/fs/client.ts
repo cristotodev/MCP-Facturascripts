@@ -68,4 +68,19 @@ export class FacturaScriptsClient {
       data: dataArray,
     };
   }
+
+  async getRaw(endpoint: string, params?: Record<string, any>): Promise<Response> {
+    const axiosResponse = await this.client.get(endpoint, { 
+      params,
+      responseType: 'arraybuffer',
+      validateStatus: () => true // Don't throw on non-2xx status codes
+    });
+    
+    // Convert axios response to fetch-like Response
+    return new Response(axiosResponse.data, {
+      status: axiosResponse.status,
+      statusText: axiosResponse.statusText,
+      headers: new Headers(axiosResponse.headers as Record<string, string>)
+    });
+  }
 }

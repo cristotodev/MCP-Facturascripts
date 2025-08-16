@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **New OpenAPI Part16 Endpoints**: Implementation of 4 new FacturaScripts API endpoints
+- **Product Variants Management**: `get_variantes` tool for product variants with attributes, pricing, and stock tracking
+- **Work Events Monitoring**: `get_workeventes` tool for system job/task tracking and process monitoring
+- **Analytics Models**: `get_totalmodeles` tool for system analytics and data aggregation models
+- **PDF Export Functionality**: `exportar_factura_cliente` tool for customer invoice PDF generation and download
+- **Enhanced Client Support**: Added `getRaw` method to FacturaScriptsClient for binary data handling (PDF downloads)
+- **Advanced Product Variant Features**: Support for barcode tracking, cost analysis, margin calculation, and multi-attribute variants
+- **System Event Analytics**: Work event filtering by completion status, date ranges, and user assignment
+- **Binary Data Handling**: Comprehensive PDF export with format options, language selection, and metadata response
+
+### Changed
+- **Resource Count**: Expanded from 56 to 59 total MCP resources with specialized system and product management
+- **Tool Count**: Enhanced from 61 to 65 interactive tools including specialized export functionality
+- **TypeScript Interfaces**: Added 3 new strongly-typed interfaces (TotalModel, Variante, WorkEvent)
+- **Client Capabilities**: Enhanced FacturaScriptsClient with binary response handling for document exports
+- **Test Coverage**: Increased to 445+ comprehensive tests with new modules validation
+
+### Fixed
+- **Integration Test Robustness**: Enhanced error handling for non-existent API endpoints with graceful fallbacks
+- **Data Type Flexibility**: Improved test assertions to handle API variations (boolean vs numeric values)
+- **Tool Implementation Patterns**: Corrected parameter passing in new tool implementations
+- **Date Validation**: Enhanced date parsing validation for work events with invalid date handling
+
 ## [1.0.2] - 2025-08-16 - Enhanced Business Analytics and Customer Intelligence
 
 ### Added

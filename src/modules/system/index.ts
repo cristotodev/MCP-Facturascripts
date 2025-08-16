@@ -6,3 +6,5 @@ export * from './cronjobes/index.js';
 export * from './doctransformations/index.js';
 export * from './attachedfiles/index.js';
 export * from './attachedfilerelations/index.js';
+export * from './pages/index.js';
+export * from './pagefilteres/index.js';

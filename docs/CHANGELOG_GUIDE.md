@@ -47,17 +47,29 @@ This project follows the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/
 ### Available Scripts
 
 ```bash
-# Generate changelog from conventional commits
+# Generate changelog from conventional commits (recommended)
 npm run changelog
 
-# Auto-generate changelog from git history
+# Generate changelog for unreleased changes only
+npm run changelog:unreleased
+
+# Auto-generate from git history (all commits)
 npm run changelog:auto
+
+# Generate complete changelog with keepachangelog template
+npm run changelog:all
 
 # Create a new version with updated changelog
 npm run version
 
-# Full release process (version, build, test)
+# Full release process (patch version, build, test)
 npm run release
+
+# Minor release (new features)
+npm run release:minor
+
+# Major release (breaking changes)
+npm run release:major
 ```
 
 ### Conventional Commits
@@ -101,7 +113,10 @@ ci: add automated testing workflow
 **Examples:**
 ```bash
 git commit -m "feat: add new MCP resource for invoices"
+git commit -m "feat(openapi): implement product variants management tool"
+git commit -m "feat(export): add PDF export functionality for customer invoices"
 git commit -m "fix(client): handle API timeout errors"
+git commit -m "fix(tests): resolve integration test parameter passing"
 git commit -m "docs: update installation guide with Docker setup"
 git commit -m "test: add integration tests for new resources"
 ```
@@ -171,11 +186,17 @@ git commit -m "test: add integration tests for new resources"
 
 ```markdown
 ### Added
-- **New MCP Resource**: `get_facturaclientes` tool for accessing customer invoices
+- **Product Variants Management**: `get_variantes` tool for product variants with attributes, pricing, and stock tracking
+- **Work Events Monitoring**: `get_workeventes` tool for system job/task tracking and process monitoring
+- **PDF Export Functionality**: `exportar_factura_cliente` tool for customer invoice PDF generation and download
+- **Enhanced Client Support**: Added `getRaw` method to FacturaScriptsClient for binary data handling
 - **Advanced Filtering**: Support for date ranges and status filters in all resources
-- **Claude Desktop Integration**: Interactive tools for all 56 MCP resources
+- **Claude Desktop Integration**: Interactive tools for all 59 MCP resources
 
 ### Fixed
+- **Integration Test Robustness**: Enhanced error handling for non-existent API endpoints with graceful fallbacks
+- **Data Type Flexibility**: Improved test assertions to handle API variations (boolean vs numeric values)
+- **Tool Implementation Patterns**: Corrected parameter passing in new tool implementations
 - **Memory Leak**: Resolved memory leak in background API polling (#123)
 - **Type Safety**: Fixed TypeScript compilation errors in resource definitions
 - **API Timeout**: Improved error handling for slow FacturaScripts responses

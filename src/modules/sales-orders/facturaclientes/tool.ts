@@ -645,3 +645,105 @@ export async function toolClientesTopFacturacionImplementation(
     };
   }
 }
+
+// Tool definition for exporting customer invoices as PDF
+export const toolExportarFacturaDefinition = {
+  name: 'exportar_factura_cliente',
+  description: 'Exporta una factura de cliente en formato PDF. Proporciona el código de la factura y obtiene el documento PDF listo para descarga. Útil para envío de facturas a clientes, archivo de documentos y gestión documental.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      code: { type: 'string', description: 'Código de la factura a exportar (requerido)' },
+      type: { type: 'string', description: 'Tipo de exportación', enum: ['PDF'], default: 'PDF' },
+      format: { type: 'number', description: 'Formato del documento (0 por defecto)', default: 0 },
+      lang: { type: 'string', description: 'Código de idioma para el documento', default: 'es' }
+    },
+    required: ['code']
+  }
+};
+
+export async function toolExportarFacturaImplementation(
+  args: { code: string; type?: string; format?: number; lang?: string },
+  client: FacturaScriptsClient
+) {
+  const { code, type = 'PDF', format = 0, lang = 'es' } = args;
+
+  try {
+    // Build query parameters for the export endpoint
+    const params = new URLSearchParams();
+    if (type) params.append('type', type);
+    if (format !== undefined) params.append('format', format.toString());
+    if (lang) params.append('lang', lang);
+
+    // Call the export endpoint with path parameter
+    const endpoint = `/exportarFacturaCliente/${encodeURIComponent(code)}`;
+    const queryString = params.toString();
+    const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint;
+
+    // Make the API call - this returns binary PDF data
+    const response = await client.getRaw(fullEndpoint);
+
+    if (response.status === 200) {
+      // For PDF binary data, we'll return a success message with metadata
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              success: true,
+              message: `Factura ${code} exportada correctamente como PDF`,
+              exportData: {
+                facturaCode: code,
+                type,
+                format,
+                lang,
+                contentType: 'application/pdf',
+                size: response.headers.get('content-length') || 'unknown'
+              }
+            }, null, 2)
+          }
+        ]
+      };
+    } else {
+      // Handle error responses
+      let errorMessage = 'Error desconocido al exportar la factura';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              error: 'Export failed',
+              message: errorMessage,
+              facturaCode: code,
+              httpStatus: response.status
+            }, null, 2)
+          }
+        ],
+        isError: true
+      };
+    }
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to export factura',
+            message: errorMessage,
+            facturaCode: code
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}
