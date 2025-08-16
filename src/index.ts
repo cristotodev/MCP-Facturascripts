@@ -68,6 +68,7 @@ import { EmpresasResource } from './modules/geographic/empresas/resource.js';
 import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation } from './modules/sales-orders/facturaclientes/tool.js';
 import { lowStockToolImplementation } from './modules/core-business/stocks/tool.js';
 import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
+import { productosNoVendidosToolDefinition, productosNoVendidosToolImplementation } from './modules/core-business/productos/index.js';
 
 const server = new Server(
   {
@@ -197,6 +198,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      productosNoVendidosToolDefinition,
       {
         name: 'get_productoproveedores',
         description: 'Obtiene la lista de productos por proveedor con paginación y filtros avanzados',
@@ -2432,6 +2434,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      }
+
+      case 'get_productos_no_vendidos': {
+        return await productosNoVendidosToolImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_productoproveedores': {
