@@ -91,7 +91,7 @@ The MCP FacturaScripts project provides a comprehensive Model Context Protocol s
 - `empresas` - Company data ✅
 
 ### Interactive Tools - 100% ✅
-**57 Claude Desktop Tools** with advanced filtering and pagination:
+**61 Claude Desktop Tools** with advanced filtering and pagination:
 
 #### Standard Resource Tools (56/56) ✅
 - One tool per MCP resource with consistent 4-parameter interface
@@ -99,9 +99,12 @@ The MCP FacturaScripts project provides a comprehensive Model Context Protocol s
 - Flexible sorting with field:direction format
 - Pagination with limit/offset bounds validation
 
-#### Specialized Business Tools (1/1) ✅
+#### Specialized Business Tools (5/5) ✅
 - `get_facturas_cliente_por_cifnif` - Invoice search by tax ID ✅
+- `get_clientes_morosos` - Overdue client tracking ✅
 - `get_productos_mas_vendidos` - Best-selling products analytics ✅
+- `get_clientes_top_facturacion` - Customer billing rankings ✅
+- `get_productos_stock_bajo` - Low stock monitoring ✅
 
 ### Advanced Features - 100% ✅
 
@@ -112,7 +115,7 @@ The MCP FacturaScripts project provides a comprehensive Model Context Protocol s
 - **Error Recovery**: Robust error handling with graceful degradation
 
 #### Testing Coverage ✅
-- **374 Tests Total**: 100% pass rate
+- **421 Tests Total**: 100% pass rate
 - **Unit Tests**: Comprehensive coverage for all modules
 - **Integration Tests**: Real API validation scenarios
 - **Error Scenario Testing**: Edge cases and failure modes
@@ -166,6 +169,38 @@ The MCP FacturaScripts project provides a comprehensive Model Context Protocol s
 - **TypeScript Examples**: Production-ready code samples in `examples/typescript-sdk/`
 - **Business Use Cases**: Inventory management, revenue analysis, performance monitoring
 
+### `get_clientes_top_facturacion` - 100% ✅
+
+**Purpose**: Generate customer billing rankings by total invoiced amount within a specified date range
+
+**Implementation Details**:
+- **Multi-step Process**: Invoice filtering by date range → Client grouping and totals calculation → Client details lookup → Ranking generation
+- **Key Features**: Date range filtering, optional payment status filtering, comprehensive pagination, automatic sorting
+- **Business Analytics**: Provides insights for sales analysis, customer relationship management, and revenue tracking
+- **Robust Error Handling**: No invoices found, no paid invoices, client lookup failures, API errors
+
+**Testing Coverage**:
+- **11 Unit Tests**: Success scenarios, error handling, parameter validation
+- **6 Integration Tests**: Real API validation with various date ranges and edge cases
+- **Business Scenarios**: Customer ranking analysis, payment filtering, pagination handling
+
+**Response Structure**:
+```json
+{
+  "periodo": { "fecha_desde", "fecha_hasta", "solo_pagadas" },
+  "meta": { "total", "limit", "offset", "hasMore" },
+  "data": [
+    {
+      "codcliente": "string",
+      "nombre": "string", 
+      "cifnif": "string",
+      "total_facturado": number,
+      "numero_facturas": number
+    }
+  ]
+}
+```
+
 ### `get_facturas_cliente_por_cifnif` - 100% ✅
 
 **Purpose**: Search customer invoices by CIF/NIF tax identification number
@@ -185,7 +220,7 @@ The MCP FacturaScripts project provides a comprehensive Model Context Protocol s
 - **Source Files**: 200+ TypeScript files
 - **Test Files**: 70+ test files
 - **Lines of Code**: 15,000+ lines (excluding dependencies)
-- **Test Coverage**: 374 tests with 100% pass rate
+- **Test Coverage**: 421 tests with 100% pass rate
 - **Module Organization**: 8 functional categories
 
 ### Performance Metrics
@@ -237,8 +272,8 @@ The MCP FacturaScripts project provides a comprehensive Model Context Protocol s
 The MCP FacturaScripts project has achieved **100% completion** of its core objectives:
 
 ✅ **Complete FacturaScripts Coverage**: 56 resources covering all major business entities  
-✅ **Full Tool Integration**: 57 interactive tools with advanced filtering and analytics  
-✅ **Comprehensive Testing**: 374 tests ensuring reliability and quality  
+✅ **Full Tool Integration**: 61 interactive tools with advanced filtering and analytics  
+✅ **Comprehensive Testing**: 421 tests ensuring reliability and quality  
 ✅ **Production Ready**: Error handling, documentation, and monitoring  
 ✅ **Developer Experience**: SDK examples, documentation, and onboarding guides  
 ✅ **Business Analytics**: Specialized tools for real-world business scenarios  

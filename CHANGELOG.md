@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-08-16 - Enhanced Business Analytics and Customer Intelligence
+
 ### Added
+- **Customer Billing Rankings Tool**: `get_clientes_top_facturacion` for customer analytics by total invoiced amount within date ranges
+- **Advanced Customer Analytics**: Multi-step process with invoice filtering, client grouping, totals calculation, and ranking generation
+- **Payment Status Filtering**: Optional `solo_pagadas` parameter to analyze only paid invoices for cash flow insights
+- **Comprehensive Business Documentation**: Complete usage examples for customer billing analytics in `docs/TOOL_USAGE_EXAMPLES.md`
+- **Business Intelligence Use Cases**: Sales team management, financial analysis, CRM insights, and strategic decision making scenarios
+- **Advanced Date Range Analytics**: Quarterly, monthly, and year-to-date customer performance analysis
+- **Revenue Concentration Analysis**: Tools for identifying dependency on top customers and managing concentration risk
 - **Advanced Business Analytics Tool**: `get_productos_mas_vendidos` for best-selling products analysis with date range filtering
 - **TypeScript SDK Examples**: Comprehensive production-ready code samples in `examples/typescript-sdk/`
 - **Business Intelligence Features**: Product ranking by quantity sold and total revenue with flexible sorting
@@ -17,12 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Smart Product Grouping**: Handles both catalog products (by referencia) and custom services (by descripcion)
 
 ### Changed
-- **Test Coverage**: Increased from 358 to 374 comprehensive tests with business scenario validation
-- **Tool Count**: Enhanced from 56 to 57 interactive tools with specialized business analytics
-- **Documentation Structure**: Updated all documentation to reflect new analytics capabilities and SDK examples
+- **Test Coverage**: Increased from 358 to 421 comprehensive tests with business scenario validation (63 new tests total)
+- **Tool Count**: Enhanced from 56 to 61 interactive tools with expanded specialized business analytics (5 new tools)
+- **Documentation Structure**: Updated all documentation to reflect new analytics capabilities and expanded tool suite
+- **Implementation Status**: Enhanced specialized business tools from 1 to 5 with comprehensive business analytics coverage
+- **Tool Usage Examples**: Added 400+ lines of business-focused documentation with real-world scenarios and advanced filtering patterns
 - **Developer Experience**: Enhanced onboarding guide with TypeScript SDK examples and patterns
 
 ### Fixed
+- **Test Assertion Logic**: Corrected sorting validation in unit tests to match actual descending order by total_facturado
+- **Parameter Normalization**: Enhanced limit bounds enforcement (1-1000) and offset validation for customer ranking queries
+- **Business Error Handling**: Improved error messages for no invoices found, no paid invoices, and client lookup failures
 - **Parameter Validation**: Improved limit bounds enforcement with nullish coalescing for edge cases
 - **Date Range Handling**: Robust validation and error messaging for business date periods
 - **Integration Testing**: Enhanced real API testing with malformed parameter scenarios
@@ -167,6 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Links
 
+- [1.0.2]: https://github.com/cristotodev/MCP-Facturascripts/compare/v1.0.1...v1.0.2
 - [1.0.1]: https://github.com/cristotodev/MCP-Facturascripts/compare/v1.0.0...v1.0.1
 - [1.0.0]: https://github.com/cristotodev/MCP-Facturascripts/compare/v0.5.0...v1.0.0
 - [0.5.0]: https://github.com/cristotodev/MCP-Facturascripts/compare/v0.4.0...v0.5.0

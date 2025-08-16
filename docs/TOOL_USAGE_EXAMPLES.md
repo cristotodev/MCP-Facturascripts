@@ -671,4 +671,209 @@ get_productos_mas_vendidos({
 
 ---
 
-*This documentation helps AI assistants understand both tools' capabilities and use them effectively for comprehensive business analysis scenarios.*
+## 💰 Specialized Business Tool: `get_clientes_top_facturacion`
+
+### Overview
+Generate customer billing rankings by total invoiced amount within a specified date range. This tool helps identify top-performing customers for sales analysis, account management prioritization, and revenue insights.
+
+### Multi-Step Process
+1. **Filter Invoices**: Get invoices within date range
+2. **Apply Payment Filter**: Optionally filter by payment status
+3. **Group & Calculate**: Group by customer and calculate totals
+4. **Lookup Customer Details**: Fetch customer information (name, CIF/NIF)
+5. **Sort & Paginate**: Order by billing amount and apply pagination
+
+### Parameters
+- **`fecha_desde`** (required): Start date (YYYY-MM-DD format)
+- **`fecha_hasta`** (required): End date (YYYY-MM-DD format)  
+- **`solo_pagadas`** (optional): Include only paid invoices (default: false)
+- **`limit`** (optional): Maximum customers to return (1-1000, default: 100)
+- **`offset`** (optional): Skip customers for pagination (default: 0)
+
+---
+
+## 📊 Usage Examples
+
+### 1. Top Customers This Quarter
+**Scenario**: Get top 10 customers by total billing for Q3 2024
+
+```typescript
+get_clientes_top_facturacion({
+  fecha_desde: "2024-07-01",
+  fecha_hasta: "2024-09-30",
+  limit: 10
+})
+```
+
+**Expected Response**:
+```json
+{
+  "periodo": {
+    "fecha_desde": "2024-07-01",
+    "fecha_hasta": "2024-09-30", 
+    "solo_pagadas": false
+  },
+  "meta": { "total": 45, "limit": 10, "offset": 0, "hasMore": true },
+  "data": [
+    {
+      "codcliente": "CLI001",
+      "nombre": "Empresa ABC S.L.",
+      "cifnif": "A12345678",
+      "total_facturado": 15750.80,
+      "numero_facturas": 12
+    },
+    {
+      "codcliente": "CLI025", 
+      "nombre": "Corporación XYZ",
+      "cifnif": "B87654321",
+      "total_facturado": 12430.50,
+      "numero_facturas": 8
+    }
+  ]
+}
+```
+
+### 2. Top Paid Customers
+**Scenario**: Find customers with highest paid invoice amounts this year
+
+```typescript
+get_clientes_top_facturacion({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  solo_pagadas: true,
+  limit: 20
+})
+```
+
+### 3. Account Management Analysis
+**Scenario**: Get complete customer ranking for monthly review
+
+```typescript
+get_clientes_top_facturacion({
+  fecha_desde: "2024-08-01",
+  fecha_hasta: "2024-08-31",
+  limit: 50,
+  offset: 0
+})
+```
+
+### 4. Revenue Validation
+**Scenario**: Cross-check revenue from top 5 customers
+
+```typescript
+get_clientes_top_facturacion({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-06-30",
+  limit: 5
+})
+```
+
+### 5. Sales Performance Review
+**Scenario**: Quarterly analysis with pagination
+
+```typescript
+// Get first page of top customers
+get_clientes_top_facturacion({
+  fecha_desde: "2024-04-01",
+  fecha_hasta: "2024-06-30",
+  limit: 25,
+  offset: 0
+})
+
+// Get second page
+get_clientes_top_facturacion({
+  fecha_desde: "2024-04-01", 
+  fecha_hasta: "2024-06-30",
+  limit: 25,
+  offset: 25
+})
+```
+
+---
+
+## 📈 Business Use Cases
+
+### Sales Team Management
+- **Priority Account Identification**: Focus on high-value customers
+- **Territory Performance**: Analyze regional customer rankings
+- **Sales Rep Evaluation**: Track customer billing by sales representative
+
+### Financial Analysis  
+- **Revenue Concentration**: Identify dependency on top customers
+- **Cash Flow Analysis**: Compare paid vs. unpaid customer rankings
+- **Budget Planning**: Historical customer performance for forecasting
+
+### Customer Relationship Management
+- **VIP Customer Programs**: Identify candidates for premium services
+- **Customer Retention**: Monitor changes in customer rankings over time
+- **Account Growth Opportunities**: Spot potential for upselling
+
+### Strategic Decision Making
+- **Market Segmentation**: Understand customer value distribution
+- **Resource Allocation**: Focus support on high-value accounts  
+- **Risk Management**: Monitor customer concentration risk
+
+---
+
+## 🔧 Advanced Filtering Examples
+
+### Date Range Combinations
+```typescript
+// Last 30 days
+get_clientes_top_facturacion({
+  fecha_desde: "2024-08-01",
+  fecha_hasta: "2024-08-31"
+})
+
+// Year-to-date
+get_clientes_top_facturacion({
+  fecha_desde: "2024-01-01", 
+  fecha_hasta: "2024-08-31"
+})
+
+// Specific quarter
+get_clientes_top_facturacion({
+  fecha_desde: "2024-04-01",
+  fecha_hasta: "2024-06-30"
+})
+```
+
+### Payment Status Analysis
+```typescript
+// Only customers with paid invoices
+get_clientes_top_facturacion({
+  fecha_desde: "2024-07-01",
+  fecha_hasta: "2024-07-31",
+  solo_pagadas: true
+})
+
+// All invoices (default - includes paid and unpaid)
+get_clientes_top_facturacion({
+  fecha_desde: "2024-07-01",
+  fecha_hasta: "2024-07-31",
+  solo_pagadas: false
+})
+```
+
+### Pagination for Large Results
+```typescript
+// First 100 customers
+get_clientes_top_facturacion({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31",
+  limit: 100,
+  offset: 0
+})
+
+// Next 100 customers  
+get_clientes_top_facturacion({
+  fecha_desde: "2024-01-01",
+  fecha_hasta: "2024-12-31", 
+  limit: 100,
+  offset: 100
+})
+```
+
+---
+
+*This documentation helps AI assistants understand all specialized business tools' capabilities and use them effectively for comprehensive business analysis scenarios.*

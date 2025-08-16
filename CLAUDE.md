@@ -553,8 +553,8 @@ All 28 resources return consistent pagination format:
 
 ### Current Project Status (v1.0.1)
 - ✅ **56 MCP Resources** - Complete FacturaScripts API coverage
-- ✅ **57 Interactive Tools** - Full Claude Desktop integration with advanced filtering including specialized business analytics
-- ✅ **374 Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools
+- ✅ **61 Interactive Tools** - Full Claude Desktop integration with advanced filtering including specialized business analytics
+- ✅ **421 Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools
 - ✅ **Live API Integration** - Working with real FacturaScripts instances
 - ✅ **Advanced API Support** - Full FacturaScripts filtering, sorting, and pagination
 - ✅ **TypeScript Strict Mode** - Full type safety and IntelliSense
@@ -612,6 +612,40 @@ All 28 resources return consistent pagination format:
 - ✅ Comprehensive error scenario coverage
 - ✅ Parameter validation and sanitization
 - ✅ SDK documentation with business-focused examples
+
+### New Implementation: `get_clientes_top_facturacion`
+
+**Implementation Details:**
+- **Purpose**: Generate customer billing rankings by total invoiced amount within a specified date range
+- **Location**: `src/modules/sales-orders/facturaclientes/tool.ts`
+- **Multi-step Process**: Invoice filtering by date range → Client grouping and totals calculation → Client details lookup → Ranking generation
+- **Key Features**:
+  - Date range filtering (fecha_desde/fecha_hasta required)
+  - Optional payment status filtering (solo_pagadas)
+  - Comprehensive pagination (limit: 1-1000, default: 100)
+  - Automatic sorting by total_facturado (descending)
+  - Robust error handling for edge cases
+- **Testing**: 11 comprehensive tests covering success scenarios, error handling, and parameter validation
+- **Integration Tests**: 6 additional tests with real API validation
+- **Total New Tests**: 17 tests added (increasing total from 374 to 421)
+- **Status**: ✅ Complete and production-ready
+
+**Response Structure:**
+```json
+{
+  "periodo": { "fecha_desde", "fecha_hasta", "solo_pagadas" },
+  "meta": { "total", "limit", "offset", "hasMore" },
+  "data": [
+    {
+      "codcliente": "string",
+      "nombre": "string", 
+      "cifnif": "string",
+      "total_facturado": number,
+      "numero_facturas": number
+    }
+  ]
+}
+```
 
 ### Previous Implementation: `get_facturas_cliente_por_cifnif`
 

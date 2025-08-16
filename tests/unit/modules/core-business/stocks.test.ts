@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StocksResource } from '../../../../src/modules/core-business/stocks/resource.js';
+import { lowStockToolImplementation } from '../../../../src/modules/core-business/stocks/tool.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import type { Stock } from '../../../../src/types/facturascripts.js';
 
@@ -112,6 +113,352 @@ describe('StocksResource', () => {
       expect(result.name).toBe('FacturaScripts Stocks (Error)');
       expect(result.contents[0].text).toContain('Failed to fetch stocks');
       expect(result.contents[0].text).toContain(errorMessage);
+    });
+  });
+});
+
+describe('lowStockToolImplementation', () => {
+  let mockClient: FacturaScriptsClient;
+
+  beforeEach(() => {
+    mockClient = new FacturaScriptsClient();
+    vi.clearAllMocks();
+  });
+
+  const mockStocksWithLowStock: Stock[] = [
+    {
+      idstock: 1,
+      referencia: 'PROD001',
+      codalmacen: 'ALM001',
+      descripcion: 'Product 1 Description',
+      cantidad: 5,    // Below minimum of 20
+      stockmin: 20,
+    },
+    {
+      idstock: 2,
+      referencia: 'PROD002',
+      codalmacen: 'ALM001',
+      descripcion: 'Product 2 Description',
+      cantidad: 15,   // Below minimum of 25
+      stockmin: 25,
+    },
+    {
+      idstock: 3,
+      referencia: 'PROD003',
+      codalmacen: 'ALM001',
+      descripcion: 'Product 3 Description',
+      cantidad: 50,   // Above minimum of 30
+      stockmin: 30,
+    },
+    {
+      idstock: 4,
+      referencia: 'PROD004',
+      codalmacen: 'ALM002',
+      descripcion: 'Product 4 Description',
+      cantidad: 10,   // Equal to minimum
+      stockmin: 10,
+    },
+  ];
+
+  const mockProductos = [
+    { referencia: 'PROD001', descripcion: 'Enhanced Product 1 Description', idproducto: 1 },
+    { referencia: 'PROD002', descripcion: 'Enhanced Product 2 Description', idproducto: 2 },
+    { referencia: 'PROD004', descripcion: 'Enhanced Product 4 Description', idproducto: 4 },
+  ];
+
+  describe('successful scenarios', () => {
+    it('should return products with stock below or equal to minimum by default', async () => {
+      // Mock stocks response
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        // Mock product responses
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[0]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[1]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[2]],
+        });
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      expect(result.content[0].type).toBe('text');
+      const response = JSON.parse(result.content[0].text);
+      
+      expect(response.meta.total).toBe(3); // PROD001, PROD002, and PROD004 (equal stock)
+      expect(response.data).toHaveLength(3);
+      expect(response.data[0].referencia).toBe('PROD001');
+      expect(response.data[0].cantidad).toBe(5);
+      expect(response.data[0].stockmin).toBe(20);
+      expect(response.data[0].cantidad_a_reponer).toBe(15);
+      expect(response.data[1].referencia).toBe('PROD004'); // Equal stock item
+      expect(response.data[1].cantidad_a_reponer).toBe(0); // No need to reorder
+      expect(response.data[2].referencia).toBe('PROD002');
+      expect(response.data[2].cantidad_a_reponer).toBe(10);
+    });
+
+    it('should exclude products with stock equal to minimum when explicitly requested', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        // Mock product responses
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[0]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[1]],
+        });
+
+      const result = await lowStockToolImplementation(
+        { incluir_stock_igual: false },
+        mockClient
+      );
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.total).toBe(2); // Only PROD001 and PROD002 (below minimum)
+      expect(response.data.every((p: any) => p.referencia !== 'PROD004')).toBe(true);
+    });
+
+    it('should include products with stock equal to minimum when explicitly requested', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[0]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[1]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[2]],
+        });
+
+      const result = await lowStockToolImplementation(
+        { incluir_stock_igual: true },
+        mockClient
+      );
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.total).toBe(3); // PROD001, PROD002, and PROD004
+      expect(response.data.some((p: any) => p.referencia === 'PROD004')).toBe(true);
+    });
+
+    it('should filter by warehouse when codalmacen is provided', async () => {
+      const filteredStocks = mockStocksWithLowStock.filter(s => s.codalmacen === 'ALM002');
+      
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1000, offset: 0, hasMore: false },
+          data: filteredStocks,
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[2]],
+        });
+
+      const result = await lowStockToolImplementation(
+        { codalmacen: 'ALM002', incluir_stock_igual: true },
+        mockClient
+      );
+
+      expect(mockClient.getWithPagination).toHaveBeenCalledWith(
+        '/stocks',
+        1000,
+        0,
+        { 'filter[codalmacen]': 'ALM002' }
+      );
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.summary.almacen_filtrado).toBe('ALM002');
+      expect(response.data).toHaveLength(1);
+      expect(response.data[0].almacen).toBe('ALM002');
+    });
+
+    it('should handle pagination correctly - middle page', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[0]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[1]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[2]],
+        });
+
+      const result = await lowStockToolImplementation(
+        { limite: 1, offset: 1 },
+        mockClient
+      );
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.limit).toBe(1);
+      expect(response.meta.offset).toBe(1);
+      expect(response.meta.hasMore).toBe(true); // Since total = 3, offset = 1, limit = 1, there's still one more item
+    });
+
+    it('should handle pagination correctly - first page with more data', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[0]],
+        })
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false },
+          data: [mockProductos[1]],
+        });
+
+      const result = await lowStockToolImplementation(
+        { limite: 1, offset: 0 },
+        mockClient
+      );
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.limit).toBe(1);
+      expect(response.meta.offset).toBe(0);
+      expect(response.meta.hasMore).toBe(true); // Since total = 2, offset = 0, limit = 1, there's more data
+    });
+
+    it('should sort results by cantidad ascending', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        .mockResolvedValue({
+          meta: { total: 0, limit: 1, offset: 0, hasMore: false },
+          data: [],
+        });
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.data[0].cantidad).toBe(5);  // PROD001 has lowest stock
+      expect(response.data[1].cantidad).toBe(10); // PROD004 has middle stock (equal to minimum)
+      expect(response.data[2].cantidad).toBe(15); // PROD002 has highest stock
+    });
+  });
+
+  describe('edge cases and error handling', () => {
+    it('should return empty result when no stocks exist', async () => {
+      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+        meta: { total: 0, limit: 1000, offset: 0, hasMore: false },
+        data: [],
+      });
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.total).toBe(0);
+      expect(response.data).toHaveLength(0);
+      expect(response.message).toContain('No se encontraron stocks');
+    });
+
+    it('should return empty result when no products are below or equal minimum stock', async () => {
+      const stocksAboveMin = mockStocksWithLowStock.map(s => ({ ...s, cantidad: s.stockmin! + 10 }));
+      
+      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+        meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+        data: stocksAboveMin,
+      });
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.total).toBe(0);
+      expect(response.data).toHaveLength(0);
+      expect(response.message).toContain('No hay productos con stock bajo o igual al mínimo');
+    });
+
+    it('should skip items without stockmin defined', async () => {
+      const stocksWithoutMin = mockStocksWithLowStock.map(s => ({ ...s, stockmin: undefined }));
+      
+      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+        meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+        data: stocksWithoutMin,
+      });
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.total).toBe(0);
+      expect(response.data).toHaveLength(0);
+    });
+
+    it('should handle parameter validation', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
+          data: mockStocksWithLowStock,
+        })
+        .mockResolvedValue({
+          meta: { total: 0, limit: 1, offset: 0, hasMore: false },
+          data: [],
+        });
+
+      const result = await lowStockToolImplementation(
+        { limite: 2000, offset: -5 }, // Invalid values
+        mockClient
+      );
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.meta.limit).toBe(1000); // Clamped to maximum
+      expect(response.meta.offset).toBe(0);   // Clamped to minimum
+    });
+
+    it('should handle API errors gracefully', async () => {
+      vi.mocked(mockClient.getWithPagination).mockRejectedValue(
+        new Error('API connection failed')
+      );
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      expect(result.isError).toBe(true);
+      const response = JSON.parse(result.content[0].text);
+      expect(response.error).toBe('Failed to fetch low stock products');
+      expect(response.message).toBe('API connection failed');
+    });
+
+    it('should fallback to stock description when product details fail', async () => {
+      vi.mocked(mockClient.getWithPagination)
+        .mockResolvedValueOnce({
+          meta: { total: 1, limit: 1000, offset: 0, hasMore: false },
+          data: [mockStocksWithLowStock[0]],
+        })
+        .mockRejectedValue(new Error('Product API failed'));
+
+      const result = await lowStockToolImplementation({}, mockClient);
+
+      const response = JSON.parse(result.content[0].text);
+      expect(response.data[0].descripcion).toBe('Product 1 Description'); // From stock
     });
   });
 });

@@ -229,3 +229,419 @@ export async function toolByCifnifImplementation(
     };
   }
 }
+
+// Tool definition for clients with overdue unpaid invoices
+export const toolClientesMorososDefinition = {
+  name: 'get_clientes_morosos',
+  description: 'Obtiene una lista de clientes con facturas impagadas y vencidas. Realiza consultas avanzadas filtrando facturas no pagadas (pagada:false) y vencidas (vencida:true), agrupa por cliente y calcula totales pendientes. Incluye información del cliente (nombre, CIF/NIF, email) y detalles de deuda (total pendiente, número de facturas vencidas, códigos de facturas). Útil para gestión de cobros, seguimiento de morosos y análisis financiero.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      limit: { type: 'number', description: 'Número máximo de clientes morosos a devolver (1-1000)', minimum: 1, maximum: 1000, default: 50 },
+      offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+    }
+  }
+};
+
+interface ClienteMoroso {
+  codcliente: string;
+  nombre: string;
+  cifnif: string;
+  email: string | null;
+  total_pendiente: number;
+  facturas_vencidas: number;
+  codigos_facturas: string[];
+}
+
+export async function toolClientesMorososImplementation(
+  args: { limit?: number; offset?: number },
+  client: FacturaScriptsClient
+) {
+  const limit = Math.min(Math.max(args.limit || 50, 1), 1000);
+  const offset = Math.max(args.offset || 0, 0);
+
+  try {
+    // Step 1: Get ALL invoices (no filters in API call)
+    const allInvoicesResult = await client.getWithPagination<FacturaCliente>(
+      '/facturaclientes',
+      5000, // Large limit to get all invoices for filtering
+      0,
+      {} // No filters applied at API level
+    );
+
+    if (!allInvoicesResult.data || allInvoicesResult.data.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              message: 'No se encontraron facturas en el sistema',
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 2: Filter invoices in memory: pagada === false AND vencida === true
+    const overdueUnpaidInvoices = allInvoicesResult.data.filter(invoice => 
+      invoice.pagada === false && invoice.vencida === true
+    );
+
+    if (overdueUnpaidInvoices.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              message: 'No se encontraron clientes con facturas vencidas y no pagadas',
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 3: Group by codcliente and calculate aggregates
+    const clienteGroups = new Map<string, {
+      facturas_vencidas: number;
+      total_pendiente: number;
+      codigos_facturas: string[];
+    }>();
+
+    overdueUnpaidInvoices.forEach(invoice => {
+      const codcliente = invoice.codcliente;
+      const existing = clienteGroups.get(codcliente) || {
+        facturas_vencidas: 0,
+        total_pendiente: 0,
+        codigos_facturas: []
+      };
+
+      existing.facturas_vencidas += 1;
+      existing.total_pendiente += invoice.total || 0;
+      existing.codigos_facturas.push(invoice.codigo);
+
+      clienteGroups.set(codcliente, existing);
+    });
+
+    // Step 4: Get client details for each group
+    const clientesMorosos: ClienteMoroso[] = [];
+    
+    for (const [codcliente, aggregates] of clienteGroups.entries()) {
+      try {
+        const clientFilter = `codcliente:${codcliente}`;
+        const clientParams = new URLSearchParams();
+        clientParams.append('limit', '1');
+        clientParams.append('offset', '0');
+        clientParams.append('filter', clientFilter);
+        
+        const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
+        const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
+
+        const clientResult = await client.getWithPagination<any>(
+          '/clientes',
+          1,
+          0,
+          clientAdditionalParams
+        );
+
+        if (clientResult.data && clientResult.data.length > 0) {
+          const cliente = clientResult.data[0];
+          clientesMorosos.push({
+            codcliente,
+            nombre: cliente.nombre || cliente.razonsocial || 'Sin nombre',
+            cifnif: cliente.cifnif || 'Sin CIF/NIF',
+            email: cliente.email || null,
+            total_pendiente: aggregates.total_pendiente,
+            facturas_vencidas: aggregates.facturas_vencidas,
+            codigos_facturas: aggregates.codigos_facturas
+          });
+        }
+      } catch (error) {
+        // If client lookup fails, still include the entry with minimal data
+        clientesMorosos.push({
+          codcliente,
+          nombre: 'Error al obtener datos del cliente',
+          cifnif: 'Error',
+          email: null,
+          total_pendiente: aggregates.total_pendiente,
+          facturas_vencidas: aggregates.facturas_vencidas,
+          codigos_facturas: aggregates.codigos_facturas
+        });
+      }
+    }
+
+    // Step 5: Sort by total_pendiente descending
+    clientesMorosos.sort((a, b) => b.total_pendiente - a.total_pendiente);
+
+    // Step 6: Apply pagination
+    const totalClientes = clientesMorosos.length;
+    const paginatedClientes = clientesMorosos.slice(offset, offset + limit);
+    const hasMore = offset + limit < totalClientes;
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            meta: {
+              total: totalClientes,
+              limit,
+              offset,
+              hasMore,
+            },
+            data: paginatedClientes,
+          }, null, 2)
+        }
+      ]
+    };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to fetch clientes morosos',
+            message: errorMessage,
+            meta: {
+              total: 0,
+              limit,
+              offset,
+              hasMore: false,
+            },
+            data: [],
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}
+
+// Tool definition for top billing clients ranking
+export const toolClientesTopFacturacionDefinition = {
+  name: 'get_clientes_top_facturacion',
+  description: 'Obtiene un ranking de clientes por su facturación total en un rango de fechas específico. Agrupa facturas por cliente y calcula totales facturados y número de facturas. Permite filtrar solo facturas pagadas. Útil para análisis de ventas, identificación de mejores clientes y estrategias comerciales.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      fecha_desde: { type: 'string', description: 'Fecha de inicio del período (formato: YYYY-MM-DD)' },
+      fecha_hasta: { type: 'string', description: 'Fecha de fin del período (formato: YYYY-MM-DD)' },
+      solo_pagadas: { type: 'boolean', description: 'Si es true, solo incluye facturas pagadas', default: false },
+      limit: { type: 'number', description: 'Número máximo de clientes a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+      offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+    },
+    required: ['fecha_desde', 'fecha_hasta']
+  }
+};
+
+interface ClienteTopFacturacion {
+  codcliente: string;
+  nombre: string;
+  cifnif: string;
+  total_facturado: number;
+  numero_facturas: number;
+}
+
+export async function toolClientesTopFacturacionImplementation(
+  args: { fecha_desde: string; fecha_hasta: string; solo_pagadas?: boolean; limit?: number; offset?: number },
+  client: FacturaScriptsClient
+) {
+  const { fecha_desde, fecha_hasta, solo_pagadas = false } = args;
+  const limit = Math.min(Math.max(args.limit || 100, 1), 1000);
+  const offset = Math.max(args.offset || 0, 0);
+
+  try {
+    // Step 1: Get invoices within date range
+    const invoiceFilter = `fecha_gte:${fecha_desde},fecha_lte:${fecha_hasta}`;
+    const invoiceParams = new URLSearchParams();
+    invoiceParams.append('limit', '5000'); // Large limit to get all invoices for processing
+    invoiceParams.append('offset', '0');
+    invoiceParams.append('filter', invoiceFilter);
+    
+    const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
+    const { additionalParams } = parseUrlParameters(invoiceUri);
+
+    const invoiceResult = await client.getWithPagination<FacturaCliente>(
+      '/facturaclientes',
+      5000,
+      0,
+      additionalParams
+    );
+
+    if (!invoiceResult.data || invoiceResult.data.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              periodo: { fecha_desde, fecha_hasta },
+              message: `No se encontraron facturas en el período del ${fecha_desde} al ${fecha_hasta}`,
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 2: Filter by payment status if requested
+    let filteredInvoices = invoiceResult.data;
+    if (solo_pagadas) {
+      filteredInvoices = invoiceResult.data.filter(invoice => invoice.pagada === true);
+    }
+
+    if (filteredInvoices.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              periodo: { fecha_desde, fecha_hasta },
+              message: solo_pagadas 
+                ? `No se encontraron facturas pagadas en el período del ${fecha_desde} al ${fecha_hasta}`
+                : `No se encontraron facturas en el período del ${fecha_desde} al ${fecha_hasta}`,
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 3: Group by codcliente and calculate aggregates
+    const clienteGroups = new Map<string, {
+      total_facturado: number;
+      numero_facturas: number;
+    }>();
+
+    filteredInvoices.forEach(invoice => {
+      const codcliente = invoice.codcliente;
+      const existing = clienteGroups.get(codcliente) || {
+        total_facturado: 0,
+        numero_facturas: 0
+      };
+
+      existing.total_facturado += invoice.total || 0;
+      existing.numero_facturas += 1;
+
+      clienteGroups.set(codcliente, existing);
+    });
+
+    // Step 4: Get client details for each group
+    const clientesTopFacturacion: ClienteTopFacturacion[] = [];
+    
+    for (const [codcliente, aggregates] of clienteGroups.entries()) {
+      try {
+        const clientFilter = `codcliente:${codcliente}`;
+        const clientParams = new URLSearchParams();
+        clientParams.append('limit', '1');
+        clientParams.append('offset', '0');
+        clientParams.append('filter', clientFilter);
+        
+        const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
+        const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
+
+        const clientResult = await client.getWithPagination<any>(
+          '/clientes',
+          1,
+          0,
+          clientAdditionalParams
+        );
+
+        if (clientResult.data && clientResult.data.length > 0) {
+          const cliente = clientResult.data[0];
+          clientesTopFacturacion.push({
+            codcliente,
+            nombre: cliente.nombre || cliente.razonsocial || 'Sin nombre',
+            cifnif: cliente.cifnif || 'Sin CIF/NIF',
+            total_facturado: aggregates.total_facturado,
+            numero_facturas: aggregates.numero_facturas
+          });
+        }
+      } catch (error) {
+        // If client lookup fails, still include the entry with minimal data
+        clientesTopFacturacion.push({
+          codcliente,
+          nombre: 'Error al obtener datos del cliente',
+          cifnif: 'Error',
+          total_facturado: aggregates.total_facturado,
+          numero_facturas: aggregates.numero_facturas
+        });
+      }
+    }
+
+    // Step 5: Sort by total_facturado descending
+    clientesTopFacturacion.sort((a, b) => b.total_facturado - a.total_facturado);
+
+    // Step 6: Apply pagination  
+    const totalClientes = clientesTopFacturacion.length;
+    const paginatedClientes = clientesTopFacturacion.slice(offset, offset + limit);
+    const hasMore = offset + limit < totalClientes;
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            periodo: { fecha_desde, fecha_hasta, solo_pagadas },
+            meta: {
+              total: totalClientes,
+              limit,
+              offset,
+              hasMore,
+            },
+            data: paginatedClientes,
+          }, null, 2)
+        }
+      ]
+    };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to fetch clientes top facturación',
+            message: errorMessage,
+            periodo: { fecha_desde, fecha_hasta },
+            meta: {
+              total: 0,
+              limit,
+              offset,
+              hasMore: false,
+            },
+            data: [],
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}

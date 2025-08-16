@@ -65,7 +65,8 @@ import { CiudadesResource } from './modules/geographic/ciudades/resource.js';
 import { CodigopostalesResource } from './modules/geographic/codigopostales/resource.js';
 import { EmpresasResource } from './modules/geographic/empresas/resource.js';
 // Import new tool functions
-import { toolByCifnifImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { lowStockToolImplementation } from './modules/core-business/stocks/tool.js';
 import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
 
 const server = new Server(
@@ -315,6 +316,32 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: 'get_clientes_morosos',
+        description: 'Obtiene una lista de clientes con facturas impagadas y vencidas. Realiza consultas avanzadas filtrando facturas no pagadas (pagada:false) y vencidas (vencida:true), agrupa por cliente y calcula totales pendientes. Incluye información del cliente (nombre, CIF/NIF, email) y detalles de deuda (total pendiente, número de facturas vencidas, códigos de facturas). Útil para gestión de cobros, seguimiento de morosos y análisis financiero.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: { type: 'number', description: 'Número máximo de clientes morosos a devolver (1-1000)', minimum: 1, maximum: 1000, default: 50 },
+            offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+          }
+        }
+      },
+      {
+        name: 'get_clientes_top_facturacion',
+        description: 'Obtiene un ranking de clientes por su facturación total en un rango de fechas específico. Agrupa facturas por cliente y calcula totales facturados y número de facturas. Permite filtrar solo facturas pagadas. Útil para análisis de ventas, identificación de mejores clientes y estrategias comerciales.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            fecha_desde: { type: 'string', description: 'Fecha de inicio del período (formato: YYYY-MM-DD)' },
+            fecha_hasta: { type: 'string', description: 'Fecha de fin del período (formato: YYYY-MM-DD)' },
+            solo_pagadas: { type: 'boolean', description: 'Si es true, solo incluye facturas pagadas', default: false },
+            limit: { type: 'number', description: 'Número máximo de clientes a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+            offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+          },
+          required: ['fecha_desde', 'fecha_hasta']
+        }
+      },
+      {
         name: 'get_presupuestoclientes',
         description: 'Obtiene la lista de presupuestos de clientes con paginación y filtros avanzados',
         inputSchema: {
@@ -394,6 +421,37 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
           },
         },
+      },
+      {
+        name: 'get_productos_bajo_stock',
+        description: 'Obtiene una lista de productos cuyo stock actual está por debajo del stock mínimo definido. Identifica productos que necesitan reposición urgente para evitar roturas de stock. Útil para gestión de inventarios, compras y planificación de almacén.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            incluir_stock_igual: {
+              type: 'boolean',
+              description: 'Si incluir productos cuyo stock actual es igual al mínimo (por defecto: true)',
+              default: true
+            },
+            codalmacen: {
+              type: 'string',
+              description: 'Código de almacén para filtrar productos (opcional). Si se omite, revisa todos los almacenes'
+            },
+            limite: {
+              type: 'number',
+              description: 'Número máximo de productos a devolver (1-1000)',
+              minimum: 1,
+              maximum: 1000,
+              default: 100
+            },
+            offset: {
+              type: 'number',
+              description: 'Número de productos a omitir para paginación',
+              minimum: 0,
+              default: 0
+            }
+          }
+        }
       },
       {
         name: 'get_facturaproveedores',
@@ -2419,6 +2477,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await toolByCifnifImplementation(request.params.arguments as any, fsClient);
       }
 
+      case 'get_clientes_morosos': {
+        return await toolClientesMorososImplementation(request.params.arguments as any, fsClient);
+      }
+
+      case 'get_clientes_top_facturacion': {
+        return await toolClientesTopFacturacionImplementation(request.params.arguments as any, fsClient);
+      }
+
       case 'get_presupuestoclientes': {
         const uri = buildUri('presupuestoclientes');
         const result = await presupuestoclientesResource.getResource(uri);
@@ -2456,6 +2522,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      }
+
+      case 'get_productos_bajo_stock': {
+        return await lowStockToolImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_facturaproveedores': {

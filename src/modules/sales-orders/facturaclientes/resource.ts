@@ -11,6 +11,7 @@ export interface FacturaCliente {
   total?: number;
   totaliva?: number;
   pagada?: boolean;
+  vencida?: boolean;
   vencimiento?: string;
 }
 
