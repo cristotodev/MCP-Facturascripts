@@ -10,10 +10,12 @@ describe('ProveedoresResource', () => {
   let mockClient: FacturaScriptsClient;
   let proveedoresResource: ProveedoresResource;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
     mockClient = new FacturaScriptsClient();
     proveedoresResource = new ProveedoresResource(mockClient);
-    vi.clearAllMocks();
+    // Small delay to ensure proper initialization in CI environments
+    await new Promise(resolve => setTimeout(resolve, 1));
   });
 
   describe('matchesUri', () => {
@@ -65,11 +67,13 @@ describe('ProveedoresResource', () => {
     };
 
     it('should return proveedores data with default pagination', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockPaginatedResponse);
+      const mockGetWithPagination = vi.mocked(mockClient.getWithPagination);
+      mockGetWithPagination.mockResolvedValue(mockPaginatedResponse);
 
       const result = await proveedoresResource.getResource('facturascripts://proveedores');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/proveedores', 50, 0, {});
+      expect(mockGetWithPagination).toHaveBeenCalledTimes(1);
+      expect(mockGetWithPagination).toHaveBeenCalledWith('/proveedores', 50, 0, {});
       expect(result).toEqual({
         uri: 'facturascripts://proveedores',
         name: 'FacturaScripts Proveedores',
@@ -85,42 +89,51 @@ describe('ProveedoresResource', () => {
     });
 
     it('should parse and use limit and offset from URI', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+      const mockGetWithPagination = vi.mocked(mockClient.getWithPagination);
+      const modifiedResponse = {
         ...mockPaginatedResponse,
         meta: { ...mockPaginatedResponse.meta, limit: 10, offset: 20 },
-      });
+      };
+      mockGetWithPagination.mockResolvedValue(modifiedResponse);
 
       const result = await proveedoresResource.getResource('facturascripts://proveedores?limit=10&offset=20');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/proveedores', 10, 20, {});
+      expect(mockGetWithPagination).toHaveBeenCalledTimes(1);
+      expect(mockGetWithPagination).toHaveBeenCalledWith('/proveedores', 10, 20, {});
       expect(result.contents[0].text).toContain('"limit": 10');
       expect(result.contents[0].text).toContain('"offset": 20');
     });
 
     it('should handle invalid limit and offset parameters', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockPaginatedResponse);
+      const mockGetWithPagination = vi.mocked(mockClient.getWithPagination);
+      mockGetWithPagination.mockResolvedValue(mockPaginatedResponse);
 
       await proveedoresResource.getResource('facturascripts://proveedores?limit=invalid&offset=also-invalid');
 
-      expect(mockClient.getWithPagination).toHaveBeenCalledWith('/proveedores', 50, 0, {});
+      expect(mockGetWithPagination).toHaveBeenCalledTimes(1);
+      expect(mockGetWithPagination).toHaveBeenCalledWith('/proveedores', 50, 0, {});
     });
 
     it('should handle API errors gracefully', async () => {
       const errorMessage = 'API connection failed';
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(new Error(errorMessage));
+      const mockGetWithPagination = vi.mocked(mockClient.getWithPagination);
+      mockGetWithPagination.mockRejectedValue(new Error(errorMessage));
 
       const result = await proveedoresResource.getResource('facturascripts://proveedores');
 
+      expect(mockGetWithPagination).toHaveBeenCalledTimes(1);
       expect(result.name).toBe('FacturaScripts Proveedores (Error)');
       expect(result.contents[0].text).toContain('Failed to fetch proveedores');
       expect(result.contents[0].text).toContain(errorMessage);
     });
 
     it('should handle non-Error exceptions', async () => {
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue('String error');
+      const mockGetWithPagination = vi.mocked(mockClient.getWithPagination);
+      mockGetWithPagination.mockRejectedValue('String error');
 
       const result = await proveedoresResource.getResource('facturascripts://proveedores');
 
+      expect(mockGetWithPagination).toHaveBeenCalledTimes(1);
       expect(result.name).toBe('FacturaScripts Proveedores (Error)');
       expect(result.contents[0].text).toContain('Unknown error');
     });
