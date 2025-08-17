@@ -1,3 +1,40 @@
+# 1.0.0 (2025-08-17)
+
+
+### Bug Fixes
+
+* configure CI to skip integration tests and run only unit tests ([284cda0](https://github.com/cristotodev/mcp-facturascripts/commit/284cda07463e03723ed0369f434d180f533d0bce))
+* configure release workflow to run only unit tests ([19bc75f](https://github.com/cristotodev/mcp-facturascripts/commit/19bc75f027055166485aeba58254abaf8da35bf0))
+* correct API endpoint names for new MCP resources ([ee5897b](https://github.com/cristotodev/mcp-facturascripts/commit/ee5897b476d2240c7a448befe74d09db2362e292))
+* resolve environment variable validation errors in 5 additional tests ([3b4f134](https://github.com/cristotodev/mcp-facturascripts/commit/3b4f134787056abdefbe00294cf0bec54ce2a7b9))
+* resolve failing unit and integration tests ([598cd7e](https://github.com/cristotodev/mcp-facturascripts/commit/598cd7e8f8c680656d785a7bd94b8c7e20763f18))
+* resolve proveedores test environment variable validation error ([e9e392f](https://github.com/cristotodev/mcp-facturascripts/commit/e9e392fbe30aac4873f721ca9e9ffab5ec252a08))
+* upgrade Node.js version in release workflow to meet semantic-release requirements ([eefe370](https://github.com/cristotodev/mcp-facturascripts/commit/eefe3702e461badbf2dc4f83fb0c60750b0fc285))
+
+
+### Features
+
+* add 5 banking and financial resources with comprehensive testing ([76969c0](https://github.com/cristotodev/mcp-facturascripts/commit/76969c012bf53bbfacdbf46b64d4e3dc050f9425))
+* add complete OpenAPI-based resources and enhanced query parameter support ([a26c243](https://github.com/cristotodev/mcp-facturascripts/commit/a26c243f214f90efe221258425504d93f302cc4b))
+* add comprehensive TDD setup with Vitest ([d8efc92](https://github.com/cristotodev/mcp-facturascripts/commit/d8efc921d08a85fdd1508876e90c163749d2d579))
+* add filter parameter to get_facturas_cliente_por_cifnif tool ([696b622](https://github.com/cristotodev/mcp-facturascripts/commit/696b622e68bd163df6018a64b5088e906bb6955b))
+* add interactive tools for Claude Desktop integration ([204526a](https://github.com/cristotodev/mcp-facturascripts/commit/204526a3533723022851706424b2b7db13ea750a))
+* add presupuestoclientes MCP resource for customer quotes ([623cd38](https://github.com/cristotodev/mcp-facturascripts/commit/623cd384799525729a926adbd2002332dddd9dc3))
+* add productoproveedores, pedidoclientes, and facturaclientes MCP resources ([acf50be](https://github.com/cristotodev/mcp-facturascripts/commit/acf50beec57082262ee19acdb01e45ee014d8105))
+* complete modular architecture migration and MCP Inspector compatibility (v1.0.1) ([3c9444f](https://github.com/cristotodev/mcp-facturascripts/commit/3c9444ff82bbaa70b0cf4135dad8cc427b28f10b))
+* implement 5 new OpenAPI-based resources and comprehensive documentation update (v0.2.0) ([9d04e1c](https://github.com/cristotodev/mcp-facturascripts/commit/9d04e1cbe38b002cce5fa5f1007fb81fc29f04de))
+* implement 5 new OpenAPI-based resources and comprehensive system enhancement (v0.3.0) ([43393a3](https://github.com/cristotodev/mcp-facturascripts/commit/43393a35e50c184707bb00f0ba2a021f385d5fca))
+* implement advanced FacturaScripts API integration with dynamic filtering (v0.4.0) ([195e175](https://github.com/cristotodev/mcp-facturascripts/commit/195e1757ac2dd3a997637e38b0e7d274962cf789))
+* implement automated semantic release and customer purchase frequency analytics ([8035858](https://github.com/cristotodev/mcp-facturascripts/commit/80358589829797e04202de44fc2205b9acfd7072))
+* implement best-selling products analytics tool with comprehensive TypeScript SDK examples ([b03fd9e](https://github.com/cristotodev/mcp-facturascripts/commit/b03fd9e40382dafd6e65b053e52f40778820d754))
+* implement comprehensive changelog automation and test reorganization ([08254fb](https://github.com/cristotodev/mcp-facturascripts/commit/08254fb130ed0e484ebd1dbea3daa513e33a4e9d))
+* implement comprehensive changelog management system ([cbf7979](https://github.com/cristotodev/mcp-facturascripts/commit/cbf7979760f42eb9454b35ffcbe2cdcd7b13e679))
+* implement comprehensive modular architecture and project cleanup (v0.5.0) ([b6e8e3b](https://github.com/cristotodev/mcp-facturascripts/commit/b6e8e3b6f126f4e65ed890f1743148d463e8de5c))
+* implement customer billing rankings tool and comprehensive business analytics v1.0.2 ([619f875](https://github.com/cristotodev/mcp-facturascripts/commit/619f87574e1c82d618574d6294279ed674c73dad))
+* implement customer invoice data integrity error detection tool ([5a2f310](https://github.com/cristotodev/mcp-facturascripts/commit/5a2f310c136cbd6e76df08d85299a92729539162))
+* implement OpenAPI part16 endpoints and comprehensive changelog automation ([ed65c57](https://github.com/cristotodev/mcp-facturascripts/commit/ed65c5792522311cdbb106a94d0cdabddd4bd118))
+* implement unsold products analytics tool for inventory management ([1756fe5](https://github.com/cristotodev/mcp-facturascripts/commit/1756fe5581412990c8641e5d3e5153f25ff6c899))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
