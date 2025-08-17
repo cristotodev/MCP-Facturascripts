@@ -31,7 +31,7 @@ jobs:
         run: npm ci
 
       - name: Run tests  
-        run: npm run test:run
+        run: npm run test:unit
         env:
           # Skip integration tests - they require live FacturaScripts API
           CI: true
