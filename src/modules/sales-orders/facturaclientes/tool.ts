@@ -489,7 +489,7 @@ export async function toolClientesTopFacturacionImplementation(
           {
             type: 'text' as const,
             text: JSON.stringify({
-              periodo: { fecha_desde, fecha_hasta },
+              periodo: { fecha_desde, fecha_hasta, solo_pagadas },
               message: `No se encontraron facturas en el período del ${fecha_desde} al ${fecha_hasta}`,
               meta: {
                 total: 0,
@@ -516,7 +516,7 @@ export async function toolClientesTopFacturacionImplementation(
           {
             type: 'text' as const,
             text: JSON.stringify({
-              periodo: { fecha_desde, fecha_hasta },
+              periodo: { fecha_desde, fecha_hasta, solo_pagadas },
               message: solo_pagadas 
                 ? `No se encontraron facturas pagadas en el período del ${fecha_desde} al ${fecha_hasta}`
                 : `No se encontraron facturas en el período del ${fecha_desde} al ${fecha_hasta}`,

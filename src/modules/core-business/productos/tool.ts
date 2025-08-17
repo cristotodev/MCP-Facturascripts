@@ -188,7 +188,6 @@ export const noVendidosToolImplementation = async (args: any, client: any) => {
     };
 
   } catch (error) {
-    console.error('Error in get_productos_no_vendidos:', error);
     return {
       content: [{
         type: 'text',
