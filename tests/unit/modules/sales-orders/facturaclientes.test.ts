@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FacturaclientesResource, FacturaCliente } from '../../../../src/modules/sales-orders/facturaclientes/resource.js';
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
@@ -1224,6 +1224,746 @@ describe('toolClientesTopFacturacionImplementation', () => {
       expect(parsedResult.meta.limit).toBe(100);    // Default limit
       expect(parsedResult.meta.offset).toBe(0);     // Default offset
       expect(parsedResult.periodo.solo_pagadas).toBe(false); // Default solo_pagadas
+    });
+  });
+});
+
+describe('toolClientesSinComprasImplementation', () => {
+  let mockClient: any;
+
+  beforeEach(() => {
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+  });
+
+  describe('successful scenarios', () => {
+    it('should return clients without purchases in date range', async () => {
+      const mockClients = [
+        {
+          codcliente: 'CLI001',
+          nombre: 'Cliente Activo',
+          email: 'activo@example.com',
+          telefono1: '123456789'
+        },
+        {
+          codcliente: 'CLI002',
+          nombre: 'Cliente Inactivo',
+          email: 'inactivo@example.com',
+          telefono1: '987654321'
+        },
+        {
+          codcliente: 'CLI003',
+          nombre: 'Cliente Sin Datos',
+          email: null,
+          telefono1: null
+        }
+      ];
+
+      const mockInvoices = [
+        {
+          codcliente: 'CLI001',
+          fecha: '2024-01-15',
+          total: 1000.00
+        }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 3, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 1, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      
+      expect(parsedResult.periodo).toEqual({
+        fecha_desde: '2024-01-01',
+        fecha_hasta: '2024-01-31'
+      });
+      expect(parsedResult.meta.total).toBe(2);
+      expect(parsedResult.data).toHaveLength(2);
+      
+      // CLI001 should be excluded (has invoices), CLI002 and CLI003 should be included
+      expect(parsedResult.data.find(c => c.codcliente === 'CLI001')).toBeUndefined();
+      expect(parsedResult.data.find(c => c.codcliente === 'CLI002')).toBeDefined();
+      expect(parsedResult.data.find(c => c.codcliente === 'CLI003')).toBeDefined();
+    });
+
+    it('should return all clients when no invoices exist in date range', async () => {
+      const mockClients = [
+        {
+          codcliente: 'CLI001',
+          nombre: 'Cliente 1',
+          email: 'cliente1@example.com',
+          telefono1: '123456789'
+        },
+        {
+          codcliente: 'CLI002',
+          nombre: 'Cliente 2',
+          email: 'cliente2@example.com',
+          telefono1: '987654321'
+        }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 2, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [], // No invoices in date range
+          meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      
+      expect(parsedResult.meta.total).toBe(2);
+      expect(parsedResult.data).toHaveLength(2);
+      expect(parsedResult.data[0].codcliente).toBe('CLI001');
+      expect(parsedResult.data[1].codcliente).toBe('CLI002');
+    });
+
+    it('should return empty array when all clients have purchases', async () => {
+      const mockClients = [
+        {
+          codcliente: 'CLI001',
+          nombre: 'Cliente 1',
+          email: 'cliente1@example.com',
+          telefono1: '123456789'
+        },
+        {
+          codcliente: 'CLI002',
+          nombre: 'Cliente 2',
+          email: 'cliente2@example.com',
+          telefono1: '987654321'
+        }
+      ];
+
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-15', total: 1000.00 },
+        { codcliente: 'CLI002', fecha: '2024-01-20', total: 2000.00 }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 2, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 2, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      
+      expect(parsedResult.meta.total).toBe(0);
+      expect(parsedResult.data).toEqual([]);
+    });
+
+    it('should handle pagination correctly', async () => {
+      const mockClients = Array.from({ length: 5 }, (_, i) => ({
+        codcliente: `CLI00${i + 1}`,
+        nombre: `Cliente ${i + 1}`,
+        email: `cliente${i + 1}@example.com`,
+        telefono1: `12345678${i}`
+      }));
+
+      // Only CLI001 has invoices
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-15', total: 1000.00 }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 5, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 1, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31',
+          limit: 2,
+          offset: 1
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      
+      expect(parsedResult.meta.total).toBe(4); // 5 clients - 1 with purchases
+      expect(parsedResult.meta.limit).toBe(2);
+      expect(parsedResult.meta.offset).toBe(1);
+      expect(parsedResult.meta.hasMore).toBe(true);
+      expect(parsedResult.data).toHaveLength(2);
+      
+      // Should get CLI003 and CLI004 (skipping CLI002 due to offset)
+      expect(parsedResult.data[0].codcliente).toBe('CLI003');
+      expect(parsedResult.data[1].codcliente).toBe('CLI004');
+    });
+
+    it('should handle clients with missing names gracefully', async () => {
+      const mockClients = [
+        {
+          codcliente: 'CLI001',
+          nombre: null,
+          razonsocial: 'Empresa Test S.L.',
+          email: 'empresa@example.com',
+          telefono1: '123456789'
+        },
+        {
+          codcliente: 'CLI002',
+          nombre: null,
+          razonsocial: null,
+          email: 'sin-nombre@example.com',
+          telefono1: null
+        }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 2, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [], // No invoices
+          meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      
+      expect(parsedResult.data[0].nombre).toBe('Empresa Test S.L.');
+      expect(parsedResult.data[1].nombre).toBe('Sin nombre');
+    });
+  });
+
+  describe('error scenarios', () => {
+    it('should handle no clients in system', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 5000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      expect(parsedResult.message).toBe('No se encontraron clientes en el sistema');
+      expect(parsedResult.data).toEqual([]);
+    });
+
+    it('should handle API errors gracefully', async () => {
+      mockClient.getWithPagination.mockRejectedValueOnce(new Error('API Error'));
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      expect(result.isError).toBe(true);
+      const parsedResult = JSON.parse(result.content[0].text);
+      expect(parsedResult.error).toBe('Failed to fetch clientes sin compras');
+      expect(parsedResult.message).toBe('API Error');
+      expect(parsedResult.periodo).toEqual({
+        fecha_desde: '2024-01-01',
+        fecha_hasta: '2024-01-31'
+      });
+    });
+
+    it('should handle invoice API errors gracefully', async () => {
+      const mockClients = [
+        { codcliente: 'CLI001', nombre: 'Cliente Test' }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 1, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockRejectedValueOnce(new Error('Invoice API Error'));
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      expect(result.isError).toBe(true);
+      const parsedResult = JSON.parse(result.content[0].text);
+      expect(parsedResult.error).toBe('Failed to fetch clientes sin compras');
+      expect(parsedResult.message).toBe('Invoice API Error');
+    });
+  });
+
+  describe('parameter validation', () => {
+    it('should normalize limit and offset parameters', async () => {
+      const mockClients = [
+        { codcliente: 'CLI001', nombre: 'Cliente Test', email: null, telefono1: null }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 1, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [],
+          meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31',
+          limit: 5000, // Should be capped to 1000
+          offset: -10  // Should be normalized to 0
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      expect(parsedResult.meta.limit).toBe(1000); // Capped
+      expect(parsedResult.meta.offset).toBe(0);   // Normalized
+    });
+
+    it('should use default values correctly', async () => {
+      const mockClients = [
+        { codcliente: 'CLI001', nombre: 'Cliente Test', email: null, telefono1: null }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockClients,
+          meta: { total: 1, limit: 5000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [],
+          meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesSinComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+          // No limit or offset - should use defaults
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      expect(parsedResult.meta.limit).toBe(100);  // Default limit
+      expect(parsedResult.meta.offset).toBe(0);   // Default offset
+    });
+  });
+});
+
+describe('toolClientesFrecuenciaComprasImplementation', () => {
+  let mockClient: any;
+
+  beforeEach(() => {
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+  });
+
+  describe('successful scenarios', () => {
+    it('should calculate purchase frequency for clients with multiple invoices', async () => {
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-10', total: 100 },
+        { codcliente: 'CLI001', fecha: '2024-01-25', total: 150 }, // 15 days later
+        { codcliente: 'CLI001', fecha: '2024-02-10', total: 200 }, // 16 days later (avg: 15.5 days)
+        { codcliente: 'CLI002', fecha: '2024-01-15', total: 300 }  // Single purchase
+      ];
+
+      const mockClients = [
+        { codcliente: 'CLI001', nombre: 'Juan Pérez', email: 'juan@example.com', telefono1: '600123456' },
+        { codcliente: 'CLI002', nombre: 'Ana Gómez', email: 'ana@example.com', telefono1: '600654321' }
+      ];
+
+      // Mock invoice retrieval
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 4, limit: 10000, offset: 0, hasMore: false }
+        })
+        // Mock client lookups
+        .mockResolvedValueOnce({
+          data: [mockClients[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-02-28'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.periodo.fecha_desde).toBe('2024-01-01');
+      expect(parsedResult.periodo.fecha_hasta).toBe('2024-02-28');
+      expect(parsedResult.meta.total).toBe(2);
+      expect(parsedResult.data).toHaveLength(2);
+
+      // Check client with multiple purchases (sorted first by numero_compras)
+      const cli001 = parsedResult.data[0];
+      expect(cli001.codcliente).toBe('CLI001');
+      expect(cli001.numero_compras).toBe(3);
+      expect(cli001.fecha_primera_compra).toBe('2024-01-10');
+      expect(cli001.fecha_ultima_compra).toBe('2024-02-10');
+      expect(cli001.frecuencia_dias).toBe(16); // Rounded average: (15 + 16) / 2 = 15.5 ≈ 16
+
+      // Check client with single purchase
+      const cli002 = parsedResult.data[1];
+      expect(cli002.codcliente).toBe('CLI002');
+      expect(cli002.numero_compras).toBe(1);
+      expect(cli002.fecha_primera_compra).toBe('2024-01-15');
+      expect(cli002.fecha_ultima_compra).toBe('2024-01-15');
+      expect(cli002.frecuencia_dias).toBeNull();
+    });
+
+    it('should handle clients with exactly 2 invoices', async () => {
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-01', total: 100 },
+        { codcliente: 'CLI001', fecha: '2024-01-31', total: 150 } // 30 days later
+      ];
+
+      const mockClient1 = { codcliente: 'CLI001', nombre: 'Cliente Test', email: 'test@example.com', telefono1: '123456789' };
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 2, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClient1],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+      const cliente = parsedResult.data[0];
+
+      expect(cliente.numero_compras).toBe(2);
+      expect(cliente.frecuencia_dias).toBe(30); // Exact 30 days between purchases
+    });
+
+    it('should apply pagination correctly', async () => {
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-10', total: 100 },
+        { codcliente: 'CLI002', fecha: '2024-01-15', total: 150 },
+        { codcliente: 'CLI003', fecha: '2024-01-20', total: 200 }
+      ];
+
+      const mockClients = [
+        { codcliente: 'CLI001', nombre: 'Cliente 1' },
+        { codcliente: 'CLI002', nombre: 'Cliente 2' },
+        { codcliente: 'CLI003', nombre: 'Cliente 3' }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 3, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[2]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31',
+          limit: 2,
+          offset: 1
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.total).toBe(3); // Total clients
+      expect(parsedResult.meta.limit).toBe(2);
+      expect(parsedResult.meta.offset).toBe(1);
+      expect(parsedResult.meta.hasMore).toBe(false); // 3 total, offset 1, limit 2 → items 1,2 → no more
+      expect(parsedResult.data).toHaveLength(2); // Only 2 results due to pagination
+    });
+  });
+
+  describe('error scenarios', () => {
+    it('should handle no invoices found in date range', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.message).toContain('No se encontraron facturas en el período');
+      expect(parsedResult.meta.total).toBe(0);
+      expect(parsedResult.data).toEqual([]);
+    });
+
+    it('should handle client lookup failures gracefully', async () => {
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-10', total: 100 },
+        { codcliente: 'CLI001', fecha: '2024-01-25', total: 150 }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 2, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockRejectedValueOnce(new Error('Client lookup failed'));
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.data).toHaveLength(1);
+      const cliente = parsedResult.data[0];
+      expect(cliente.codcliente).toBe('CLI001');
+      expect(cliente.nombre).toBe('Error al obtener datos del cliente');
+      expect(cliente.numero_compras).toBe(2);
+      expect(cliente.frecuencia_dias).toBe(15); // Still calculated correctly
+    });
+
+    it('should handle API errors gracefully', async () => {
+      mockClient.getWithPagination.mockRejectedValueOnce(new Error('API Error'));
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      expect(result.isError).toBe(true);
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.error).toBe('Failed to fetch clientes frecuencia compras');
+      expect(parsedResult.message).toBe('API Error');
+      expect(parsedResult.periodo.fecha_desde).toBe('2024-01-01');
+      expect(parsedResult.periodo.fecha_hasta).toBe('2024-01-31');
+    });
+
+    it('should handle missing client data', async () => {
+      const mockInvoices = [
+        { codcliente: 'CLI001', fecha: '2024-01-10', total: 100 }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 1, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [], // No client found
+          meta: { total: 0, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.data).toHaveLength(0); // Client not included if lookup fails with empty data
+    });
+  });
+
+  describe('parameter validation', () => {
+    it('should normalize limit and offset parameters', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31',
+          limit: 5000, // Should be capped to 1000
+          offset: -10  // Should be normalized to 0
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.limit).toBe(1000); // Capped limit
+      expect(parsedResult.meta.offset).toBe(0);   // Normalized offset
+    });
+
+    it('should use default parameters when not provided', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+          // No limit or offset - should use defaults
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.limit).toBe(100);  // Default limit
+      expect(parsedResult.meta.offset).toBe(0);   // Default offset
+    });
+  });
+
+  describe('sorting logic', () => {
+    it('should sort by numero_compras descending, then by frecuencia_dias ascending', async () => {
+      const mockInvoices = [
+        // CLI001: 3 purchases, frequency: 15 days
+        { codcliente: 'CLI001', fecha: '2024-01-01', total: 100 },
+        { codcliente: 'CLI001', fecha: '2024-01-16', total: 150 },
+        { codcliente: 'CLI001', fecha: '2024-01-31', total: 200 },
+        // CLI002: 2 purchases, frequency: 20 days
+        { codcliente: 'CLI002', fecha: '2024-01-01', total: 100 },
+        { codcliente: 'CLI002', fecha: '2024-01-21', total: 150 },
+        // CLI003: 2 purchases, frequency: 10 days (should come before CLI002)
+        { codcliente: 'CLI003', fecha: '2024-01-01', total: 100 },
+        { codcliente: 'CLI003', fecha: '2024-01-11', total: 150 }
+      ];
+
+      const mockClients = [
+        { codcliente: 'CLI001', nombre: 'Cliente 1' },
+        { codcliente: 'CLI002', nombre: 'Cliente 2' },
+        { codcliente: 'CLI003', nombre: 'Cliente 3' }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockInvoices,
+          meta: { total: 7, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClients[2]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesFrecuenciaComprasImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          fecha_hasta: '2024-01-31'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.data).toHaveLength(3);
+      
+      // Should be sorted by numero_compras desc, then frecuencia_dias asc
+      expect(parsedResult.data[0].codcliente).toBe('CLI001'); // 3 purchases
+      expect(parsedResult.data[1].codcliente).toBe('CLI003'); // 2 purchases, 10 days
+      expect(parsedResult.data[2].codcliente).toBe('CLI002'); // 2 purchases, 20 days
     });
   });
 });

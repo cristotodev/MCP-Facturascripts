@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import { FacturaclientesResource } from '../../../../src/modules/sales-orders/facturaclientes/resource.js';
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
 
 // Integration tests - only run if environment is configured
 const shouldRunIntegrationTests = process.env.NODE_ENV === 'test' &&
@@ -351,6 +351,325 @@ describe.skipIf(!shouldRunIntegrationTests)('Facturaclientes Integration Tests',
 
     expect(result.content[0].type).toBe('text');
     
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Parameters should be normalized
+    expect(parsedResult.meta.limit).toBe(1000); // Capped
+    expect(parsedResult.meta.offset).toBe(0);   // Normalized
+    
+    // Should still work correctly
+    expect(parsedResult).toHaveProperty('periodo');
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+  }, 15000);
+
+  it('should handle get_clientes_sin_compras tool with real API', async () => {
+    // Test with a recent date range
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    const fechaDesde = thirtyDaysAgo.toISOString().split('T')[0];
+    const fechaHasta = today.toISOString().split('T')[0];
+
+    const result = await toolClientesSinComprasImplementation(
+      {
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: 5,
+        offset: 0
+      },
+      client
+    );
+
+    expect(result.content[0].type).toBe('text');
+    
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Should have proper response structure regardless of whether there are clients without purchases
+    expect(parsedResult).toHaveProperty('periodo');
+    expect(parsedResult.periodo).toEqual({
+      fecha_desde: fechaDesde,
+      fecha_hasta: fechaHasta
+    });
+    
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult.meta).toHaveProperty('total');
+    expect(parsedResult.meta).toHaveProperty('limit', 5);
+    expect(parsedResult.meta).toHaveProperty('offset', 0);
+    expect(parsedResult.meta).toHaveProperty('hasMore');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+
+    // If there are clients without purchases, verify structure
+    if (parsedResult.data.length > 0) {
+      const firstClient = parsedResult.data[0];
+      expect(firstClient).toHaveProperty('codcliente');
+      expect(firstClient).toHaveProperty('nombre');
+      expect(firstClient).toHaveProperty('email');
+      expect(firstClient).toHaveProperty('telefono1');
+      expect(typeof firstClient.codcliente).toBe('string');
+      expect(typeof firstClient.nombre).toBe('string');
+      // email and telefono1 can be null
+      expect(firstClient.email === null || typeof firstClient.email === 'string').toBe(true);
+      expect(firstClient.telefono1 === null || typeof firstClient.telefono1 === 'string').toBe(true);
+    }
+
+    // If no clients exist, should have appropriate message
+    if (parsedResult.data.length === 0 && parsedResult.message) {
+      expect(parsedResult.message).toMatch(/No se encontraron clientes/);
+    }
+  }, 20000);
+
+  it('should handle get_clientes_sin_compras with different date ranges', async () => {
+    // Test with a historical date range that might have more inactive clients
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    const elevenMonthsAgo = new Date();
+    elevenMonthsAgo.setFullYear(elevenMonthsAgo.getFullYear() - 1);
+    elevenMonthsAgo.setMonth(elevenMonthsAgo.getMonth() + 1);
+    
+    const fechaDesde = oneYearAgo.toISOString().split('T')[0];
+    const fechaHasta = elevenMonthsAgo.toISOString().split('T')[0];
+
+    const result = await toolClientesSinComprasImplementation(
+      {
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: 3,
+        offset: 0
+      },
+      client
+    );
+
+    expect(result.content[0].type).toBe('text');
+    
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Verify date range is reflected in response
+    expect(parsedResult.periodo.fecha_desde).toBe(fechaDesde);
+    expect(parsedResult.periodo.fecha_hasta).toBe(fechaHasta);
+    
+    // Should have proper pagination
+    expect(parsedResult.meta.limit).toBe(3);
+    expect(parsedResult.meta.offset).toBe(0);
+    
+    // Should work correctly regardless of results
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+  }, 20000);
+
+  it('should handle pagination with get_clientes_sin_compras tool', async () => {
+    // Test pagination with small limit
+    const today = new Date();
+    const sixMonthsAgo = new Date(today.getTime() - 180 * 24 * 60 * 60 * 1000);
+    
+    const fechaDesde = sixMonthsAgo.toISOString().split('T')[0];
+    const fechaHasta = today.toISOString().split('T')[0];
+
+    const result = await toolClientesSinComprasImplementation(
+      {
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: 1,
+        offset: 0
+      },
+      client
+    );
+
+    expect(result.content[0].type).toBe('text');
+    
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Verify pagination structure
+    expect(parsedResult.meta).toHaveProperty('total');
+    expect(parsedResult.meta).toHaveProperty('limit', 1);
+    expect(parsedResult.meta).toHaveProperty('offset', 0);
+    expect(parsedResult.meta).toHaveProperty('hasMore');
+    
+    // Should return at most 1 result
+    expect(parsedResult.data.length).toBeLessThanOrEqual(1);
+    
+    // If there's data and total > 1, hasMore should be true
+    if (parsedResult.data.length === 1 && parsedResult.meta.total > 1) {
+      expect(parsedResult.meta.hasMore).toBe(true);
+    }
+  }, 15000);
+
+  it('should handle edge case scenarios for get_clientes_sin_compras', async () => {
+    // Test with a very recent date range (last 7 days) - most clients likely won't have purchases
+    const today = new Date();
+    const sevenDaysAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    const fechaDesde = sevenDaysAgo.toISOString().split('T')[0];
+    const fechaHasta = today.toISOString().split('T')[0];
+
+    const result = await toolClientesSinComprasImplementation(
+      {
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: 10,
+        offset: 0
+      },
+      client
+    );
+
+    expect(result.content[0].type).toBe('text');
+    
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Should work correctly - most clients likely haven't purchased in the last 7 days
+    expect(parsedResult.periodo.fecha_desde).toBe(fechaDesde);
+    expect(parsedResult.periodo.fecha_hasta).toBe(fechaHasta);
+    expect(parsedResult.meta.total).toBeGreaterThanOrEqual(0);
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+    
+    // Should handle the case where all or most clients haven't made purchases recently
+    if (parsedResult.data.length > 0) {
+      // Each client should have proper structure
+      parsedResult.data.forEach(client => {
+        expect(client).toHaveProperty('codcliente');
+        expect(client).toHaveProperty('nombre');
+        expect(client).toHaveProperty('email');
+        expect(client).toHaveProperty('telefono1');
+      });
+    }
+  }, 15000);
+
+  it('should handle parameter validation for get_clientes_sin_compras', async () => {
+    // Test with extreme parameters that should be normalized
+    const today = new Date();
+    const oneMonthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    const fechaDesde = oneMonthAgo.toISOString().split('T')[0];
+    const fechaHasta = today.toISOString().split('T')[0];
+
+    const result = await toolClientesSinComprasImplementation(
+      {
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: 5000, // Should be capped to 1000
+        offset: -10  // Should be normalized to 0
+      },
+      client
+    );
+
+    expect(result.content[0].type).toBe('text');
+    
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Parameters should be normalized
+    expect(parsedResult.meta.limit).toBe(1000); // Capped
+    expect(parsedResult.meta.offset).toBe(0);   // Normalized
+    
+    // Should still work correctly
+    expect(parsedResult).toHaveProperty('periodo');
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+  }, 15000);
+
+  it('should handle get_clientes_frecuencia_compras tool with real API', async () => {
+    // Use a recent date range to potentially find data
+    const fechaDesde = '2024-01-01';
+    const fechaHasta = '2024-12-31';
+    
+    const result = await toolClientesFrecuenciaComprasImplementation(
+      { 
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta,
+        limit: 5
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    expect(Array.isArray(result.content)).toBe(true);
+    expect(result.content.length).toBeGreaterThan(0);
+
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Should have proper structure regardless of whether data is found
+    expect(parsedResult).toHaveProperty('periodo');
+    expect(parsedResult.periodo.fecha_desde).toBe(fechaDesde);
+    expect(parsedResult.periodo.fecha_hasta).toBe(fechaHasta);
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult.meta).toHaveProperty('total');
+    expect(parsedResult.meta).toHaveProperty('limit', 5);
+    expect(parsedResult.meta).toHaveProperty('offset', 0);
+    expect(parsedResult.meta).toHaveProperty('hasMore');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+
+    // If data is found, validate structure
+    if (parsedResult.data.length > 0) {
+      const cliente = parsedResult.data[0];
+      expect(cliente).toHaveProperty('codcliente');
+      expect(cliente).toHaveProperty('nombre');
+      expect(cliente).toHaveProperty('numero_compras');
+      expect(cliente).toHaveProperty('fecha_primera_compra');
+      expect(cliente).toHaveProperty('fecha_ultima_compra');
+      expect(cliente).toHaveProperty('frecuencia_dias');
+      
+      // Validate data types
+      expect(typeof cliente.codcliente).toBe('string');
+      expect(typeof cliente.nombre).toBe('string');
+      expect(typeof cliente.numero_compras).toBe('number');
+      expect(typeof cliente.fecha_primera_compra).toBe('string');
+      expect(typeof cliente.fecha_ultima_compra).toBe('string');
+      // frecuencia_dias can be number or null
+      expect(cliente.frecuencia_dias === null || typeof cliente.frecuencia_dias === 'number').toBe(true);
+      
+      // Business logic validation
+      expect(cliente.numero_compras).toBeGreaterThan(0);
+      if (cliente.numero_compras === 1) {
+        expect(cliente.frecuencia_dias).toBeNull();
+        expect(cliente.fecha_primera_compra).toBe(cliente.fecha_ultima_compra);
+      } else {
+        expect(cliente.frecuencia_dias).toBeGreaterThan(0);
+      }
+    }
+  }, 15000);
+
+  it('should handle get_clientes_frecuencia_compras with no data period', async () => {
+    // Use a future date range where no data should exist
+    const fechaDesde = '2030-01-01';
+    const fechaHasta = '2030-01-31';
+    
+    const result = await toolClientesFrecuenciaComprasImplementation(
+      { 
+        fecha_desde: fechaDesde,
+        fecha_hasta: fechaHasta
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    expect(Array.isArray(result.content)).toBe(true);
+    expect(result.content.length).toBeGreaterThan(0);
+
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Should have proper error/empty message
+    expect(parsedResult).toHaveProperty('message');
+    expect(parsedResult.message).toContain('No se encontraron facturas en el período');
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult.meta.total).toBe(0);
+    expect(parsedResult.data).toEqual([]);
+  }, 15000);
+
+  it('should handle get_clientes_frecuencia_compras parameter validation with real API', async () => {
+    const result = await toolClientesFrecuenciaComprasImplementation(
+      { 
+        fecha_desde: '2024-01-01',
+        fecha_hasta: '2024-01-31',
+        limit: 5000, // Should be capped to 1000
+        offset: -10  // Should be normalized to 0
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
     const parsedResult = JSON.parse(result.content[0].text);
     
     // Parameters should be normalized

@@ -3,6 +3,14 @@
   "version": "1.0.2",
   "description": "MCP server for comprehensive FacturaScripts integration - provides access to 59 resources with 65 interactive tools including specialized business analytics, OpenAPI part16 implementation, and PDF export functionality",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cristotodev/mcp-facturascripts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cristotodev/mcp-facturascripts/issues"
+  },
+  "homepage": "https://github.com/cristotodev/mcp-facturascripts#readme",
   "main": "mcp-server.js",
   "scripts": {
     "dev": "node mcp-server.js",
@@ -23,7 +31,9 @@
     "version:major": "npm version major && npm run build && npm run test:run",
     "release": "npm version patch && npm run build && npm run test:run",
     "release:minor": "npm run version:minor",
-    "release:major": "npm run version:major"
+    "release:major": "npm run version:major",
+    "semantic-release": "semantic-release",
+    "semantic-release:dry": "semantic-release --dry-run"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -32,10 +42,14 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
     "@types/node": "^22.0.0",
     "@vitest/ui": "^3.2.4",
     "auto-changelog": "^2.5.0",
     "conventional-changelog-cli": "^5.0.0",
+    "semantic-release": "^24.2.7",
     "tsx": "^4.16.0",
     "typescript": "^5.5.0",
     "vitest": "^3.2.4"

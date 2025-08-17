@@ -747,3 +747,373 @@ export async function toolExportarFacturaImplementation(
     };
   }
 }
+
+// Tool definition for clients without purchases in a date range
+export const toolClientesSinComprasDefinition = {
+  name: 'get_clientes_sin_compras',
+  description: 'Obtiene una lista de clientes que no han realizado compras (no aparecen en facturas de clientes) en un rango de fechas específico. Realiza búsqueda en dos pasos: 1) Obtiene todos los clientes activos, 2) Filtra aquellos sin facturas en el período. Útil para campañas de reactivación, análisis de clientes inactivos y estrategias de retención.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      fecha_desde: { type: 'string', description: 'Fecha de inicio del período (formato: YYYY-MM-DD)' },
+      fecha_hasta: { type: 'string', description: 'Fecha de fin del período (formato: YYYY-MM-DD)' },
+      limit: { type: 'number', description: 'Número máximo de clientes a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+      offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+    },
+    required: ['fecha_desde', 'fecha_hasta']
+  }
+};
+
+interface ClienteSinCompras {
+  codcliente: string;
+  nombre: string;
+  email: string | null;
+  telefono1: string | null;
+}
+
+export async function toolClientesSinComprasImplementation(
+  args: { fecha_desde: string; fecha_hasta: string; limit?: number; offset?: number },
+  client: FacturaScriptsClient
+) {
+  const { fecha_desde, fecha_hasta } = args;
+  const limit = Math.min(Math.max(args.limit || 100, 1), 1000);
+  const offset = Math.max(args.offset || 0, 0);
+
+  try {
+    // Step 1: Get all clients
+    const allClientsResult = await client.getWithPagination<any>(
+      '/clientes',
+      5000, // Large limit to get all clients
+      0,
+      {} // No filters
+    );
+
+    if (!allClientsResult.data || allClientsResult.data.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              periodo: { fecha_desde, fecha_hasta },
+              message: 'No se encontraron clientes en el sistema',
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 2: Get invoices within date range
+    const invoiceFilter = `fecha_gte:${fecha_desde},fecha_lte:${fecha_hasta}`;
+    const invoiceParams = new URLSearchParams();
+    invoiceParams.append('limit', '10000'); // Large limit to get all invoices
+    invoiceParams.append('offset', '0');
+    invoiceParams.append('filter', invoiceFilter);
+    
+    const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
+    const { additionalParams } = parseUrlParameters(invoiceUri);
+
+    const invoiceResult = await client.getWithPagination<FacturaCliente>(
+      '/facturaclientes',
+      10000,
+      0,
+      additionalParams
+    );
+
+    // Step 3: Extract unique client codes from invoices
+    const clientesConCompras = new Set<string>();
+    if (invoiceResult.data && invoiceResult.data.length > 0) {
+      invoiceResult.data.forEach(invoice => {
+        if (invoice.codcliente) {
+          clientesConCompras.add(invoice.codcliente);
+        }
+      });
+    }
+
+    // Step 4: Filter clients without purchases
+    const clientesSinCompras: ClienteSinCompras[] = allClientsResult.data
+      .filter(cliente => !clientesConCompras.has(cliente.codcliente))
+      .map(cliente => ({
+        codcliente: cliente.codcliente,
+        nombre: cliente.nombre || cliente.razonsocial || 'Sin nombre',
+        email: cliente.email || null,
+        telefono1: cliente.telefono1 || null
+      }));
+
+    // Step 5: Apply pagination
+    const totalClientes = clientesSinCompras.length;
+    const paginatedClientes = clientesSinCompras.slice(offset, offset + limit);
+    const hasMore = offset + limit < totalClientes;
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            periodo: { fecha_desde, fecha_hasta },
+            meta: {
+              total: totalClientes,
+              limit,
+              offset,
+              hasMore,
+            },
+            data: paginatedClientes,
+          }, null, 2)
+        }
+      ]
+    };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to fetch clientes sin compras',
+            message: errorMessage,
+            periodo: { fecha_desde, fecha_hasta },
+            meta: {
+              total: 0,
+              limit,
+              offset,
+              hasMore: false,
+            },
+            data: [],
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}
+
+// Tool definition for customer purchase frequency analysis
+export const toolClientesFrecuenciaComprasDefinition = {
+  name: 'get_clientes_frecuencia_compras',
+  description: 'Analiza la frecuencia de compras de clientes basándose en sus facturas dentro de un rango de fechas específico. Calcula el número de compras, fechas de primera y última compra, y la frecuencia promedio en días entre compras. Útil para segmentar clientes frecuentes, ocasionales o inactivos, y para estrategias de fidelización.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      fecha_desde: { type: 'string', description: 'Fecha de inicio del período de análisis (formato: YYYY-MM-DD)' },
+      fecha_hasta: { type: 'string', description: 'Fecha de fin del período de análisis (formato: YYYY-MM-DD)' },
+      limit: { type: 'number', description: 'Número máximo de clientes a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+      offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+    },
+    required: ['fecha_desde', 'fecha_hasta']
+  }
+};
+
+interface ClienteFrecuenciaCompras {
+  codcliente: string;
+  nombre: string;
+  email: string | null;
+  telefono1: string | null;
+  numero_compras: number;
+  fecha_primera_compra: string;
+  fecha_ultima_compra: string;
+  frecuencia_dias: number | null;
+}
+
+export async function toolClientesFrecuenciaComprasImplementation(
+  args: { fecha_desde: string; fecha_hasta: string; limit?: number; offset?: number },
+  client: FacturaScriptsClient
+) {
+  const { fecha_desde, fecha_hasta } = args;
+  const limit = Math.min(Math.max(args.limit || 100, 1), 1000);
+  const offset = Math.max(args.offset || 0, 0);
+
+  try {
+    // Step 1: Get invoices within date range
+    const invoiceFilter = `fecha_gte:${fecha_desde},fecha_lte:${fecha_hasta}`;
+    const invoiceParams = new URLSearchParams();
+    invoiceParams.append('limit', '10000'); // Large limit to get all invoices for analysis
+    invoiceParams.append('offset', '0');
+    invoiceParams.append('filter', invoiceFilter);
+    
+    const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
+    const { additionalParams } = parseUrlParameters(invoiceUri);
+
+    const invoiceResult = await client.getWithPagination<FacturaCliente>(
+      '/facturaclientes',
+      10000,
+      0,
+      additionalParams
+    );
+
+    if (!invoiceResult.data || invoiceResult.data.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              periodo: { fecha_desde, fecha_hasta },
+              message: `No se encontraron facturas en el período del ${fecha_desde} al ${fecha_hasta}`,
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 2: Group invoices by client and calculate frequency data
+    const clienteGroups = new Map<string, FacturaCliente[]>();
+
+    invoiceResult.data.forEach(invoice => {
+      const codcliente = invoice.codcliente;
+      if (!clienteGroups.has(codcliente)) {
+        clienteGroups.set(codcliente, []);
+      }
+      clienteGroups.get(codcliente)!.push(invoice);
+    });
+
+    // Step 3: Calculate frequency metrics for each client
+    const clientesFrecuencia: ClienteFrecuenciaCompras[] = [];
+
+    for (const [codcliente, invoices] of clienteGroups.entries()) {
+      // Sort invoices by fecha ascending
+      const sortedInvoices = invoices.sort((a, b) => {
+        const dateA = new Date(a.fecha);
+        const dateB = new Date(b.fecha);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+      const numero_compras = sortedInvoices.length;
+      const fecha_primera_compra = sortedInvoices[0].fecha;
+      const fecha_ultima_compra = sortedInvoices[sortedInvoices.length - 1].fecha;
+
+      // Calculate average frequency in days
+      let frecuencia_dias: number | null = null;
+      if (numero_compras > 1) {
+        const fechas = sortedInvoices.map(invoice => new Date(invoice.fecha));
+        const intervalos: number[] = [];
+        
+        for (let i = 1; i < fechas.length; i++) {
+          const days = Math.floor((fechas[i].getTime() - fechas[i-1].getTime()) / (1000 * 60 * 60 * 24));
+          intervalos.push(days);
+        }
+        
+        // Calculate average days between purchases
+        if (intervalos.length > 0) {
+          const sumaIntervalos = intervalos.reduce((sum, interval) => sum + interval, 0);
+          frecuencia_dias = Math.round(sumaIntervalos / intervalos.length);
+        }
+      }
+
+      try {
+        // Get client details
+        const clientFilter = `codcliente:${codcliente}`;
+        const clientParams = new URLSearchParams();
+        clientParams.append('limit', '1');
+        clientParams.append('offset', '0');
+        clientParams.append('filter', clientFilter);
+        
+        const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
+        const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
+
+        const clientResult = await client.getWithPagination<any>(
+          '/clientes',
+          1,
+          0,
+          clientAdditionalParams
+        );
+
+        if (clientResult.data && clientResult.data.length > 0) {
+          const cliente = clientResult.data[0];
+          clientesFrecuencia.push({
+            codcliente,
+            nombre: cliente.nombre || cliente.razonsocial || 'Sin nombre',
+            email: cliente.email || null,
+            telefono1: cliente.telefono1 || null,
+            numero_compras,
+            fecha_primera_compra,
+            fecha_ultima_compra,
+            frecuencia_dias
+          });
+        }
+      } catch (error) {
+        // If client lookup fails, still include with minimal data but keep calculated frequency
+        clientesFrecuencia.push({
+          codcliente,
+          nombre: 'Error al obtener datos del cliente',
+          email: null,
+          telefono1: null,
+          numero_compras,
+          fecha_primera_compra,
+          fecha_ultima_compra,
+          frecuencia_dias // Keep the calculated frequency even when client lookup fails
+        });
+      }
+    }
+
+    // Step 4: Sort by numero_compras descending, then by frecuencia_dias ascending
+    clientesFrecuencia.sort((a, b) => {
+      if (a.numero_compras !== b.numero_compras) {
+        return b.numero_compras - a.numero_compras;
+      }
+      // For clients with same number of purchases, sort by frequency (lower is better)
+      if (a.frecuencia_dias === null && b.frecuencia_dias === null) return 0;
+      if (a.frecuencia_dias === null) return 1;
+      if (b.frecuencia_dias === null) return -1;
+      return a.frecuencia_dias - b.frecuencia_dias;
+    });
+
+    // Step 5: Apply pagination
+    const totalClientes = clientesFrecuencia.length;
+    const paginatedClientes = clientesFrecuencia.slice(offset, offset + limit);
+    const hasMore = offset + limit < totalClientes;
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            periodo: { fecha_desde, fecha_hasta },
+            meta: {
+              total: totalClientes,
+              limit,
+              offset,
+              hasMore,
+            },
+            data: paginatedClientes,
+          }, null, 2)
+        }
+      ]
+    };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to fetch clientes frecuencia compras',
+            message: errorMessage,
+            periodo: { fecha_desde, fecha_hasta },
+            meta: {
+              total: 0,
+              limit,
+              offset,
+              hasMore: false,
+            },
+            data: [],
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}
