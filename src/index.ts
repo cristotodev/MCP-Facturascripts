@@ -87,7 +87,7 @@ import { SeriesResource } from './modules/configuration/series/resource.js';
 import { SubcuentasResource } from './modules/accounting/subcuentas/resource.js';
 import { TarifasResource } from './modules/configuration/tarifas/resource.js';
 // Import new tool functions
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolExportarFacturaImplementation, toolClientesFrecuenciaComprasImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolExportarFacturaImplementation, toolClientesFrecuenciaComprasImplementation, toolFacturasConErroresImplementation } from './modules/sales-orders/facturaclientes/tool.js';
 import { lowStockToolImplementation } from './modules/core-business/stocks/tool.js';
 import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
 import { productosNoVendidosToolDefinition, productosNoVendidosToolImplementation } from './modules/core-business/productos/index.js';
@@ -461,6 +461,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
           },
           required: ['fecha_desde', 'fecha_hasta']
+        }
+      },
+      {
+        name: 'get_facturas_con_errores',
+        description: 'Obtiene una lista de facturas de clientes que presentan posibles errores de integridad de datos como clientes faltantes, totales en cero, fechas vacías, facturas sin líneas o identificadores duplicados. Útil para detectar facturas problemáticas y realizar limpiezas de datos y revisiones contables.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            fecha_desde: { type: 'string', description: 'Fecha de inicio del período (formato: YYYY-MM-DD)' },
+            fecha_hasta: { type: 'string', description: 'Fecha de fin del período (formato: YYYY-MM-DD)' },
+            limit: { type: 'number', description: 'Número máximo de facturas con errores a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+            offset: { type: 'number', description: 'Número de facturas a omitir para paginación', minimum: 0, default: 0 }
+          }
         }
       },
       {
@@ -3031,6 +3044,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_clientes_frecuencia_compras': {
         return await toolClientesFrecuenciaComprasImplementation(request.params.arguments as any, fsClient);
+      }
+
+      case 'get_facturas_con_errores': {
+        return await toolFacturasConErroresImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_presupuestoclientes': {

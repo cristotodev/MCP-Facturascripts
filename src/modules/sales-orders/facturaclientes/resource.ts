@@ -13,6 +13,9 @@ export interface FacturaCliente {
   pagada?: boolean;
   vencida?: boolean;
   vencimiento?: string;
+  codserie?: string;
+  codejercicio?: string;
+  idfactura?: number;
 }
 
 export class FacturaclientesResource {

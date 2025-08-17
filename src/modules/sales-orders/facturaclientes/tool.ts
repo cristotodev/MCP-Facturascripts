@@ -1117,3 +1117,231 @@ export async function toolClientesFrecuenciaComprasImplementation(
     };
   }
 }
+
+// Tool definition for invoices with data integrity errors
+export const toolFacturasConErroresDefinition = {
+  name: 'get_facturas_con_errores',
+  description: 'Obtiene una lista de facturas de clientes que presentan posibles errores de integridad de datos como clientes faltantes, totales en cero, fechas vacías, facturas sin líneas o identificadores duplicados. Útil para detectar facturas problemáticas y realizar limpiezas de datos y revisiones contables.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      fecha_desde: { type: 'string', description: 'Fecha de inicio del período (formato: YYYY-MM-DD)' },
+      fecha_hasta: { type: 'string', description: 'Fecha de fin del período (formato: YYYY-MM-DD)' },
+      limit: { type: 'number', description: 'Número máximo de facturas con errores a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+      offset: { type: 'number', description: 'Número de facturas a omitir para paginación', minimum: 0, default: 0 }
+    }
+  }
+};
+
+interface FacturaConErrores {
+  codigo: string;
+  codcliente: string;
+  fecha: string;
+  total: number;
+  errores: string[];
+}
+
+export async function toolFacturasConErroresImplementation(
+  args: { fecha_desde?: string; fecha_hasta?: string; limit?: number; offset?: number },
+  client: FacturaScriptsClient
+) {
+  const limit = Math.min(Math.max(args.limit || 100, 1), 1000);
+  const offset = Math.max(args.offset || 0, 0);
+
+  try {
+    // Step 1: Get invoices with optional date filters
+    let invoiceFilter = '';
+    if (args.fecha_desde && args.fecha_hasta) {
+      invoiceFilter = `fecha_gte:${args.fecha_desde},fecha_lte:${args.fecha_hasta}`;
+    } else if (args.fecha_desde) {
+      invoiceFilter = `fecha_gte:${args.fecha_desde}`;
+    } else if (args.fecha_hasta) {
+      invoiceFilter = `fecha_lte:${args.fecha_hasta}`;
+    }
+
+    const invoiceParams = new URLSearchParams();
+    invoiceParams.append('limit', '10000'); // High limit to get all invoices for analysis
+    invoiceParams.append('offset', '0');
+    if (invoiceFilter) invoiceParams.append('filter', invoiceFilter);
+    
+    const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
+    const { additionalParams } = parseUrlParameters(invoiceUri);
+
+    const invoiceResult = await client.getWithPagination<FacturaCliente>(
+      '/facturaclientes',
+      10000,
+      0,
+      additionalParams
+    );
+
+    if (!invoiceResult.data || invoiceResult.data.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              message: args.fecha_desde || args.fecha_hasta 
+                ? `No se encontraron facturas en el período especificado`
+                : 'No se encontraron facturas en el sistema',
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 2: Build duplicate detection map using numero + codserie + codejercicio
+    const duplicateMap = new Map<string, FacturaCliente[]>();
+    
+    invoiceResult.data.forEach(invoice => {
+      const key = `${invoice.numero || ''}-${invoice.codserie || ''}-${invoice.codejercicio || ''}`;
+      if (!duplicateMap.has(key)) {
+        duplicateMap.set(key, []);
+      }
+      duplicateMap.get(key)!.push(invoice);
+    });
+
+    // Step 3: Check each invoice for errors
+    const facturasConErrores: FacturaConErrores[] = [];
+
+    for (const invoice of invoiceResult.data) {
+      const errores: string[] = [];
+
+      // Check for total <= 0
+      if (!invoice.total || invoice.total <= 0) {
+        errores.push('total vacío o negativo');
+      }
+
+      // Check for missing codcliente
+      if (!invoice.codcliente || invoice.codcliente.trim() === '') {
+        errores.push('cliente no asignado');
+      }
+
+      // Check for invalid fecha
+      if (!invoice.fecha || invoice.fecha.trim() === '') {
+        errores.push('fecha inválida');
+      } else {
+        // Additional validation: check if fecha is a valid date
+        // FacturaScripts uses DD-MM-YYYY format, convert to YYYY-MM-DD for validation
+        const fechaStr = invoice.fecha.trim();
+        let isValidDate = false;
+        
+        // Try to parse DD-MM-YYYY format (FacturaScripts standard)
+        const ddmmyyyyMatch = fechaStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+        if (ddmmyyyyMatch) {
+          const [, day, month, year] = ddmmyyyyMatch;
+          const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+          const fecha = new Date(isoDate);
+          isValidDate = !isNaN(fecha.getTime()) && 
+                       fecha.getFullYear() == parseInt(year) &&
+                       fecha.getMonth() + 1 == parseInt(month) &&
+                       fecha.getDate() == parseInt(day);
+        } else {
+          // Try standard JavaScript date parsing as fallback
+          const fecha = new Date(fechaStr);
+          isValidDate = !isNaN(fecha.getTime());
+        }
+        
+        if (!isValidDate) {
+          errores.push('fecha inválida');
+        }
+      }
+
+      // Check for duplicate invoice (numero + serie + ejercicio)
+      const duplicateKey = `${invoice.numero || ''}-${invoice.codserie || ''}-${invoice.codejercicio || ''}`;
+      const duplicates = duplicateMap.get(duplicateKey);
+      if (duplicates && duplicates.length > 1) {
+        errores.push('posible duplicado');
+      }
+
+      // Check for invoices without lines
+      if (invoice.idfactura) {
+        try {
+          const lineFilter = `idfactura:${invoice.idfactura}`;
+          const lineParams = new URLSearchParams();
+          lineParams.append('limit', '1');
+          lineParams.append('offset', '0');
+          lineParams.append('filter', lineFilter);
+          
+          const lineUri = `facturascripts://lineafacturaclientes?${lineParams.toString()}`;
+          const { additionalParams: lineAdditionalParams } = parseUrlParameters(lineUri);
+
+          const lineResult = await client.getWithPagination<any>(
+            '/lineafacturaclientes',
+            1,
+            0,
+            lineAdditionalParams
+          );
+
+          if (!lineResult.data || lineResult.data.length === 0) {
+            errores.push('factura sin líneas');
+          }
+        } catch (error) {
+          // If line lookup fails, we could consider it an error or skip this check
+          // For now, we'll skip to avoid false positives
+        }
+      }
+
+      // Only include invoices that have at least one error
+      if (errores.length > 0) {
+        facturasConErrores.push({
+          codigo: invoice.codigo || 'Sin código',
+          codcliente: invoice.codcliente || '',
+          fecha: invoice.fecha || '',
+          total: invoice.total || 0,
+          errores
+        });
+      }
+    }
+
+    // Step 4: Apply pagination
+    const totalFacturas = facturasConErrores.length;
+    const paginatedFacturas = facturasConErrores.slice(offset, offset + limit);
+    const hasMore = offset + limit < totalFacturas;
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            meta: {
+              total: totalFacturas,
+              limit,
+              offset,
+              hasMore,
+            },
+            data: paginatedFacturas,
+          }, null, 2)
+        }
+      ]
+    };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to fetch facturas con errores',
+            message: errorMessage,
+            meta: {
+              total: 0,
+              limit,
+              offset,
+              hasMore: false,
+            },
+            data: [],
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}
