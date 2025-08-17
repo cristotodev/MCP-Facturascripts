@@ -4,7 +4,7 @@ import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import { FacturaclientesResource } from '../../../../src/modules/sales-orders/facturaclientes/resource.js';
 import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
 
-// Integration tests - only run if environment is configured
+// Integration tests - only run if environment is configured and not in CI
 const shouldRunIntegrationTests = process.env.NODE_ENV === 'test' &&
   process.env.FS_BASE_URL &&
   process.env.FS_API_TOKEN;
