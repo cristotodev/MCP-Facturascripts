@@ -1,20 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StocksResource } from '../../../../src/modules/core-business/stocks/resource.js';
 import { lowStockToolImplementation } from '../../../../src/modules/core-business/stocks/tool.js';
-import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import type { Stock } from '../../../../src/types/facturascripts.js';
 
-// Mock the FacturaScriptsClient
-vi.mock('../../../../src/fs/client.js');
-
 describe('StocksResource', () => {
-  let mockClient: FacturaScriptsClient;
+  let mockClient: any;
   let stocksResource: StocksResource;
 
   beforeEach(() => {
-    mockClient = new FacturaScriptsClient();
-    stocksResource = new StocksResource(mockClient);
     vi.clearAllMocks();
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+    stocksResource = new StocksResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -72,7 +70,7 @@ describe('StocksResource', () => {
     };
 
     it('should return stocks data with default pagination', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockPaginatedResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockPaginatedResponse);
 
       const result = await stocksResource.getResource('facturascripts://stocks');
 
@@ -92,7 +90,7 @@ describe('StocksResource', () => {
     });
 
     it('should parse and use limit and offset from URI', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+      mockClient.getWithPagination.mockResolvedValue({
         ...mockPaginatedResponse,
         meta: { ...mockPaginatedResponse.meta, limit: 25, offset: 10 },
       });
@@ -106,7 +104,7 @@ describe('StocksResource', () => {
 
     it('should handle API errors gracefully', async () => {
       const errorMessage = 'Stock API connection failed';
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(new Error(errorMessage));
+      mockClient.getWithPagination.mockRejectedValue(new Error(errorMessage));
 
       const result = await stocksResource.getResource('facturascripts://stocks');
 
@@ -118,11 +116,13 @@ describe('StocksResource', () => {
 });
 
 describe('lowStockToolImplementation', () => {
-  let mockClient: FacturaScriptsClient;
+  let mockClient: any;
 
   beforeEach(() => {
-    mockClient = new FacturaScriptsClient();
     vi.clearAllMocks();
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
   });
 
   const mockStocksWithLowStock: Stock[] = [
@@ -169,7 +169,7 @@ describe('lowStockToolImplementation', () => {
   describe('successful scenarios', () => {
     it('should return products with stock below or equal to minimum by default', async () => {
       // Mock stocks response
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -206,7 +206,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should exclude products with stock equal to minimum when explicitly requested', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -232,7 +232,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should include products with stock equal to minimum when explicitly requested', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -263,7 +263,7 @@ describe('lowStockToolImplementation', () => {
     it('should filter by warehouse when codalmacen is provided', async () => {
       const filteredStocks = mockStocksWithLowStock.filter(s => s.codalmacen === 'ALM002');
       
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 1, limit: 1000, offset: 0, hasMore: false },
           data: filteredStocks,
@@ -292,7 +292,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should handle pagination correctly - middle page', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -322,7 +322,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should handle pagination correctly - first page with more data', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -348,7 +348,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should sort results by cantidad ascending', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -369,7 +369,7 @@ describe('lowStockToolImplementation', () => {
 
   describe('edge cases and error handling', () => {
     it('should return empty result when no stocks exist', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+      mockClient.getWithPagination.mockResolvedValue({
         meta: { total: 0, limit: 1000, offset: 0, hasMore: false },
         data: [],
       });
@@ -385,7 +385,7 @@ describe('lowStockToolImplementation', () => {
     it('should return empty result when no products are below or equal minimum stock', async () => {
       const stocksAboveMin = mockStocksWithLowStock.map(s => ({ ...s, cantidad: s.stockmin! + 10 }));
       
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+      mockClient.getWithPagination.mockResolvedValue({
         meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
         data: stocksAboveMin,
       });
@@ -401,7 +401,7 @@ describe('lowStockToolImplementation', () => {
     it('should skip items without stockmin defined', async () => {
       const stocksWithoutMin = mockStocksWithLowStock.map(s => ({ ...s, stockmin: undefined }));
       
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+      mockClient.getWithPagination.mockResolvedValue({
         meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
         data: stocksWithoutMin,
       });
@@ -414,7 +414,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should handle parameter validation', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 4, limit: 1000, offset: 0, hasMore: false },
           data: mockStocksWithLowStock,
@@ -435,7 +435,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should handle API errors gracefully', async () => {
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(
+      mockClient.getWithPagination.mockRejectedValue(
         new Error('API connection failed')
       );
 
@@ -448,7 +448,7 @@ describe('lowStockToolImplementation', () => {
     });
 
     it('should fallback to stock description when product details fail', async () => {
-      vi.mocked(mockClient.getWithPagination)
+      mockClient.getWithPagination
         .mockResolvedValueOnce({
           meta: { total: 1, limit: 1000, offset: 0, hasMore: false },
           data: [mockStocksWithLowStock[0]],

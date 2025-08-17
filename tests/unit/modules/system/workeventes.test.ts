@@ -1,18 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import { WorkEventesResource } from '../../../../src/modules/system/workeventes/resource.js';
 import type { WorkEvent } from '../../../../src/types/facturascripts.js';
 
-vi.mock('../../../../src/fs/client.js');
-
 describe('WorkEventesResource', () => {
-  let mockClient: FacturaScriptsClient;
+  let mockClient: any;
   let workEventesResource: WorkEventesResource;
 
   beforeEach(() => {
-    mockClient = new FacturaScriptsClient();
-    workEventesResource = new WorkEventesResource(mockClient);
     vi.clearAllMocks();
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+    workEventesResource = new WorkEventesResource(mockClient);
   });
 
   describe('getResource', () => {
@@ -52,7 +51,7 @@ describe('WorkEventesResource', () => {
         data: mockData,
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       const result = await workEventesResource.getResource('facturascripts://workeventes?limit=50&offset=0');
 
@@ -81,7 +80,7 @@ describe('WorkEventesResource', () => {
 
     it('should handle API errors gracefully', async () => {
       const mockError = new Error('Server maintenance in progress');
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(mockError);
+      mockClient.getWithPagination.mockRejectedValue(mockError);
 
       const result = await workEventesResource.getResource('facturascripts://workeventes');
 
@@ -102,7 +101,7 @@ describe('WorkEventesResource', () => {
         data: [],
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       await workEventesResource.getResource('facturascripts://workeventes?limit=25&offset=5&filter=done:1,nick:admin&order=creation_date:desc');
 
@@ -131,7 +130,7 @@ describe('WorkEventesResource', () => {
         data: mockData,
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       const result = await workEventesResource.getResource('facturascripts://workeventes');
 
@@ -148,7 +147,7 @@ describe('WorkEventesResource', () => {
         data: [],
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       await workEventesResource.getResource('facturascripts://workeventes?filter=name_like:backup');
 

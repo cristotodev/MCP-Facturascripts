@@ -1,19 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FacturaproveedoresResource } from '../../../../src/modules/purchasing/facturaproveedores/resource.js';
-import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import type { FacturaProveedor } from '../../../../src/types/facturascripts.js';
 
-// Mock the FacturaScriptsClient
-vi.mock('../../../../src/fs/client.js');
-
 describe('FacturaproveedoresResource', () => {
-  let mockClient: FacturaScriptsClient;
+  let mockClient: any;
   let facturaproveedoresResource: FacturaproveedoresResource;
 
   beforeEach(() => {
-    mockClient = new FacturaScriptsClient();
-    facturaproveedoresResource = new FacturaproveedoresResource(mockClient);
     vi.clearAllMocks();
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+    facturaproveedoresResource = new FacturaproveedoresResource(mockClient);
   });
 
   describe('matchesUri', () => {
@@ -93,7 +91,7 @@ describe('FacturaproveedoresResource', () => {
     };
 
     it('should return factura proveedores data with default pagination', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockPaginatedResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockPaginatedResponse);
 
       const result = await facturaproveedoresResource.getResource('facturascripts://facturaproveedores');
 
@@ -113,7 +111,7 @@ describe('FacturaproveedoresResource', () => {
     });
 
     it('should parse and use limit and offset from URI', async () => {
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue({
+      mockClient.getWithPagination.mockResolvedValue({
         ...mockPaginatedResponse,
         meta: { ...mockPaginatedResponse.meta, limit: 20, offset: 5 },
       });
@@ -127,7 +125,7 @@ describe('FacturaproveedoresResource', () => {
 
     it('should handle API errors gracefully', async () => {
       const errorMessage = 'FacturaProveedores API connection failed';
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(new Error(errorMessage));
+      mockClient.getWithPagination.mockRejectedValue(new Error(errorMessage));
 
       const result = await facturaproveedoresResource.getResource('facturascripts://facturaproveedores');
 

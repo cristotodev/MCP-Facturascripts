@@ -1,18 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import { VariantesResource } from '../../../../src/modules/core-business/variantes/resource.js';
 import type { Variante } from '../../../../src/types/facturascripts.js';
 
-vi.mock('../../../../src/fs/client.js');
-
 describe('VariantesResource', () => {
-  let mockClient: FacturaScriptsClient;
+  let mockClient: any;
   let variantesResource: VariantesResource;
 
   beforeEach(() => {
-    mockClient = new FacturaScriptsClient();
-    variantesResource = new VariantesResource(mockClient);
     vi.clearAllMocks();
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+    variantesResource = new VariantesResource(mockClient);
   });
 
   describe('getResource', () => {
@@ -52,7 +51,7 @@ describe('VariantesResource', () => {
         data: mockData,
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       const result = await variantesResource.getResource('facturascripts://variantes?limit=50&offset=0');
 
@@ -80,7 +79,7 @@ describe('VariantesResource', () => {
 
     it('should handle API errors gracefully', async () => {
       const mockError = new Error('Database connection failed');
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(mockError);
+      mockClient.getWithPagination.mockRejectedValue(mockError);
 
       const result = await variantesResource.getResource('facturascripts://variantes');
 
@@ -101,7 +100,7 @@ describe('VariantesResource', () => {
         data: [],
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       await variantesResource.getResource('facturascripts://variantes?limit=25&offset=10&filter=idproducto:100,precio_gte:20.00&order=precio:desc');
 
@@ -123,7 +122,7 @@ describe('VariantesResource', () => {
         data: [],
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       const result = await variantesResource.getResource('facturascripts://variantes?filter=nonexistent:value');
 

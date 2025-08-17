@@ -1,18 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import { TotalModelesResource } from '../../../../src/modules/system/totalmodeles/resource.js';
 import type { TotalModel } from '../../../../src/types/facturascripts.js';
 
-vi.mock('../../../../src/fs/client.js');
-
 describe('TotalModelesResource', () => {
-  let mockClient: FacturaScriptsClient;
+  let mockClient: any;
   let totalModelesResource: TotalModelesResource;
 
   beforeEach(() => {
-    mockClient = new FacturaScriptsClient();
-    totalModelesResource = new TotalModelesResource(mockClient);
     vi.clearAllMocks();
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+    totalModelesResource = new TotalModelesResource(mockClient);
   });
 
   describe('getResource', () => {
@@ -32,7 +31,7 @@ describe('TotalModelesResource', () => {
         data: mockData,
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       const result = await totalModelesResource.getResource('facturascripts://totalmodeles?limit=50&offset=0');
 
@@ -58,7 +57,7 @@ describe('TotalModelesResource', () => {
 
     it('should handle API errors gracefully', async () => {
       const mockError = new Error('API connection failed');
-      vi.mocked(mockClient.getWithPagination).mockRejectedValue(mockError);
+      mockClient.getWithPagination.mockRejectedValue(mockError);
 
       const result = await totalModelesResource.getResource('facturascripts://totalmodeles');
 
@@ -79,7 +78,7 @@ describe('TotalModelesResource', () => {
         data: [],
       };
 
-      vi.mocked(mockClient.getWithPagination).mockResolvedValue(mockResponse);
+      mockClient.getWithPagination.mockResolvedValue(mockResponse);
 
       await totalModelesResource.getResource('facturascripts://totalmodeles?limit=25&offset=10&filter=active:1&order=name:asc');
 
