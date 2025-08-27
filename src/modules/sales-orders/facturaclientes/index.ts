@@ -7,5 +7,7 @@ export {
   toolClientesMorososDefinition as facturaclientesMorososToolDefinition,
   toolClientesMorososImplementation as facturaclientesMorososToolImplementation,
   toolClientesTopFacturacionDefinition as facturaclientesTopFacturacionToolDefinition,
-  toolClientesTopFacturacionImplementation as facturaclientesTopFacturacionToolImplementation
+  toolClientesTopFacturacionImplementation as facturaclientesTopFacturacionToolImplementation,
+  toolClientesPerdidosDefinition as facturaclientesPerdidosToolDefinition,
+  toolClientesPerdidosImplementation as facturaclientesPerdidosToolImplementation
 } from './tool.js';

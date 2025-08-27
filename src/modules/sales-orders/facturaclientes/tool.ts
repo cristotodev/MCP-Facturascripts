@@ -23,14 +23,14 @@ export async function toolImplementation(
 ) {
   const limit = Math.min(Math.max(args.limit || 50, 1), 1000);
   const offset = Math.max(args.offset || 0, 0);
-  
+
   // Build query string
   const params = new URLSearchParams();
   params.append('limit', limit.toString());
   params.append('offset', offset.toString());
   if (args.filter) params.append('filter', args.filter);
   if (args.order) params.append('order', args.order);
-  
+
   const uri = `facturascripts://facturaclientes?${params.toString()}`;
   const { additionalParams } = parseUrlParameters(uri);
 
@@ -106,7 +106,7 @@ export async function toolByCifnifImplementation(
     clientParams.append('limit', '1');
     clientParams.append('offset', '0');
     clientParams.append('filter', clientFilter);
-    
+
     const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
     const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
 
@@ -172,13 +172,13 @@ export async function toolByCifnifImplementation(
       // Combine client filter with additional filters
       invoiceFilter += `,${args.filter}`;
     }
-    
+
     const invoiceParams = new URLSearchParams();
     invoiceParams.append('limit', limit.toString());
     invoiceParams.append('offset', offset.toString());
     invoiceParams.append('filter', invoiceFilter);
     if (args.order) invoiceParams.append('order', args.order);
-    
+
     const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
     const { additionalParams: invoiceAdditionalParams } = parseUrlParameters(invoiceUri);
 
@@ -290,7 +290,7 @@ export async function toolClientesMorososImplementation(
     }
 
     // Step 2: Filter invoices in memory: pagada === false AND vencida === true
-    const overdueUnpaidInvoices = allInvoicesResult.data.filter(invoice => 
+    const overdueUnpaidInvoices = allInvoicesResult.data.filter(invoice =>
       invoice.pagada === false && invoice.vencida === true
     );
 
@@ -338,7 +338,7 @@ export async function toolClientesMorososImplementation(
 
     // Step 4: Get client details for each group
     const clientesMorosos: ClienteMoroso[] = [];
-    
+
     for (const [codcliente, aggregates] of clienteGroups.entries()) {
       try {
         const clientFilter = `codcliente:${codcliente}`;
@@ -346,7 +346,7 @@ export async function toolClientesMorososImplementation(
         clientParams.append('limit', '1');
         clientParams.append('offset', '0');
         clientParams.append('filter', clientFilter);
-        
+
         const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
         const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
 
@@ -472,7 +472,7 @@ export async function toolClientesTopFacturacionImplementation(
     invoiceParams.append('limit', '5000'); // Large limit to get all invoices for processing
     invoiceParams.append('offset', '0');
     invoiceParams.append('filter', invoiceFilter);
-    
+
     const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
     const { additionalParams } = parseUrlParameters(invoiceUri);
 
@@ -517,7 +517,7 @@ export async function toolClientesTopFacturacionImplementation(
             type: 'text' as const,
             text: JSON.stringify({
               periodo: { fecha_desde, fecha_hasta, solo_pagadas },
-              message: solo_pagadas 
+              message: solo_pagadas
                 ? `No se encontraron facturas pagadas en el período del ${fecha_desde} al ${fecha_hasta}`
                 : `No se encontraron facturas en el período del ${fecha_desde} al ${fecha_hasta}`,
               meta: {
@@ -554,7 +554,7 @@ export async function toolClientesTopFacturacionImplementation(
 
     // Step 4: Get client details for each group
     const clientesTopFacturacion: ClienteTopFacturacion[] = [];
-    
+
     for (const [codcliente, aggregates] of clienteGroups.entries()) {
       try {
         const clientFilter = `codcliente:${codcliente}`;
@@ -562,7 +562,7 @@ export async function toolClientesTopFacturacionImplementation(
         clientParams.append('limit', '1');
         clientParams.append('offset', '0');
         clientParams.append('filter', clientFilter);
-        
+
         const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
         const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
 
@@ -815,7 +815,7 @@ export async function toolClientesSinComprasImplementation(
     invoiceParams.append('limit', '10000'); // Large limit to get all invoices
     invoiceParams.append('offset', '0');
     invoiceParams.append('filter', invoiceFilter);
-    
+
     const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
     const { additionalParams } = parseUrlParameters(invoiceUri);
 
@@ -936,7 +936,7 @@ export async function toolClientesFrecuenciaComprasImplementation(
     invoiceParams.append('limit', '10000'); // Large limit to get all invoices for analysis
     invoiceParams.append('offset', '0');
     invoiceParams.append('filter', invoiceFilter);
-    
+
     const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
     const { additionalParams } = parseUrlParameters(invoiceUri);
 
@@ -999,12 +999,12 @@ export async function toolClientesFrecuenciaComprasImplementation(
       if (numero_compras > 1) {
         const fechas = sortedInvoices.map(invoice => new Date(invoice.fecha));
         const intervalos: number[] = [];
-        
+
         for (let i = 1; i < fechas.length; i++) {
-          const days = Math.floor((fechas[i].getTime() - fechas[i-1].getTime()) / (1000 * 60 * 60 * 24));
+          const days = Math.floor((fechas[i].getTime() - fechas[i - 1].getTime()) / (1000 * 60 * 60 * 24));
           intervalos.push(days);
         }
-        
+
         // Calculate average days between purchases
         if (intervalos.length > 0) {
           const sumaIntervalos = intervalos.reduce((sum, interval) => sum + interval, 0);
@@ -1019,7 +1019,7 @@ export async function toolClientesFrecuenciaComprasImplementation(
         clientParams.append('limit', '1');
         clientParams.append('offset', '0');
         clientParams.append('filter', clientFilter);
-        
+
         const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
         const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
 
@@ -1163,7 +1163,7 @@ export async function toolFacturasConErroresImplementation(
     invoiceParams.append('limit', '10000'); // High limit to get all invoices for analysis
     invoiceParams.append('offset', '0');
     if (invoiceFilter) invoiceParams.append('filter', invoiceFilter);
-    
+
     const invoiceUri = `facturascripts://facturaclientes?${invoiceParams.toString()}`;
     const { additionalParams } = parseUrlParameters(invoiceUri);
 
@@ -1180,7 +1180,7 @@ export async function toolFacturasConErroresImplementation(
           {
             type: 'text' as const,
             text: JSON.stringify({
-              message: args.fecha_desde || args.fecha_hasta 
+              message: args.fecha_desde || args.fecha_hasta
                 ? `No se encontraron facturas en el período especificado`
                 : 'No se encontraron facturas en el sistema',
               meta: {
@@ -1198,7 +1198,7 @@ export async function toolFacturasConErroresImplementation(
 
     // Step 2: Build duplicate detection map using numero + codserie + codejercicio
     const duplicateMap = new Map<string, FacturaCliente[]>();
-    
+
     invoiceResult.data.forEach(invoice => {
       const key = `${invoice.numero || ''}-${invoice.codserie || ''}-${invoice.codejercicio || ''}`;
       if (!duplicateMap.has(key)) {
@@ -1231,23 +1231,23 @@ export async function toolFacturasConErroresImplementation(
         // FacturaScripts uses DD-MM-YYYY format, convert to YYYY-MM-DD for validation
         const fechaStr = invoice.fecha.trim();
         let isValidDate = false;
-        
+
         // Try to parse DD-MM-YYYY format (FacturaScripts standard)
         const ddmmyyyyMatch = fechaStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
         if (ddmmyyyyMatch) {
           const [, day, month, year] = ddmmyyyyMatch;
           const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
           const fecha = new Date(isoDate);
-          isValidDate = !isNaN(fecha.getTime()) && 
-                       fecha.getFullYear() == parseInt(year) &&
-                       fecha.getMonth() + 1 == parseInt(month) &&
-                       fecha.getDate() == parseInt(day);
+          isValidDate = !isNaN(fecha.getTime()) &&
+            fecha.getFullYear() == parseInt(year) &&
+            fecha.getMonth() + 1 == parseInt(month) &&
+            fecha.getDate() == parseInt(day);
         } else {
           // Try standard JavaScript date parsing as fallback
           const fecha = new Date(fechaStr);
           isValidDate = !isNaN(fecha.getTime());
         }
-        
+
         if (!isValidDate) {
           errores.push('fecha inválida');
         }
@@ -1268,7 +1268,7 @@ export async function toolFacturasConErroresImplementation(
           lineParams.append('limit', '1');
           lineParams.append('offset', '0');
           lineParams.append('filter', lineFilter);
-          
+
           const lineUri = `facturascripts://lineafacturaclientes?${lineParams.toString()}`;
           const { additionalParams: lineAdditionalParams } = parseUrlParameters(lineUri);
 
@@ -1331,6 +1331,237 @@ export async function toolFacturasConErroresImplementation(
           text: JSON.stringify({
             error: 'Failed to fetch facturas con errores',
             message: errorMessage,
+            meta: {
+              total: 0,
+              limit,
+              offset,
+              hasMore: false,
+            },
+            data: [],
+          }, null, 2)
+        }
+      ],
+      isError: true
+    };
+  }
+}
+
+// Tool definition for lost clients (clients who had invoices but none within specified date range)
+export const toolClientesPerdidosDefinition = {
+  name: 'get_clientes_perdidos',
+  description: 'Obtiene una lista de clientes que tenían facturas anteriormente pero no han comprado desde una fecha específica hasta ahora. Excluye clientes que nunca han comprado (sin historial de facturas). Realiza análisis en tres pasos: 1) Obtiene todos los clientes con historial de facturas, 2) Identifica clientes con facturas anteriores a la fecha límite, 3) Filtra aquellos sin facturas desde la fecha hasta hoy. Útil para campañas de recuperación de clientes perdidos, análisis de retención y estrategias de reactivación.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      fecha_desde: { type: 'string', description: 'Fecha límite desde la cual considerar clientes como perdidos (formato: YYYY-MM-DD). Clientes sin facturas desde esta fecha hasta hoy se consideran perdidos.' },
+      limit: { type: 'number', description: 'Número máximo de clientes perdidos a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+      offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+    },
+    required: ['fecha_desde']
+  }
+};
+
+interface ClientePerdido {
+  codcliente: string;
+  nombre: string;
+  email: string | null;
+  telefono1: string | null;
+  fecha_ultima_factura: string;
+  total_facturas_historicas: number;
+  total_facturado_historico: number;
+}
+
+export async function toolClientesPerdidosImplementation(
+  args: { fecha_desde: string; limit?: number; offset?: number },
+  client: FacturaScriptsClient
+) {
+  const { fecha_desde } = args;
+  const limit = Math.min(Math.max(args.limit || 100, 1), 1000);
+  const offset = Math.max(args.offset || 0, 0);
+
+  try {
+    // Step 1: Get all invoices to identify clients with purchase history
+    const allInvoicesResult = await client.getWithPagination<FacturaCliente>(
+      '/facturaclientes',
+      10000,
+      0,
+      {}
+    );
+
+    if (!allInvoicesResult.data || allInvoicesResult.data.length === 0) {
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({
+              fecha_corte: fecha_desde,
+              message: 'No se encontraron facturas en el sistema. No hay historial de clientes.',
+              meta: {
+                total: 0,
+                limit,
+                offset,
+                hasMore: false,
+              },
+              data: [],
+            }, null, 2)
+          }
+        ]
+      };
+    }
+
+    // Step 2: Group all invoices by client and calculate historical data
+    const clienteHistorico = new Map<string, {
+      facturas: FacturaCliente[];
+      total_facturas: number;
+      total_facturado: number;
+      fecha_ultima_factura: string;
+    }>();
+
+    const convertToISODate = (facturaScriptsDate: string): string => {
+      if (!facturaScriptsDate || facturaScriptsDate.trim() === '') return '';
+
+      const ddmmyyyyMatch = facturaScriptsDate.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+      if (ddmmyyyyMatch) {
+        const [, day, month, year] = ddmmyyyyMatch;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+
+      return facturaScriptsDate;
+    };
+
+    allInvoicesResult.data.forEach(invoice => {
+      const codcliente = invoice.codcliente;
+      if (!codcliente) return;
+
+      if (!clienteHistorico.has(codcliente)) {
+        clienteHistorico.set(codcliente, {
+          facturas: [],
+          total_facturas: 0,
+          total_facturado: 0,
+          fecha_ultima_factura: invoice.fecha || ''
+        });
+      }
+
+      const clienteData = clienteHistorico.get(codcliente)!;
+      clienteData.facturas.push(invoice);
+      clienteData.total_facturas += 1;
+      clienteData.total_facturado += invoice.total || 0;
+
+      // Update fecha_ultima_factura if this invoice is more recent
+      if (invoice.fecha && invoice.fecha !== '') {
+        const currentInvoiceISO = convertToISODate(invoice.fecha);
+        const lastInvoiceISO = convertToISODate(clienteData.fecha_ultima_factura);
+
+        if (currentInvoiceISO > lastInvoiceISO) {
+          clienteData.fecha_ultima_factura = invoice.fecha;
+        }
+      }
+    });
+
+    // Step 3: Filter clients who are "lost" (no invoices since fecha_desde)
+    const clientesPerdidos: ClientePerdido[] = [];
+
+    for (const [codcliente, historico] of clienteHistorico.entries()) {
+      // Check if client has any invoices from fecha_desde onwards
+      const facturasRecientes = historico.facturas.filter(invoice => {
+        if (!invoice.fecha || invoice.fecha.trim() === '') return false;
+
+        const invoiceISO = convertToISODate(invoice.fecha);
+        return invoiceISO >= fecha_desde;
+      });
+
+      // Client is "lost" if:
+      // 1. They have historical invoices (exclude clients who never bought)
+      // 2. They have NO invoices since fecha_desde
+      if (historico.total_facturas > 0 && facturasRecientes.length === 0) {
+        try {
+          // Get client details
+          const clientFilter = `codcliente:${codcliente}`;
+          const clientParams = new URLSearchParams();
+          clientParams.append('limit', '1');
+          clientParams.append('offset', '0');
+          clientParams.append('filter', clientFilter);
+
+          const clientUri = `facturascripts://clientes?${clientParams.toString()}`;
+          const { additionalParams: clientAdditionalParams } = parseUrlParameters(clientUri);
+
+          const clientResult = await client.getWithPagination<any>(
+            '/clientes',
+            1,
+            0,
+            clientAdditionalParams
+          );
+
+          if (clientResult.data && clientResult.data.length > 0) {
+            const cliente = clientResult.data[0];
+            clientesPerdidos.push({
+              codcliente,
+              nombre: cliente.nombre || cliente.razonsocial || 'Sin nombre',
+              email: cliente.email || null,
+              telefono1: cliente.telefono1 || null,
+              fecha_ultima_factura: historico.fecha_ultima_factura,
+              total_facturas_historicas: historico.total_facturas,
+              total_facturado_historico: historico.total_facturado
+            });
+          }
+        } catch (error) {
+          // If client lookup fails, still include with minimal data
+          clientesPerdidos.push({
+            codcliente,
+            nombre: 'Error al obtener datos del cliente',
+            email: null,
+            telefono1: null,
+            fecha_ultima_factura: historico.fecha_ultima_factura,
+            total_facturas_historicas: historico.total_facturas,
+            total_facturado_historico: historico.total_facturado
+          });
+        }
+      }
+    }
+
+    // Step 4: Sort by fecha_ultima_factura descending (most recent lost clients first)
+    clientesPerdidos.sort((a, b) => {
+      if (a.fecha_ultima_factura && b.fecha_ultima_factura) {
+        const aISO = convertToISODate(a.fecha_ultima_factura);
+        const bISO = convertToISODate(b.fecha_ultima_factura);
+        return bISO.localeCompare(aISO);
+      }
+      return 0;
+    });
+
+    // Step 5: Apply pagination
+    const totalClientes = clientesPerdidos.length;
+    const paginatedClientes = clientesPerdidos.slice(offset, offset + limit);
+    const hasMore = offset + limit < totalClientes;
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            fecha_corte: fecha_desde,
+            meta: {
+              total: totalClientes,
+              limit,
+              offset,
+              hasMore,
+            },
+            data: paginatedClientes,
+          }, null, 2)
+        }
+      ]
+    };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            error: 'Failed to fetch clientes perdidos',
+            message: errorMessage,
+            fecha_corte: fecha_desde,
             meta: {
               total: 0,
               limit,

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { FacturaclientesResource, FacturaCliente } from '../../../../src/modules/sales-orders/facturaclientes/resource.js';
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation, toolClientesPerdidosImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 
 vi.mock('../../../../src/fs/client.js');
@@ -1964,6 +1964,576 @@ describe('toolClientesFrecuenciaComprasImplementation', () => {
       expect(parsedResult.data[0].codcliente).toBe('CLI001'); // 3 purchases
       expect(parsedResult.data[1].codcliente).toBe('CLI003'); // 2 purchases, 10 days
       expect(parsedResult.data[2].codcliente).toBe('CLI002'); // 2 purchases, 20 days
+    });
+  });
+});
+
+describe('toolClientesPerdidosImplementation', () => {
+  let mockClient: any;
+
+  beforeEach(() => {
+    mockClient = {
+      getWithPagination: vi.fn()
+    };
+  });
+
+  describe('successful scenarios', () => {
+    it('should return clients who had invoices but none since fecha_desde', async () => {
+      const mockAllInvoices = [
+        // CLI001: had invoices before fecha_desde, none after → lost client
+        { codcliente: 'CLI001', fecha: '2023-12-15', total: 1000 },
+        { codcliente: 'CLI001', fecha: '2023-11-10', total: 500 },
+        // CLI002: had invoices before AND after fecha_desde → not lost
+        { codcliente: 'CLI002', fecha: '2023-12-01', total: 800 },
+        { codcliente: 'CLI002', fecha: '2024-02-15', total: 1200 }, // After fecha_desde
+        // CLI003: had invoices before fecha_desde, none after → lost client
+        { codcliente: 'CLI003', fecha: '2023-10-20', total: 300 }
+      ];
+
+      const mockClientesPerdidos = [
+        {
+          codcliente: 'CLI001',
+          nombre: 'Cliente Perdido Uno',
+          email: 'perdido1@example.com',
+          telefono1: '600111111'
+        },
+        {
+          codcliente: 'CLI003', 
+          nombre: 'Cliente Perdido Tres',
+          email: 'perdido3@example.com',
+          telefono1: '600333333'
+        }
+      ];
+
+      mockClient.getWithPagination
+        // Get all invoices
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 5, limit: 10000, offset: 0, hasMore: false }
+        })
+        // Client lookups for lost clients
+        .mockResolvedValueOnce({
+          data: [mockClientesPerdidos[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientesPerdidos[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.fecha_corte).toBe('2024-01-01');
+      expect(parsedResult.meta.total).toBe(2);
+      expect(parsedResult.data).toHaveLength(2);
+
+      // Check lost client CLI001 (more recent last invoice should be first)
+      const cli001 = parsedResult.data[0];
+      expect(cli001.codcliente).toBe('CLI001');
+      expect(cli001.nombre).toBe('Cliente Perdido Uno');
+      expect(cli001.email).toBe('perdido1@example.com');
+      expect(cli001.fecha_ultima_factura).toBe('2023-12-15'); // Most recent invoice
+      expect(cli001.total_facturas_historicas).toBe(2);
+      expect(cli001.total_facturado_historico).toBe(1500);
+
+      // Check lost client CLI003  
+      const cli003 = parsedResult.data[1];
+      expect(cli003.codcliente).toBe('CLI003');
+      expect(cli003.nombre).toBe('Cliente Perdido Tres');
+      expect(cli003.fecha_ultima_factura).toBe('2023-10-20');
+      expect(cli003.total_facturas_historicas).toBe(1);
+      expect(cli003.total_facturado_historico).toBe(300);
+    });
+
+    it('should exclude clients who never had invoices', async () => {
+      const mockAllInvoices = [
+        // Only CLI001 has invoices, but after fecha_desde
+        { codcliente: 'CLI001', fecha: '2024-02-15', total: 1000 }
+      ];
+
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: mockAllInvoices,
+        meta: { total: 1, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.total).toBe(0);
+      expect(parsedResult.data).toEqual([]);
+    });
+
+    it('should handle clients with missing invoice dates gracefully', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '', total: 1000 }, // Empty fecha
+        { codcliente: 'CLI002', fecha: null, total: 500 }, // Null fecha
+        { codcliente: 'CLI003', fecha: '2023-12-15', total: 800 } // Valid fecha - lost client
+      ];
+
+      // Need mock clients for all clients that have invoices (even with invalid dates)
+      const mockClientes = [
+        {
+          codcliente: 'CLI001',
+          nombre: 'Cliente Uno',
+          email: null,
+          telefono1: null
+        },
+        {
+          codcliente: 'CLI002',
+          nombre: 'Cliente Dos',
+          email: null,
+          telefono1: null
+        },
+        {
+          codcliente: 'CLI003',
+          nombre: 'Cliente Tres',
+          email: null,
+          telefono1: null
+        }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 3, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[2]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      // All clients should be returned (they all have historical invoices but none since fecha_desde)
+      // CLI001 and CLI002 have invalid dates, CLI003 has valid date before cutoff
+      expect(parsedResult.meta.total).toBe(3);
+      
+      // CLI003 should be first (has valid fecha_ultima_factura for sorting)
+      const cli003 = parsedResult.data.find(c => c.codcliente === 'CLI003');
+      expect(cli003).toBeDefined();
+      expect(cli003.codcliente).toBe('CLI003');
+      
+      // CLI001 and CLI002 should also be present
+      const cli001 = parsedResult.data.find(c => c.codcliente === 'CLI001');
+      const cli002 = parsedResult.data.find(c => c.codcliente === 'CLI002');
+      expect(cli001).toBeDefined();
+      expect(cli002).toBeDefined();
+    });
+
+    it('should apply pagination correctly', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '2023-12-15', total: 1000 },
+        { codcliente: 'CLI002', fecha: '2023-11-10', total: 500 },
+        { codcliente: 'CLI003', fecha: '2023-10-05', total: 800 },
+        { codcliente: 'CLI004', fecha: '2023-09-20', total: 300 },
+        { codcliente: 'CLI005', fecha: '2023-08-15', total: 600 }
+      ];
+
+      const mockClientes = [
+        { codcliente: 'CLI001', nombre: 'Cliente 1' },
+        { codcliente: 'CLI002', nombre: 'Cliente 2' },
+        { codcliente: 'CLI003', nombre: 'Cliente 3' },
+        { codcliente: 'CLI004', nombre: 'Cliente 4' },
+        { codcliente: 'CLI005', nombre: 'Cliente 5' }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 5, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      // Mock client lookups
+      mockClientes.forEach(cliente => {
+        mockClient.getWithPagination.mockResolvedValueOnce({
+          data: [cliente],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+      });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          limit: 3,
+          offset: 1
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.total).toBe(5); // Total lost clients
+      expect(parsedResult.meta.limit).toBe(3);
+      expect(parsedResult.meta.offset).toBe(1);
+      expect(parsedResult.meta.hasMore).toBe(true);
+      expect(parsedResult.data).toHaveLength(3);
+
+      // Results should be sorted by fecha_ultima_factura desc, so offset 1 skips CLI001
+      expect(parsedResult.data[0].codcliente).toBe('CLI002');
+      expect(parsedResult.data[1].codcliente).toBe('CLI003'); 
+      expect(parsedResult.data[2].codcliente).toBe('CLI004');
+    });
+
+    it('should sort by fecha_ultima_factura descending (most recent lost clients first)', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '2023-08-15', total: 1000 }, // Oldest
+        { codcliente: 'CLI002', fecha: '2023-12-01', total: 500 },  // Most recent
+        { codcliente: 'CLI003', fecha: '2023-10-10', total: 800 }   // Middle
+      ];
+
+      const mockClientes = [
+        { codcliente: 'CLI001', nombre: 'Cliente 1' },
+        { codcliente: 'CLI002', nombre: 'Cliente 2' },
+        { codcliente: 'CLI003', nombre: 'Cliente 3' }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 3, limit: 10000, offset: 0, hasMore: false }
+        });
+
+      mockClientes.forEach(cliente => {
+        mockClient.getWithPagination.mockResolvedValueOnce({
+          data: [cliente],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+      });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.data).toHaveLength(3);
+      // Should be sorted by fecha_ultima_factura descending
+      expect(parsedResult.data[0].codcliente).toBe('CLI002'); // 2023-12-01
+      expect(parsedResult.data[1].codcliente).toBe('CLI003'); // 2023-10-10
+      expect(parsedResult.data[2].codcliente).toBe('CLI001'); // 2023-08-15
+    });
+
+    it('should handle clients with missing names gracefully', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '2023-12-15', total: 1000 },
+        { codcliente: 'CLI002', fecha: '2023-11-10', total: 500 }
+      ];
+
+      const mockClientes = [
+        {
+          codcliente: 'CLI001',
+          nombre: null,
+          razonsocial: 'Empresa Test S.L.',
+          email: 'empresa@example.com',
+          telefono1: '123456789'
+        },
+        {
+          codcliente: 'CLI002',
+          nombre: null,
+          razonsocial: null, // Both null - should use 'Sin nombre'
+          email: null,
+          telefono1: null
+        }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 2, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.data[0].nombre).toBe('Empresa Test S.L.');
+      expect(parsedResult.data[1].nombre).toBe('Sin nombre');
+    });
+  });
+
+  describe('error scenarios', () => {
+    it('should handle no invoices in system', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.message).toBe('No se encontraron facturas en el sistema. No hay historial de clientes.');
+      expect(parsedResult.meta.total).toBe(0);
+      expect(parsedResult.data).toEqual([]);
+    });
+
+    it('should handle client lookup failures gracefully', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '2023-12-15', total: 1000 }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 1, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockRejectedValueOnce(new Error('Client lookup failed'));
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.data).toHaveLength(1);
+      expect(parsedResult.data[0]).toEqual({
+        codcliente: 'CLI001',
+        nombre: 'Error al obtener datos del cliente',
+        email: null,
+        telefono1: null,
+        fecha_ultima_factura: '2023-12-15',
+        total_facturas_historicas: 1,
+        total_facturado_historico: 1000
+      });
+    });
+
+    it('should handle API errors gracefully', async () => {
+      mockClient.getWithPagination.mockRejectedValueOnce(new Error('API Error'));
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      expect(result.isError).toBe(true);
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.error).toBe('Failed to fetch clientes perdidos');
+      expect(parsedResult.message).toBe('API Error');
+      expect(parsedResult.fecha_corte).toBe('2024-01-01');
+    });
+
+    it('should skip invoices without codcliente', async () => {
+      const mockAllInvoices = [
+        { codcliente: null, fecha: '2023-12-15', total: 1000 }, // No codcliente
+        { codcliente: '', fecha: '2023-11-10', total: 500 },    // Empty codcliente  
+        { codcliente: 'CLI001', fecha: '2023-10-05', total: 800 } // Valid codcliente
+      ];
+
+      const mockCliente = {
+        codcliente: 'CLI001',
+        nombre: 'Cliente Valido',
+        email: null,
+        telefono1: null
+      };
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 3, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockCliente],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      // Only CLI001 should be processed
+      expect(parsedResult.meta.total).toBe(1);
+      expect(parsedResult.data[0].codcliente).toBe('CLI001');
+    });
+  });
+
+  describe('parameter validation', () => {
+    it('should normalize limit and offset parameters', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01',
+          limit: 5000, // Should be capped to 1000
+          offset: -10  // Should be normalized to 0
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.limit).toBe(1000); // Capped
+      expect(parsedResult.meta.offset).toBe(0);   // Normalized
+    });
+
+    it('should use default values when not provided', async () => {
+      mockClient.getWithPagination.mockResolvedValueOnce({
+        data: [],
+        meta: { total: 0, limit: 10000, offset: 0, hasMore: false }
+      });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+          // No limit or offset - should use defaults
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      expect(parsedResult.meta.limit).toBe(100);  // Default limit
+      expect(parsedResult.meta.offset).toBe(0);   // Default offset
+    });
+  });
+
+  describe('date handling', () => {
+    it('should correctly filter invoices by fecha_desde', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '2023-12-31', total: 1000 }, // Before fecha_desde
+        { codcliente: 'CLI001', fecha: '2024-01-01', total: 500 },  // Exactly fecha_desde - not lost
+        { codcliente: 'CLI002', fecha: '2023-11-15', total: 800 },  // Before fecha_desde
+        { codcliente: 'CLI002', fecha: '2024-01-02', total: 300 },  // After fecha_desde - not lost
+        { codcliente: 'CLI003', fecha: '2023-10-20', total: 600 }   // Before fecha_desde - lost
+      ];
+
+      const mockCliente3 = {
+        codcliente: 'CLI003',
+        nombre: 'Cliente Perdido',
+        email: null,
+        telefono1: null
+      };
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 5, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockCliente3],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2024-01-01'
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      // Only CLI003 should be returned as lost (only has invoices before fecha_desde)
+      expect(parsedResult.meta.total).toBe(1);
+      expect(parsedResult.data[0].codcliente).toBe('CLI003');
+    });
+
+    it('should handle FacturaScripts DD-MM-YYYY date format correctly', async () => {
+      const mockAllInvoices = [
+        { codcliente: 'CLI001', fecha: '15-12-2023', total: 1000 }, // DD-MM-YYYY before fecha_desde
+        { codcliente: 'CLI001', fecha: '17-08-2025', total: 500 },  // DD-MM-YYYY after fecha_desde - not lost
+        { codcliente: 'CLI002', fecha: '10-07-2025', total: 800 },  // DD-MM-YYYY before fecha_desde (July < August) - lost
+        { codcliente: 'CLI003', fecha: '20-12-2024', total: 600 }   // DD-MM-YYYY before fecha_desde - lost
+      ];
+
+      const mockClientes = [
+        { codcliente: 'CLI002', nombre: 'Cliente Dos', email: null, telefono1: null },
+        { codcliente: 'CLI003', nombre: 'Cliente Tres', email: null, telefono1: null }
+      ];
+
+      mockClient.getWithPagination
+        .mockResolvedValueOnce({
+          data: mockAllInvoices,
+          meta: { total: 4, limit: 10000, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[0]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        })
+        .mockResolvedValueOnce({
+          data: [mockClientes[1]],
+          meta: { total: 1, limit: 1, offset: 0, hasMore: false }
+        });
+
+      const result = await toolClientesPerdidosImplementation(
+        {
+          fecha_desde: '2025-08-01' // ISO format
+        },
+        mockClient
+      );
+
+      const parsedResult = JSON.parse(result.content[0].text);
+
+      // CLI002 and CLI003 should be returned as lost
+      // CLI001 has invoice '17-08-2025' which converts to '2025-08-17' >= '2025-08-01' so NOT lost
+      // CLI002 has invoice '10-07-2025' which converts to '2025-07-10' < '2025-08-01' so lost
+      expect(parsedResult.meta.total).toBe(2); 
+      expect(parsedResult.data.some(c => c.codcliente === 'CLI002')).toBe(true);
+      expect(parsedResult.data.some(c => c.codcliente === 'CLI003')).toBe(true);
+      // CLI001 should NOT be in results (has recent invoice '17-08-2025')
+      expect(parsedResult.data.some(c => c.codcliente === 'CLI001')).toBe(false);
     });
   });
 });

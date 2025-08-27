@@ -87,7 +87,7 @@ import { SeriesResource } from './modules/configuration/series/resource.js';
 import { SubcuentasResource } from './modules/accounting/subcuentas/resource.js';
 import { TarifasResource } from './modules/configuration/tarifas/resource.js';
 // Import new tool functions
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolExportarFacturaImplementation, toolClientesFrecuenciaComprasImplementation, toolFacturasConErroresImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolExportarFacturaImplementation, toolClientesFrecuenciaComprasImplementation, toolFacturasConErroresImplementation, toolClientesPerdidosImplementation } from './modules/sales-orders/facturaclientes/tool.js';
 import { lowStockToolImplementation } from './modules/core-business/stocks/tool.js';
 import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
 import { productosNoVendidosToolDefinition, productosNoVendidosToolImplementation } from './modules/core-business/productos/index.js';
@@ -433,6 +433,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
           },
           required: ['fecha_desde', 'fecha_hasta']
+        }
+      },
+      {
+        name: 'get_clientes_perdidos',
+        description: 'Obtiene una lista de clientes que tenían facturas anteriormente pero no han comprado desde una fecha específica hasta ahora. Excluye clientes que nunca han comprado (sin historial de facturas). Realiza análisis en tres pasos: 1) Obtiene todos los clientes con historial de facturas, 2) Identifica clientes con facturas anteriores a la fecha límite, 3) Filtra aquellos sin facturas desde la fecha hasta hoy. Útil para campañas de recuperación de clientes perdidos, análisis de retención y estrategias de reactivación.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            fecha_desde: { type: 'string', description: 'Fecha límite desde la cual considerar clientes como perdidos (formato: YYYY-MM-DD). Clientes sin facturas desde esta fecha hasta hoy se consideran perdidos.' },
+            limit: { type: 'number', description: 'Número máximo de clientes perdidos a devolver (1-1000)', minimum: 1, maximum: 1000, default: 100 },
+            offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
+          },
+          required: ['fecha_desde']
         }
       },
       {
@@ -3036,6 +3049,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_clientes_top_facturacion': {
         return await toolClientesTopFacturacionImplementation(request.params.arguments as any, fsClient);
+      }
+
+      case 'get_clientes_perdidos': {
+        return await toolClientesPerdidosImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_clientes_sin_compras': {

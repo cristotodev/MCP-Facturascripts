@@ -553,15 +553,15 @@ All 28 resources return consistent pagination format:
 
 ### Current Project Status (v1.0.2)
 - ✅ **59 MCP Resources** - Complete FacturaScripts API coverage including OpenAPI part16 implementation
-- ✅ **65 Interactive Tools** - Full Claude Desktop integration with advanced filtering including specialized business analytics
-- ✅ **566 Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools
+- ✅ **66 Interactive Tools** - Full Claude Desktop integration with advanced filtering including specialized business analytics and customer retention tools
+- ✅ **567+ Tests Passing** - Comprehensive unit & integration testing with modular organization including specialized business tools and customer retention analytics
 - ✅ **Live API Integration** - Working with real FacturaScripts instances
 - ✅ **Advanced API Support** - Full FacturaScripts filtering, sorting, and pagination
 - ✅ **TypeScript Strict Mode** - Full type safety and IntelliSense
 - ✅ **Production Ready** - Error handling, documentation, and monitoring
 - ✅ **Automated Changelog** - Conventional commits and automated release management with Keep a Changelog format
 - ✅ **Enhanced Documentation** - Comprehensive guides and best practices
-- ✅ **Specialized Business Tools** - Advanced invoice search by CIF/NIF and best-selling products analytics with comprehensive error handling
+- ✅ **Specialized Business Tools** - Advanced customer analytics including lost client recovery, invoice search by CIF/NIF, best-selling products, and customer retention analytics with comprehensive error handling
 - ✅ **MCP TypeScript SDK Examples** - Comprehensive SDK documentation with business-focused examples
 - ✅ **OpenAPI Part16 Implementation** - Product variants, work events, analytics models, and PDF export functionality
 - ✅ **Binary Data Support** - PDF generation and download capabilities
@@ -696,6 +696,75 @@ All 28 resources return consistent pagination format:
   ]
 }
 ```
+
+### Latest Implementation: `get_clientes_perdidos`
+
+**Implementation Details:**
+- **Purpose**: Identify customers who had previous purchase history but haven't bought since a specified date until now
+- **Location**: `src/modules/sales-orders/facturaclientes/tool.ts`
+- **Multi-step Process**: Historical invoice analysis → Client grouping and statistics calculation → Lost client filtering → Client details lookup → Chronological ranking
+- **Key Features**:
+  - **Smart Date Handling**: Automatic conversion between FacturaScripts DD-MM-YYYY and ISO YYYY-MM-DD formats
+  - **Historical Analysis**: Only considers clients with previous purchase history (excludes never-purchased clients)
+  - **Comprehensive Data**: Includes client contact info and historical statistics (total invoices, revenue, last purchase date)
+  - **Intelligent Sorting**: Orders by `fecha_ultima_factura` descending (most recent lost clients first)
+  - **Robust Pagination**: Full pagination support (limit: 1-1000, default: 100)
+  - **Business Intelligence**: Provides actionable data for customer retention campaigns
+- **Testing**: 14 comprehensive unit tests + 5 integration tests covering all scenarios
+- **Date Logic Fix**: Corrected DD-MM-YYYY to YYYY-MM-DD conversion for accurate comparisons
+- **Status**: ✅ Complete and production-ready with date format fix
+
+**Response Structure:**
+```json
+{
+  "fecha_corte": "2025-08-01",
+  "meta": { "total": 25, "limit": 100, "offset": 0, "hasMore": false },
+  "data": [
+    {
+      "codcliente": "CLI001",
+      "nombre": "Cliente Perdido S.L.",
+      "email": "contacto@clienteperdido.com",
+      "telefono1": "600123456",
+      "fecha_ultima_factura": "15-12-2024",
+      "total_facturas_historicas": 8,
+      "total_facturado_historico": 15750.50
+    }
+  ]
+}
+```
+
+**Usage Examples:**
+```typescript
+// Basic usage - find clients lost since August 1st, 2025
+get_clientes_perdidos({
+  fecha_desde: "2025-08-01"
+})
+
+// With pagination for large datasets
+get_clientes_perdidos({
+  fecha_desde: "2024-06-01",
+  limit: 50,
+  offset: 0
+})
+
+// Find clients lost in the last 6 months
+get_clientes_perdidos({
+  fecha_desde: "2024-08-01",
+  limit: 25
+})
+```
+
+**Business Use Cases:**
+- **Customer Retention Campaigns**: Target clients who haven't purchased recently but have historical value
+- **Sales Recovery**: Prioritize follow-up based on `total_facturado_historico` and `fecha_ultima_factura`
+- **Performance Analysis**: Identify patterns in customer attrition by analyzing lost client timelines
+- **Marketing Segmentation**: Create targeted campaigns for different customer segments based on purchase history
+
+**Date Format Handling:**
+The tool automatically handles FacturaScripts' DD-MM-YYYY date format:
+- Invoice date `"17-08-2025"` with `fecha_desde: "2025-08-01"` → Client NOT lost (recent purchase)
+- Invoice date `"10-07-2025"` with `fecha_desde: "2025-08-01"` → Client IS lost (old purchase)
+- Sorting works correctly with mixed date formats in the database
 
 ### Previous Implementation: `get_facturas_cliente_por_cifnif`
 

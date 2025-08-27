@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { Resource } from '@modelcontextprotocol/sdk/types.js';
 import { FacturaScriptsClient } from '../../../../src/fs/client.js';
 import { FacturaclientesResource } from '../../../../src/modules/sales-orders/facturaclientes/resource.js';
-import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
+import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolClientesFrecuenciaComprasImplementation, toolClientesPerdidosImplementation } from '../../../../src/modules/sales-orders/facturaclientes/tool.js';
 
 // Integration tests - only run if environment is configured and not in CI
 const shouldRunIntegrationTests = process.env.NODE_ENV === 'test' &&
@@ -681,5 +681,180 @@ describe.skipIf(!shouldRunIntegrationTests)('Facturaclientes Integration Tests',
     expect(parsedResult).toHaveProperty('meta');
     expect(parsedResult).toHaveProperty('data');
     expect(Array.isArray(parsedResult.data)).toBe(true);
+  }, 15000);
+
+  it('should handle get_clientes_perdidos tool with real API', async () => {
+    // Use a recent cutoff date to find lost clients
+    const cutoffDate = '2024-06-01';
+    
+    const result = await toolClientesPerdidosImplementation(
+      { 
+        fecha_desde: cutoffDate,
+        limit: 5,
+        offset: 0
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    expect(Array.isArray(result.content)).toBe(true);
+    expect(result.content.length).toBeGreaterThan(0);
+
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Should have proper structure regardless of whether lost clients are found
+    expect(parsedResult).toHaveProperty('fecha_corte', cutoffDate);
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult.meta).toHaveProperty('total');
+    expect(parsedResult.meta).toHaveProperty('limit', 5);
+    expect(parsedResult.meta).toHaveProperty('offset', 0);
+    expect(parsedResult.meta).toHaveProperty('hasMore');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+
+    // If lost clients are found, validate structure
+    if (parsedResult.data.length > 0) {
+      const lostClient = parsedResult.data[0];
+      expect(lostClient).toHaveProperty('codcliente');
+      expect(lostClient).toHaveProperty('nombre');
+      expect(lostClient).toHaveProperty('fecha_ultima_factura');
+      expect(lostClient).toHaveProperty('total_facturas_historicas');
+      expect(lostClient).toHaveProperty('total_facturado_historico');
+      
+      // Validate data types
+      expect(typeof lostClient.codcliente).toBe('string');
+      expect(typeof lostClient.nombre).toBe('string');
+      expect(typeof lostClient.fecha_ultima_factura).toBe('string');
+      expect(typeof lostClient.total_facturas_historicas).toBe('number');
+      expect(typeof lostClient.total_facturado_historico).toBe('number');
+      
+      // email and telefono1 can be null
+      expect(lostClient.email === null || typeof lostClient.email === 'string').toBe(true);
+      expect(lostClient.telefono1 === null || typeof lostClient.telefono1 === 'string').toBe(true);
+      
+      // Business logic validation
+      expect(lostClient.total_facturas_historicas).toBeGreaterThan(0);
+      expect(lostClient.total_facturado_historico).toBeGreaterThan(0);
+      expect(lostClient.fecha_ultima_factura < cutoffDate).toBe(true);
+    }
+
+    // If no lost clients exist, should have appropriate response
+    if (parsedResult.data.length === 0) {
+      expect(parsedResult.meta.total).toBe(0);
+    }
+  }, 20000);
+
+  it('should handle get_clientes_perdidos with no invoice history', async () => {
+    // Use a very old cutoff date where likely no clients will have old invoices but no recent ones
+    const cutoffDate = '1990-01-01';
+    
+    const result = await toolClientesPerdidosImplementation(
+      { 
+        fecha_desde: cutoffDate,
+        limit: 3
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Should work but likely return no results (all clients would have invoices after 1990)
+    expect(parsedResult).toHaveProperty('fecha_corte', cutoffDate);
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+    
+    // If no invoices exist in system, should have proper message
+    if (parsedResult.message) {
+      expect(parsedResult.message).toContain('No se encontraron facturas');
+    }
+  }, 15000);
+
+  it('should handle get_clientes_perdidos parameter validation with real API', async () => {
+    const result = await toolClientesPerdidosImplementation(
+      { 
+        fecha_desde: '2024-01-01',
+        limit: 5000, // Should be capped to 1000
+        offset: -10  // Should be normalized to 0
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Parameters should be normalized
+    expect(parsedResult.meta.limit).toBe(1000); // Capped
+    expect(parsedResult.meta.offset).toBe(0);   // Normalized
+    
+    // Should still work correctly
+    expect(parsedResult).toHaveProperty('fecha_corte');
+    expect(parsedResult).toHaveProperty('meta');
+    expect(parsedResult).toHaveProperty('data');
+    expect(Array.isArray(parsedResult.data)).toBe(true);
+  }, 15000);
+
+  it('should handle get_clientes_perdidos sorting by fecha_ultima_factura', async () => {
+    // Use a cutoff that might find multiple lost clients
+    const cutoffDate = '2024-03-01';
+    
+    const result = await toolClientesPerdidosImplementation(
+      { 
+        fecha_desde: cutoffDate,
+        limit: 10
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // If multiple lost clients are found, verify sorting
+    if (parsedResult.data.length > 1) {
+      for (let i = 1; i < parsedResult.data.length; i++) {
+        const current = parsedResult.data[i].fecha_ultima_factura;
+        const previous = parsedResult.data[i-1].fecha_ultima_factura;
+        
+        // Should be sorted by fecha_ultima_factura descending (most recent lost clients first)
+        expect(current <= previous).toBe(true);
+      }
+    }
+    
+    // All clients should be lost (última factura < fecha_desde)
+    parsedResult.data.forEach(client => {
+      expect(client.fecha_ultima_factura < cutoffDate).toBe(true);
+    });
+  }, 20000);
+
+  it('should handle get_clientes_perdidos pagination correctly', async () => {
+    // Test pagination with small limit
+    const cutoffDate = '2024-01-01';
+    
+    const result = await toolClientesPerdidosImplementation(
+      { 
+        fecha_desde: cutoffDate,
+        limit: 1,
+        offset: 0
+      },
+      client
+    );
+
+    expect(result).toHaveProperty('content');
+    const parsedResult = JSON.parse(result.content[0].text);
+    
+    // Verify pagination structure
+    expect(parsedResult.meta).toHaveProperty('total');
+    expect(parsedResult.meta).toHaveProperty('limit', 1);
+    expect(parsedResult.meta).toHaveProperty('offset', 0);
+    expect(parsedResult.meta).toHaveProperty('hasMore');
+    
+    // Should return at most 1 result
+    expect(parsedResult.data.length).toBeLessThanOrEqual(1);
+    
+    // If there's data and total > 1, hasMore should be true
+    if (parsedResult.data.length === 1 && parsedResult.meta.total > 1) {
+      expect(parsedResult.meta.hasMore).toBe(true);
+    }
   }, 15000);
 });
