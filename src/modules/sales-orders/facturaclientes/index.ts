@@ -11,3 +11,11 @@ export {
   toolClientesPerdidosDefinition as facturaclientesPerdidosToolDefinition,
   toolClientesPerdidosImplementation as facturaclientesPerdidosToolImplementation
 } from './tool.js';
+export {
+  toolTiempoBeneficiosDefinition as facturaclientesTiempoBeneficiosToolDefinition,
+  toolTiempoBeneficiosImplementation as facturaclientesTiempoBeneficiosToolImplementation
+} from './tool-tiempo-beneficios.js';
+export {
+  toolTiempoBeneficiosBulkDefinition as facturaclientesTiempoBeneficiosBulkToolDefinition,
+  toolTiempoBeneficiosBulkImplementation as facturaclientesTiempoBeneficiosBulkToolImplementation
+} from './tool-tiempo-beneficios-bulk.js';

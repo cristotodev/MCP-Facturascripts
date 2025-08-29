@@ -88,6 +88,8 @@ import { SubcuentasResource } from './modules/accounting/subcuentas/resource.js'
 import { TarifasResource } from './modules/configuration/tarifas/resource.js';
 // Import new tool functions
 import { toolByCifnifImplementation, toolClientesMorososImplementation, toolClientesTopFacturacionImplementation, toolClientesSinComprasImplementation, toolExportarFacturaImplementation, toolClientesFrecuenciaComprasImplementation, toolFacturasConErroresImplementation, toolClientesPerdidosImplementation } from './modules/sales-orders/facturaclientes/tool.js';
+import { toolTiempoBeneficiosImplementation } from './modules/sales-orders/facturaclientes/tool-tiempo-beneficios.js';
+import { toolTiempoBeneficiosBulkImplementation } from './modules/sales-orders/facturaclientes/tool-tiempo-beneficios-bulk.js';
 import { lowStockToolImplementation } from './modules/core-business/stocks/tool.js';
 import { toolProductosMasVendidosImplementation } from './modules/sales-orders/line-items/lineafacturaclientes/tool.js';
 import { productosNoVendidosToolDefinition, productosNoVendidosToolImplementation } from './modules/core-business/productos/index.js';
@@ -433,6 +435,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 }
           },
           required: ['fecha_desde', 'fecha_hasta']
+        }
+      },
+      {
+        name: 'get_tiempo_beneficios_cliente',
+        description: 'Calcula el tiempo que tarda un cliente en generar beneficios desde su alta hasta el primer y último pago de facturas. Realiza análisis en tres pasos: 1) Busca datos del cliente por código, 2) Obtiene facturas del cliente, 3) Consulta recibos/pagos asociados. Calcula días desde fecha alta hasta primer y último pago, totales facturados y pagados. Útil para análisis de retorno de inversión en clientes, gestión de tesorería y estrategias de cobranza.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            codcliente: { type: 'string', description: 'Código del cliente para analizar (requerido)' }
+          },
+          required: ['codcliente']
+        }
+      },
+      {
+        name: 'get_tiempo_beneficios_todos_clientes',
+        description: 'Calcula el tiempo hasta beneficios para todos los clientes en un análisis bulk. Devuelve el detalle individual de cada cliente y un informe estadístico completo con medias, medianas, totales y distribuciones. Realiza procesamiento eficiente en lote para análisis masivos de rentabilidad de clientes. Útil para obtener insights generales de la cartera de clientes, identificar patrones de pago y optimizar estrategias de cobranza.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: { type: 'number', description: 'Número máximo de clientes a procesar (1-500)', minimum: 1, maximum: 500, default: 100 },
+            offset: { type: 'number', description: 'Número de clientes a omitir para paginación', minimum: 0, default: 0 },
+            incluir_sin_facturas: { type: 'boolean', description: 'Si incluir clientes sin facturas en el análisis', default: true }
+          }
         }
       },
       {
@@ -3049,6 +3074,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'get_clientes_top_facturacion': {
         return await toolClientesTopFacturacionImplementation(request.params.arguments as any, fsClient);
+      }
+
+      case 'get_tiempo_beneficios_cliente': {
+        return await toolTiempoBeneficiosImplementation(request.params.arguments as any, fsClient);
+      }
+
+      case 'get_tiempo_beneficios_todos_clientes': {
+        return await toolTiempoBeneficiosBulkImplementation(request.params.arguments as any, fsClient);
       }
 
       case 'get_clientes_perdidos': {
