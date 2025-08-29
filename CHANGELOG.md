@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/cristotodev/mcp-facturascripts/compare/v1.0.0...v1.1.0) (2025-08-29)
+
+
+### Features
+
+* **analytics:** add lost customers recovery tool for client retention analysis ([d6fcd23](https://github.com/cristotodev/mcp-facturascripts/commit/d6fcd236159d51b2e0ccc4052d592a645d6296d6))
+* **tiempo-beneficios:** add client benefit time analysis tools with anti-timeout optimizations ([e57ce15](https://github.com/cristotodev/mcp-facturascripts/commit/e57ce15b51aa52ee690aa7a139945d109d97565a))
+
 # 1.0.0 (2025-08-17)
 
 
